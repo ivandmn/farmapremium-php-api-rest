@@ -4,25 +4,21 @@
 .idea/
 .vscode/
 
-/.env.*.local
-/.env.local.php 
-/.env.test*
 /public/bundles/
+
 /var/cache/
 /var/log/
+
 /node_modules/
-/vendor/
 /tools/*/vendor/
+
 .phpunit.cache
 .phpunit.result.cache
 
-tests/
 *.bak
 *.tmp
 
-Dockerfile
-compose.yaml
-compose-test-ci.yaml
-compose-staging.yaml
-compose-prod.yaml
-docker/
+docker-compose.yaml
+docker-compose.override.yaml
+docker/*
+!docker/app/entrypoint.sh
