@@ -1,52 +1,45 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Domain\ValueObject\Task;
 
-use Domain\Exception\InvalidDomainModelArgumentException;
+use App\Domain\Exception\InvalidDomainModelArgumentException;
 
 final readonly class TaskDescription
 {
-	private const MAX_LENGTH = 1000;
+    private const MAX_LENGTH = 1000;
 
-	public function __construct(private string $value)
-	{
-		$normalizedValue = $this->normalize($value);
-		$this->ensureIsValid($normalizedValue);
-		$this->value = $normalizedValue;
-	}
+    public function __construct(private string $value)
+    {
+        $this->ensureIsValid($value);
+    }
 
-	public function value(): string
-	{
-		return $this->value;
-	}
+    public function value() : string
+    {
+        return $this->value;
+    }
 
-	private function normalize(string $value): string
-	{
-		return trim($value);
-	}
+    private function ensureIsValid(string $value) : void
+    {
+        if (strlen($value) > self::MAX_LENGTH) {
+            throw new InvalidDomainModelArgumentException(
+                sprintf(
+                    'Task description cannot exceed %d characters, got %d',
+                    self::MAX_LENGTH,
+                    strlen($value)
+                )
+            );
+        }
+    }
 
-	private function ensureIsValid(string $value): void
-	{
-		if (strlen($value) > self::MAX_LENGTH) {
-			throw new InvalidDomainModelArgumentException(
-				sprintf(
-					'Task description cannot exceed %d characters, got %d',
-					self::MAX_LENGTH,
-					strlen($value)
-				)
-			);
-		}
-	}
+    public function equals(TaskDescription $other) : bool
+    {
+        return $this === $other;
+    }
 
-	public function equals(TaskDescription $other): bool
-	{
-		return $this === $other;
-	}
-
-	public function __toString(): string
-	{
-		return $this->value;
-	}
+    public function __toString() : string
+    {
+        return $this->value;
+    }
 }

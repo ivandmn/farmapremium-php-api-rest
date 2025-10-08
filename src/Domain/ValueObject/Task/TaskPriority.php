@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\ValueObject\Task;
 
-use Domain\Exception\InvalidDomainModelArgumentException;
+use App\Domain\Exception\InvalidDomainModelArgumentException;
 
 enum TaskPriority: string
 {
