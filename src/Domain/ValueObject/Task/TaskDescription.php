@@ -22,21 +22,6 @@ final readonly class TaskDescription
 		return $this->value;
 	}
 
-	public function isEmpty(): bool
-	{
-		return $this->value === '';
-	}
-
-	public function isNotEmpty(): bool
-	{
-		return !$this->isEmpty();
-	}
-
-	public function __toString(): string
-	{
-		return $this->value;
-	}
-
 	private function normalize(string $value): string
 	{
 		return trim($value);
@@ -53,5 +38,15 @@ final readonly class TaskDescription
 				)
 			);
 		}
+	}
+
+	public function equals(TaskDescription $other): bool
+	{
+		return $this === $other;
+	}
+
+	public function __toString(): string
+	{
+		return $this->value;
 	}
 }

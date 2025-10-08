@@ -1,3 +1,7 @@
+export USER_ID := $(shell id -u)
+export GROUP_ID := $(shell id -g)
+export USER_NAME := $(shell whoami)
+
 ENV ?= dev
 COMPOSE_FILES ?=
 

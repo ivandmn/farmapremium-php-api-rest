@@ -15,8 +15,7 @@ final class User
 		private UserId $id,
 		private UserEmail $email,
 		private UserName $name,
-		private readonly DateTimeImmutable $createdAt = new DateTimeImmutable(),
-		private DateTimeImmutable $updatedAt = new DateTimeImmutable(),
+		private readonly DateTimeImmutable $createdAt = new DateTimeImmutable()
 	) {
 	}
 
@@ -40,12 +39,6 @@ final class User
 		return $this->createdAt;
 	}
 
-	public function getUpdatedAt(): DateTimeImmutable
-	{
-		return $this->updatedAt;
-	}
-
-	// Métodos de comportamiento (no setters)
 	public function changeEmail(UserEmail $newEmail): void
 	{
 		if ($this->email->equals($newEmail)) {
@@ -53,7 +46,6 @@ final class User
 		}
 
 		$this->email = $newEmail;
-		$this->markAsUpdated();
 	}
 
 	public function changeName(UserName $newName): void
@@ -63,23 +55,10 @@ final class User
 		}
 
 		$this->name = $newName;
-		$this->markAsUpdated();
 	}
 
-	// Métodos de consulta
 	public function hasEmail(UserEmail $email): bool
 	{
 		return $this->email->equals($email);
-	}
-
-	public function isActive(): bool
-	{
-		// Lógica de negocio para determinar si el usuario está activo
-		return true; // Implementar según reglas de negocio
-	}
-
-	private function markAsUpdated(): void
-	{
-		$this->updatedAt = new DateTimeImmutable();
 	}
 }

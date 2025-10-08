@@ -6,6 +6,10 @@ FROM php:8.3-fpm AS base
 WORKDIR /var/www/html
 
 ARG APP_ENV=${APP_ENV}
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+ARG USER_NAME=appuser
+
 ENV APP_ENV=${APP_ENV}
 ENV TZ=Europe/Madrid
 ENV COMPOSER_ALLOW_SUPERUSER=1
@@ -50,9 +54,14 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-enable xdebug \
 	&& rm -rf /var/lib/apt/lists/*
 
-COPY . .
+RUN groupadd -g ${GROUP_ID} ${USER_NAME} \
+    && useradd -u ${USER_ID} -g ${USER_NAME} -m -s /bin/bash ${USER_NAME}
 
-RUN composer install --no-interaction
+RUN mkdir -p var/log var/cache var/sessions \
+    && chmod -R 0777 var/ \
+    && chown -R ${USER_NAME}:${USER_NAME} /var/www/html
+
+USER ${USER_NAME}
 
 # Xdebug Port
 EXPOSE 9003

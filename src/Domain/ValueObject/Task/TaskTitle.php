@@ -22,11 +22,6 @@ final readonly class TaskTitle
 		return $this->value;
 	}
 
-	public function __toString(): string
-	{
-		return $this->value;
-	}
-
 	private function normalize(string $value): string
 	{
 		return trim($value);
@@ -49,5 +44,15 @@ final readonly class TaskTitle
 				)
 			);
 		}
+	}
+
+	public function equals(TaskTitle $other): bool
+	{
+		return $this === $other;
+	}
+
+	public function __toString(): string
+	{
+		return $this->value;
 	}
 }

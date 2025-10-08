@@ -7,6 +7,9 @@ services:
       target: dev
       args:
         APP_ENV: dev
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+        USER_NAME: ${USER_NAME:-appuser}
     volumes:
       - .:/var/www/html
       - ./docker/app/php.ini.dev:/usr/local/etc/php/conf.d/php.ini

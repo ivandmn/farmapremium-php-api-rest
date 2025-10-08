@@ -10,6 +10,7 @@ use App\Domain\ValueObject\Task\TaskDescription;
 use App\Domain\ValueObject\Task\TaskPriority;
 use App\Domain\ValueObject\Task\TaskStatus;
 use App\Domain\ValueObject\User\UserId;
+use DateTime;
 use DateTimeImmutable;
 use Domain\Exception\InvalidDomainModelArgumentException;
 
@@ -22,9 +23,9 @@ final class Task
 		private TaskStatus $status = TaskStatus::PENDING,
 		private TaskPriority $priority = TaskPriority::LOW,
 		private ?UserId $assignedUserId = null,
-		private ?DateTimeImmutable $dueDate = null,
+		private ?DateTime $dueDate = null,
 		private DateTimeImmutable $createdAt = new DateTimeImmutable(),
-		private ?DateTimeImmutable $updatedAt = null
+		private ?DateTime $updatedAt = null
 	) {
 	}
 
@@ -52,7 +53,7 @@ final class Task
 	{
 		return $this->assignedUserId;
 	}
-	public function getDueDate(): ?DateTimeImmutable
+	public function getDueDate(): ?DateTime
 	{
 		return $this->dueDate;
 	}
@@ -60,7 +61,7 @@ final class Task
 	{
 		return $this->createdAt;
 	}
-	public function getUpdatedAt(): DateTimeImmutable
+	public function getUpdatedAt(): ?DateTime
 	{
 		return $this->updatedAt;
 	}
@@ -93,7 +94,7 @@ final class Task
 	public function isOverdue(): bool
 	{
 		return $this->dueDate !== null
-			&& $this->dueDate < new DateTimeImmutable()
+			&& $this->dueDate < new DateTime()
 			&& !$this->isCompleted();
 	}
 
@@ -104,7 +105,7 @@ final class Task
 
 	public function changeTitle(TaskTitle $newTitle): void
 	{
-		if ($this->title->value() === $newTitle->value()) {
+		if ($this->title->equals($newTitle)) {
 			return;
 		}
 
@@ -114,7 +115,7 @@ final class Task
 
 	public function changeDescription(TaskDescription $newDescription): void
 	{
-		if ($this->description->value() === $newDescription->value()) {
+		if ($this->description->equals($newDescription)) {
 			return;
 		}
 
@@ -124,7 +125,7 @@ final class Task
 
 	public function changeStatus(TaskStatus $newStatus): void
 	{
-		if ($this->status === $newStatus) {
+		if ($this->status->equals($newStatus)) {
 			return;
 		}
 
@@ -136,7 +137,7 @@ final class Task
 
 	public function changePriority(TaskPriority $newPriority): void
 	{
-		if ($this->priority === $newPriority) {
+		if ($this->priority->equals($newPriority)) {
 			return;
 		}
 
@@ -144,9 +145,9 @@ final class Task
 		$this->markAsUpdated();
 	}
 
-	public function changeDueDate(?DateTimeImmutable $newDueDate): void
+	public function changeDueDate(?DateTime $newDueDate): void
 	{
-		if ($newDueDate !== null && $newDueDate < new DateTimeImmutable()) {
+		if ($newDueDate !== null && $newDueDate < new DateTime()) {
 			throw new InvalidDomainModelArgumentException('Due date cannot be in the past');
 		}
 
@@ -171,11 +172,11 @@ final class Task
 		}
 
 		$this->assignedUserId = null;
-		$this->updatedAt = new DateTimeImmutable();
+		$this->markAsUpdated();
 	}
 
 	private function markAsUpdated(): void
 	{
-		$this->updatedAt = new DateTimeImmutable();
+		$this->updatedAt = new DateTime();
 	}
 }

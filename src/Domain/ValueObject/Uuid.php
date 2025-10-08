@@ -29,15 +29,15 @@ readonly class Uuid
 		return $this->value === $other->value;
 	}
 
-	public function __toString(): string
-	{
-		return $this->value;
-	}
-
 	private function ensureIsValid(string $value): void
 	{
 		if (!RamseyUuid::isValid($value)) {
 			throw UuidInvalidException::invalid($value);
 		}
+	}
+
+	public function __toString(): string
+	{
+		return $this->value;
 	}
 }

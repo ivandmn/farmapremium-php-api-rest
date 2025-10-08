@@ -22,31 +22,6 @@ final readonly class UserEmail
 		return $this->value;
 	}
 
-	public function __toString(): string
-	{
-		return $this->value;
-	}
-
-	public function equals(UserEmail $other): bool
-	{
-		return $this->value === $other->value;
-	}
-
-	public function getDomain(): string
-	{
-		return substr($this->value, strpos($this->value, '@') + 1);
-	}
-
-	public function getLocalPart(): string
-	{
-		return substr($this->value, 0, strpos($this->value, '@'));
-	}
-
-	public function isFromDomain(string $domain): bool
-	{
-		return strcasecmp($this->getDomain(), $domain) === 0;
-	}
-
 	private function normalize(string $value): string
 	{
 		return strtolower(trim($value));
@@ -60,14 +35,22 @@ final readonly class UserEmail
 
 		if (strlen($value) > self::MAX_LENGTH) {
 			throw new InvalidDomainModelArgumentException(
-				sprintf('User email cannot exceed %d characters, got %d', self::MAX_LENGTH, strlen($value))
+				sprintf('User email cannot exceed %d characters', self::MAX_LENGTH)
 			);
 		}
 
-		if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-			throw new InvalidDomainModelArgumentException(
-				sprintf('Invalid email format "%s"', $value)
-			);
+		if (!filter_var(value: $value, filter: FILTER_VALIDATE_EMAIL)) {
+			throw new InvalidDomainModelArgumentException('Invalid user email format');
 		}
+	}
+
+	public function equals(UserEmail $other): bool
+	{
+		return $this === $other;
+	}
+
+	public function __toString(): string
+	{
+		return $this->value;
 	}
 }

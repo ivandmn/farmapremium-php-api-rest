@@ -37,7 +37,7 @@ enum TaskPriority: string
 		return $this->getNumericValue() < $other->getNumericValue();
 	}
 
-	public function isEqualTo(TaskPriority $other): bool
+	public function equals(TaskPriority $other): bool
 	{
 		return $this === $other;
 	}

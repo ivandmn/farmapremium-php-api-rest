@@ -5,14 +5,12 @@ max_execution_time = 60
 display_errors = On
 display_startup_errors = On
 error_reporting = E_ALL
+log_errors = On
+error_log = /proc/self/fd/2
 
 upload_max_filesize = 50M
 post_max_size = 50M
 
-log_errors = On
-error_log = /proc/self/fd/2
-
-zend_extension=xdebug.so
 xdebug.mode = debug,develop
 xdebug.start_with_request = yes
 xdebug.client_host = host.docker.internal
@@ -20,5 +18,6 @@ xdebug.client_port = 9003
 xdebug.log = /tmp/xdebug.log
 xdebug.discover_client_host = true
 
+opcache.enable = 0
 opcache.revalidate_freq = 0
 opcache.validate_timestamps = 1

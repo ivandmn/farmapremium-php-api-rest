@@ -24,11 +24,6 @@ final readonly class UserName
 		return $this->value;
 	}
 
-	public function __toString(): string
-	{
-		return $this->value;
-	}
-
 	private function normalize(string $value): string
 	{
 		return trim($value);
@@ -45,11 +40,20 @@ final readonly class UserName
 		if (strlen($value) > self::MAX_LENGTH) {
 			throw new InvalidDomainModelArgumentException(
 				sprintf(
-					'Task title cannot exceed %d characters, got %d',
-					self::MAX_LENGTH,
-					strlen($value)
+					'Task title cannot exceed %d characters',
+					self::MAX_LENGTH
 				)
 			);
 		}
+	}
+
+	public function equals(UserName $other): bool
+	{
+		return $this === $other;
+	}
+
+	public function __toString(): string
+	{
+		return $this->value;
 	}
 }

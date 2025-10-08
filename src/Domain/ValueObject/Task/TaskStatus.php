@@ -27,6 +27,11 @@ enum TaskStatus: string
 		return $this === self::COMPLETED;
 	}
 
+	public function equals(TaskStatus $other): bool
+	{
+		return $this === $other;
+	}
+
 	public function ensureIsValidTransitionTo(TaskStatus $newStatus): bool
 	{
 		return match ([$this, $newStatus]) {
