@@ -6,7 +6,7 @@ namespace App\Application\UseCase\CreateUser;
 
 use App\Domain\Model\User;
 
-final class CreateUserResponse
+final class CreateUserResponse implements \JsonSerializable
 {
     private string $id;
 
@@ -21,10 +21,10 @@ final class CreateUserResponse
         $this->id = $user->getId()->value();
         $this->email = $user->getEmail()->value();
         $this->name = $user->getName()->value();
-        $this->createdAt = $user->getCreatedAt()->format('Y-m-d H:i:s');
+        $this->createdAt = $user->getCreatedAt()->format(\DATE_ATOM);
     }
 
-    public function toArray() : array
+    public function jsonSerialize() : array
     {
         return [
             'id' => $this->id,
@@ -32,5 +32,10 @@ final class CreateUserResponse
             'name' => $this->name,
             'createdAt' => $this->createdAt,
         ];
+    }
+
+    public function toArray(): array
+    {
+        return $this->jsonSerialize();
     }
 }

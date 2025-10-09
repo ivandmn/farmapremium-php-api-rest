@@ -1,0 +1,49 @@
+{
+  "info": {
+    "_postman_id": "7b3f8b4a-01d2-4c9e-9c21-111222333444",
+    "name": "Farmapremium API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Send API Requests To Farmapremium"
+  },
+  "item": [
+    {
+      "name": "List Users (GET /api/users)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/users",
+          "host": ["{{base_url}}"],
+          "path": ["api", "users"]
+        }
+      }
+    },
+    {
+      "name": "Create User (POST /api/users)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"{{user_name}}\",\n  \"email\": \"{{user_email}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/users",
+          "host": ["{{base_url}}"],
+          "path": ["api", "users"]
+        },
+        "description": "Edita user_name y user_email en Variables (Collection/Environment) si quieres cambiar el payload."
+      }
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000", "type": "string" },
+    { "key": "user_name", "value": "Miguel", "type": "string" },
+    { "key": "user_email", "value": "miguel@example.com", "type": "string" }
+  ]
+}
