@@ -4,15 +4,18 @@ declare(strict_types = 1);
 
 namespace App\Domain\Model;
 
-use App\Domain\ValueObject\Task\TaskId;
-use App\Domain\ValueObject\Task\TaskTitle;
+use App\Domain\Exception\InvalidArgumentException;
+use App\Domain\Exception\Task\AssignedUserDoesNotExistException;
+use App\Domain\Exception\Task\InvalidTaskStatusTransitionException;
 use App\Domain\ValueObject\Task\TaskDescription;
+use App\Domain\ValueObject\Task\TaskId;
 use App\Domain\ValueObject\Task\TaskPriority;
 use App\Domain\ValueObject\Task\TaskStatus;
+use App\Domain\ValueObject\Task\TaskTitle;
 use App\Domain\ValueObject\User\UserId;
+use App\Domain\ValueObject\Uuid;
 use DateTime;
 use DateTimeImmutable;
-use App\Domain\Exception\InvalidDomainModelArgumentException;
 
 final class Task
 {
@@ -25,11 +28,14 @@ final class Task
         private ?UserId                    $assignedUserId = null,
         private ?DateTime                  $dueDate = null,
         private readonly DateTimeImmutable $createdAt = new DateTimeImmutable(),
-        private ?DateTime                  $updatedAt = null
+        private ?DateTime                  $updatedAt = null,
+        ?callable                          $userExistsChecker = null
     ) {
+        $this->assertDueDateIsValid($this->dueDate);
+        $this->assertAssignedUserExists($assignedUserId, $userExistsChecker);
     }
 
-    public function getId() : TaskId
+    public function getId() : Uuid
     {
         return $this->id;
     }
@@ -137,7 +143,15 @@ final class Task
             return;
         }
 
-        $this->status->ensureIsValidTransitionTo($newStatus);
+        if (!$this->status->canTransitionTo($newStatus)) {
+            throw new InvalidTaskStatusTransitionException(
+                sprintf(
+                    'Status transition from %s to %s is not allowed',
+                    $this->status->value,
+                    $newStatus->value
+                )
+            );
+        }
 
         $this->status = $newStatus;
         $this->markAsUpdated();
@@ -153,20 +167,14 @@ final class Task
         $this->markAsUpdated();
     }
 
-    public function changeDueDate(?DateTime $newDueDate) : void
-    {
-        if ($newDueDate !== null && $newDueDate < new DateTime()) {
-            throw new InvalidDomainModelArgumentException('Due date cannot be in the past');
-        }
-
-        $this->dueDate = $newDueDate;
-        $this->markAsUpdated();
-    }
-
-    public function assignTo(UserId $userId) : void
+    public function assignTo(UserId $userId, ?callable $userExistsChecker = null) : void
     {
         if ($this->assignedUserId?->equals($userId)) {
             return;
+        }
+
+        if ($userExistsChecker !== null && !$userExistsChecker($userId)) {
+            throw new AssignedUserDoesNotExistException('Assigned user does not exist');
         }
 
         $this->assignedUserId = $userId;
@@ -181,6 +189,35 @@ final class Task
 
         $this->assignedUserId = null;
         $this->markAsUpdated();
+    }
+
+    public function changeDueDate(?DateTime $newDueDate) : void
+    {
+        if ($newDueDate !== null && $newDueDate < new DateTime()) {
+            throw new InvalidArgumentException('Due date cannot be in the past');
+        }
+
+        $this->dueDate = $newDueDate;
+        $this->markAsUpdated();
+    }
+
+    public function canBeDeleted() : bool
+    {
+        return $this->status->isPending();
+    }
+
+    private function assertDueDateIsValid(?DateTime $dueDate) : void
+    {
+        if ($dueDate !== null && $dueDate < new DateTime()) {
+            throw new InvalidArgumentException('Due date cannot be in the past');
+        }
+    }
+
+    private function assertAssignedUserExists(?Uuid $userId, ?callable $userExistsChecker) : void
+    {
+        if ($userId !== null && $userExistsChecker !== null && !$userExistsChecker($userId)) {
+            throw new InvalidArgumentException('Assigned user does not exist');
+        }
     }
 
     private function markAsUpdated() : void

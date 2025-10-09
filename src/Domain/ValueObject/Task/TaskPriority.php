@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\ValueObject\Task;
 
-use App\Domain\Exception\InvalidDomainModelArgumentException;
+use App\Domain\Exception\DomainException;
 
 enum TaskPriority: string
 {
@@ -57,7 +57,7 @@ enum TaskPriority: string
 			1 => self::LOW,
 			2 => self::MEDIUM,
 			3 => self::HIGH,
-			default => throw new InvalidDomainModelArgumentException(
+			default => throw new DomainException(
 				sprintf(
 					'Invalid numeric value "%d" for task priority',
 					$value

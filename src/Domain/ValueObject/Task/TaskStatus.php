@@ -4,8 +4,6 @@ declare(strict_types = 1);
 
 namespace App\Domain\ValueObject\Task;
 
-use App\Domain\Exception\InvalidDomainModelArgumentException;
-
 enum TaskStatus: string
 {
     case PENDING = 'pending';
@@ -32,17 +30,11 @@ enum TaskStatus: string
         return $this === $other;
     }
 
-    public function ensureIsValidTransitionTo(TaskStatus $newStatus) : bool
+    public function canTransitionTo(TaskStatus $newStatus) : bool
     {
         return match ([$this, $newStatus]) {
             [self::PENDING, self::IN_PROGRESS], [self::IN_PROGRESS, self::COMPLETED] => true,
-            default => throw new InvalidDomainModelArgumentException(
-                sprintf(
-                    'Invalid status transition from %s to %s',
-                    $this->value,
-                    $newStatus->value
-                )
-            )
+            default => false
         };
     }
 }

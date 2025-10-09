@@ -4,19 +4,26 @@ declare(strict_types = 1);
 
 namespace App\Domain\ValueObject;
 
+use App\Domain\Exception\InvalidUuidException;
 use Ramsey\Uuid\Uuid as RamseyUuid;
-use App\Domain\Exception\UuidInvalidException;
 
 readonly class Uuid
 {
     public function __construct(private string $value)
     {
-        $this->ensureIsValid($value);
+        if (!RamseyUuid::isValid($value)) {
+            throw new InvalidUuidException('Invalid Uuid format');
+        }
     }
 
-    public static function generate() : self
+    public static function from(string $uuid) : static
     {
-        return new self(RamseyUuid::uuid7()->toString());
+        return new static($uuid);
+    }
+
+    public static function new() : static
+    {
+        return new static(RamseyUuid::uuid7()->toString());
     }
 
     public function value() : string
@@ -27,13 +34,6 @@ readonly class Uuid
     public function equals(Uuid $other) : bool
     {
         return $this->value === $other->value;
-    }
-
-    private function ensureIsValid(string $value) : void
-    {
-        if (!RamseyUuid::isValid($value)) {
-            throw UuidInvalidException::invalid($value);
-        }
     }
 
     public function __toString() : string

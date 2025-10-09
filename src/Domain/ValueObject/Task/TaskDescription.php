@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Domain\ValueObject\Task;
 
-use App\Domain\Exception\InvalidDomainModelArgumentException;
+use App\Domain\Exception\InvalidArgumentException;
 
 final readonly class TaskDescription
 {
@@ -12,25 +12,14 @@ final readonly class TaskDescription
 
     public function __construct(private string $value)
     {
-        $this->ensureIsValid($value);
+        if (strlen($value) > self::MAX_LENGTH) {
+            throw new InvalidArgumentException('Task description exceeds maximum characters length');
+        }
     }
 
     public function value() : string
     {
         return $this->value;
-    }
-
-    private function ensureIsValid(string $value) : void
-    {
-        if (strlen($value) > self::MAX_LENGTH) {
-            throw new InvalidDomainModelArgumentException(
-                sprintf(
-                    'Task description cannot exceed %d characters, got %d',
-                    self::MAX_LENGTH,
-                    strlen($value)
-                )
-            );
-        }
     }
 
     public function equals(TaskDescription $other) : bool

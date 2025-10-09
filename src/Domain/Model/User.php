@@ -4,8 +4,9 @@ declare(strict_types = 1);
 
 namespace App\Domain\Model;
 
-use App\Domain\ValueObject\User\UserId;
+use App\Domain\ValueObject\Email;
 use App\Domain\ValueObject\User\UserEmail;
+use App\Domain\ValueObject\User\UserId;
 use App\Domain\ValueObject\User\UserName;
 use DateTimeImmutable;
 
@@ -24,7 +25,7 @@ final class User
         return $this->id;
     }
 
-    public function getEmail() : UserEmail
+    public function getEmail() : Email
     {
         return $this->email;
     }
@@ -55,10 +56,5 @@ final class User
         }
 
         $this->name = $newName;
-    }
-
-    public function hasEmail(UserEmail $email) : bool
-    {
-        return $this->email->equals($email);
     }
 }

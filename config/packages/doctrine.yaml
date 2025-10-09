@@ -19,10 +19,10 @@ doctrine:
         auto_mapping: true
         mappings:
             App:
-                type: xml
+                type: annotation
                 is_bundle: false
-                dir: '%kernel.project_dir%/src/Infrastructure/Persistence/Doctrine/Mapping'
-                prefix: 'App\Domain\Model'
+                dir: '%kernel.project_dir%/src/Infrastructure/Persistence/Doctrine/Entity'
+                prefix: 'App\Infrastructure\Persistence\Doctrine\Entity'
                 alias: App
 
 when@test:

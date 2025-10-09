@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Domain\ValueObject\User;
 
-use App\Domain\Exception\InvalidDomainModelArgumentException;
+use App\Domain\Exception\User\InvalidUserNameException;
 
 final readonly class UserName
 {
@@ -12,30 +12,23 @@ final readonly class UserName
 
     public function __construct(private string $value)
     {
-        $this->ensureIsValid($value);
+        if (empty($value)) {
+            throw new InvalidUserNameException('User name cannot be empty');
+        }
+
+        if (strlen($value) > self::MAX_LENGTH) {
+            throw new InvalidUserNameException('User name exceeds maximum characters length');
+        }
+    }
+
+    public static function from(string $uuid) : static
+    {
+        return new static($uuid);
     }
 
     public function value() : string
     {
         return $this->value;
-    }
-
-    private function ensureIsValid(string $value) : void
-    {
-        if (empty($value)) {
-            throw new InvalidDomainModelArgumentException(
-                'Task title cannot be empty'
-            );
-        }
-
-        if (strlen($value) > self::MAX_LENGTH) {
-            throw new InvalidDomainModelArgumentException(
-                sprintf(
-                    'Task title cannot exceed %d characters',
-                    self::MAX_LENGTH
-                )
-            );
-        }
     }
 
     public function equals(UserName $other) : bool
