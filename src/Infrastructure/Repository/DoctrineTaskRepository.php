@@ -8,7 +8,6 @@ use App\Domain\Model\Task as TaskDomain;
 use App\Domain\Repository\TaskRepositoryInterface;
 use App\Domain\ValueObject\Task\TaskId;
 use App\Infrastructure\Persistence\Doctrine\Entity\Task as TaskDoctrine;
-use App\Domain\Repository\UserRepositoryInterface;
 use App\Domain\ValueObject\User\UserId;
 use App\Infrastructure\Persistence\Doctrine\Mapper\TaskMapper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -36,7 +35,7 @@ readonly class DoctrineTaskRepository implements TaskRepositoryInterface
     {
         $entities = $this->entityManager->getRepository(TaskDoctrine::class)->findAll();
 
-        return array_map([TaskDoctrine::class, 'toDomain'], $entities);
+        return array_map([TaskMapper::class, 'toDomain'], $entities);
     }
 
     public function findById(TaskId $id) : ?TaskDomain
@@ -46,9 +45,23 @@ readonly class DoctrineTaskRepository implements TaskRepositoryInterface
         return $user ? TaskMapper::toDomain($user) : null;
     }
 
-    public function findByUserId(UserId $userId) : ?TaskDomain
+    public function findByUserId(UserId $userId) : array
     {
         $entities = $this->entityManager->getRepository(TaskDoctrine::class)->findBy(['assignedTo' => $userId->value()]);
+
+        return array_map([TaskMapper::class, 'toDomain'], $entities);
+    }
+
+    public function findByFilters(array $filters, int $page, int $maxItems) : array
+    {
+        $offset = ($page - 1) * $maxItems;
+
+        $entities = $this->entityManager->getRepository(TaskDoctrine::class)->findBy(
+            $filters,
+            ['id' => 'DESC'],
+            $maxItems,
+            $offset
+        );
 
         return array_map([TaskMapper::class, 'toDomain'], $entities);
     }

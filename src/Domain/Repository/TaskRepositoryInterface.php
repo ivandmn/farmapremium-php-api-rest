@@ -18,5 +18,7 @@ interface TaskRepositoryInterface
 
     public function findById(TaskId $id) : ?Task;
 
-    public function findByUserId(UserId $userId) : ?Task;
+    public function findByUserId(UserId $userId) : array;
+
+    public function findByFilters(array $filters, int $page, int $maxItems) : array;
 }
