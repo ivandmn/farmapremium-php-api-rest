@@ -9,7 +9,7 @@ use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'users')]
+#[ORM\Table(name: 'user')]
 class User
 {
     #[ORM\Id]

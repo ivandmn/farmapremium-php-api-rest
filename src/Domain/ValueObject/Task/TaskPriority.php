@@ -1,68 +1,59 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Domain\ValueObject\Task;
 
-use App\Domain\Exception\DomainException;
+use App\Domain\Exception\Task\InvalidTaskPriorityException;
 
 enum TaskPriority: string
 {
-	case LOW = 'low';
-	case MEDIUM = 'medium';
-	case HIGH = 'high';
+    case LOW = 'low';
+    case MEDIUM = 'medium';
+    case HIGH = 'high';
 
-	public function isLow(): bool
-	{
-		return $this === self::LOW;
-	}
+    public static function fromString(string $value) : self
+    {
+        return self::tryFrom($value)
+            ?? throw new InvalidTaskPriorityException('Invalid task priority');
+    }
 
-	public function isMedium(): bool
-	{
-		return $this === self::MEDIUM;
-	}
+    public function isLow() : bool
+    {
+        return $this === self::LOW;
+    }
 
-	public function isHigh(): bool
-	{
-		return $this === self::HIGH;
-	}
+    public function isMedium() : bool
+    {
+        return $this === self::MEDIUM;
+    }
 
-	public function isHigherThan(TaskPriority $other): bool
-	{
-		return $this->getNumericValue() > $other->getNumericValue();
-	}
+    public function isHigh() : bool
+    {
+        return $this === self::HIGH;
+    }
 
-	public function isLowerThan(TaskPriority $other): bool
-	{
-		return $this->getNumericValue() < $other->getNumericValue();
-	}
+    public function isHigherThan(TaskPriority $other) : bool
+    {
+        return $this->getNumericValue() > $other->getNumericValue();
+    }
 
-	public function equals(TaskPriority $other): bool
-	{
-		return $this === $other;
-	}
+    public function isLowerThan(TaskPriority $other) : bool
+    {
+        return $this->getNumericValue() < $other->getNumericValue();
+    }
 
-	public function getNumericValue(): int
-	{
-		return match ($this) {
-			self::LOW => 1,
-			self::MEDIUM => 2,
-			self::HIGH => 3,
-		};
-	}
+    public function equals(TaskPriority $other) : bool
+    {
+        return $this === $other;
+    }
 
-	public static function fromNumericValue(int $value): TaskPriority
-	{
-		return match ($value) {
-			1 => self::LOW,
-			2 => self::MEDIUM,
-			3 => self::HIGH,
-			default => throw new DomainException(
-				sprintf(
-					'Invalid numeric value "%d" for task priority',
-					$value
-				)
-			),
-		};
-	}
+    public function getNumericValue() : int
+    {
+        return match ($this) {
+            self::LOW => 1,
+            self::MEDIUM => 2,
+            self::HIGH => 3,
+        };
+    }
 }

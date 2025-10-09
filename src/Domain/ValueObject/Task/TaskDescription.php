@@ -8,7 +8,7 @@ use App\Domain\Exception\InvalidArgumentException;
 
 final readonly class TaskDescription
 {
-    private const MAX_LENGTH = 1000;
+    public const MAX_LENGTH = 1000;
 
     public function __construct(private string $value)
     {

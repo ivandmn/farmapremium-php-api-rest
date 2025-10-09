@@ -8,7 +8,7 @@ use App\Domain\Exception\Task\InvalidTaskTitleException;
 
 final readonly class TaskTitle
 {
-    private const MAX_LENGTH = 255;
+    public const MAX_LENGTH = 255;
 
     public function __construct(private string $value)
     {
@@ -21,6 +21,11 @@ final readonly class TaskTitle
         if (strlen($value) > self::MAX_LENGTH) {
             throw new InvalidTaskTitleException('Task description exceeds maximum characters length');
         }
+    }
+
+    public static function fromString(string $value) : self
+    {
+        return new self($value);
     }
 
     public function value() : string

@@ -4,11 +4,19 @@ declare(strict_types = 1);
 
 namespace App\Domain\ValueObject\Task;
 
+use App\Domain\Exception\Task\InvalidTaskStatusException;
+
 enum TaskStatus: string
 {
     case PENDING = 'pending';
     case IN_PROGRESS = 'in_progress';
     case COMPLETED = 'completed';
+
+    public static function fromString(string $value) : self
+    {
+        return self::tryFrom($value)
+            ?? throw new InvalidTaskStatusException('Invalid task status');
+    }
 
     public function isPending() : bool
     {

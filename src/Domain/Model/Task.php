@@ -25,14 +25,14 @@ final class Task
         private TaskDescription            $description,
         private TaskStatus                 $status = TaskStatus::PENDING,
         private TaskPriority               $priority = TaskPriority::LOW,
-        private ?UserId                    $assignedUserId = null,
+        private ?UserId                    $assignedUser = null,
         private ?DateTime                  $dueDate = null,
         private readonly DateTimeImmutable $createdAt = new DateTimeImmutable(),
         private ?DateTime                  $updatedAt = null,
         ?callable                          $userExistsChecker = null
     ) {
         $this->assertDueDateIsValid($this->dueDate);
-        $this->assertAssignedUserExists($assignedUserId, $userExistsChecker);
+        $this->assertAssignedUserExists($this->assignedUser, $userExistsChecker);
     }
 
     public function getId() : Uuid
@@ -60,9 +60,9 @@ final class Task
         return $this->priority;
     }
 
-    public function getAssignedUserId() : ?UserId
+    public function getAssignedUser() : ?UserId
     {
-        return $this->assignedUserId;
+        return $this->assignedUser;
     }
 
     public function getDueDate() : ?DateTime
@@ -97,7 +97,7 @@ final class Task
 
     public function isUnassigned() : bool
     {
-        return $this->assignedUserId !== null;
+        return $this->assignedUser !== null;
     }
 
     public function isAssigned() : bool
@@ -169,7 +169,7 @@ final class Task
 
     public function assignTo(UserId $userId, ?callable $userExistsChecker = null) : void
     {
-        if ($this->assignedUserId?->equals($userId)) {
+        if ($this->assignedUser?->equals($userId)) {
             return;
         }
 
@@ -177,17 +177,17 @@ final class Task
             throw new AssignedUserDoesNotExistException('Assigned user does not exist');
         }
 
-        $this->assignedUserId = $userId;
+        $this->assignedUser = $userId;
         $this->markAsUpdated();
     }
 
     public function unassign() : void
     {
-        if ($this->assignedUserId === null) {
+        if ($this->assignedUser === null) {
             return;
         }
 
-        $this->assignedUserId = null;
+        $this->assignedUser = null;
         $this->markAsUpdated();
     }
 

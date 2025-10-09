@@ -13,18 +13,18 @@ final class ParametersValidatorException extends InvalidArgumentException
     public const CODE_UNKNOWN = 'unknown';
     public const CODE_NOT_ALLOWED_PARAMETER = 'not_allowed';
     public const CODE_MISSING_PARAMETER = 'missing';
-    public const ERRORS = [
+    private const ERRORS = [
         self::CODE_NOT_ALLOWED_PARAMETER => 'The parameter "%s" is not allowed.',
-        self::CODE_MISSING_PARAMETER => 'The parameter "%" is required.',
+        self::CODE_MISSING_PARAMETER => 'The parameter "%s" is required.',
     ];
 
-    public function __construct(private array $errors, string $message = '', ?int $code = null, ?Throwable $previous = null)
-    {
-        parent::__construct(
-            $message ?: 'Validation failed',
-            $code ?? Response::HTTP_BAD_REQUEST,
-            $previous,
-        );
+    public function __construct(
+        private readonly array $errors,
+        string                 $message = 'Validation failed',
+        int                    $code = Response::HTTP_BAD_REQUEST,
+        ?Throwable             $previous = null,
+    ) {
+        parent::__construct($message, $code, $previous);
     }
 
     public function getErrors() : array
@@ -48,14 +48,14 @@ final class ParametersValidatorException extends InvalidArgumentException
 
     public function getErrorCode(array $error) : string
     {
-        [, $code] = reset($this->errors);
+        [, $code] = reset($error);
 
         return $code;
     }
 
     public function getErrorMessage(array $error) : string
     {
-        [, $code] = reset($this->errors);
+        [, $code] = reset($error);
 
         return self::ERRORS[$code] ?? self::CODE_UNKNOWN;
     }
