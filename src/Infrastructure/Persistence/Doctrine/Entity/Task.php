@@ -25,10 +25,10 @@ class Task
     #[ORM\Column(type: 'string', length: TaskDescription::MAX_LENGTH, nullable: false)]
     private string $description;
 
-    #[ORM\Column(nullable: false, enumType: TaskStatus::class)]
+    #[ORM\Column(nullable: false, length: 30, enumType: TaskStatus::class)]
     private TaskStatus $status;
 
-    #[ORM\Column(nullable: false, enumType: TaskPriority::class)]
+    #[ORM\Column(nullable: false, length: 30, enumType: TaskPriority::class)]
     private TaskPriority $priority;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
@@ -41,7 +41,7 @@ class Task
     #[ORM\Column(name: 'created_at', type: 'datetime_immutable', nullable: false)]
     private DateTimeImmutable $createdAt;
 
-    #[ORM\Column(name: 'created_at', type: 'datetime', nullable: true)]
+    #[ORM\Column(name: 'updated_at', type: 'datetime', nullable: true)]
     private ?DateTime $updatedAt;
 
     public function getId() : string

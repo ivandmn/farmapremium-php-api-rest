@@ -5,13 +5,13 @@ declare(strict_types = 1);
 namespace App\Application\UseCase\CreateTask;
 
 use App\Infrastructure\Exception\InvalidRequestArgumentException;
-use DateTimeImmutable;
+use DateTime;
 
 final class CreateTaskRequest
 {
     private const DATE_FORMAT = \DATE_ATOM;
 
-    private DateTimeImmutable $dueDate;
+    private DateTime $dueDate;
 
     public function __construct(
         private string  $title,
@@ -20,7 +20,7 @@ final class CreateTaskRequest
         private ?string $userId,
         ?string         $dueDate
     ) {
-        $date = $dueDate !== null ? DateTimeImmutable::createFromFormat(\DATE_ATOM, $dueDate) : null;
+        $date = $dueDate !== null ? DateTime::createFromFormat(\DATE_ATOM, $dueDate) : null;
         if ($date === false) {
             throw new InvalidRequestArgumentException(sprintf('Invalid Due date, must be in format "%s"', self::DATE_FORMAT));
         }
@@ -48,7 +48,7 @@ final class CreateTaskRequest
         return $this->userId;
     }
 
-    public function getDueDate() : ?DateTimeImmutable
+    public function getDueDate() : ?DateTime
     {
         return $this->dueDate;
     }

@@ -6,14 +6,12 @@ namespace App\Infrastructure\Controller;
 
 use App\Application\UseCase\CreateTask\CreateTaskRequest;
 use App\Application\UseCase\CreateTask\CreateTaskUserCase;
-use App\Application\UseCase\CreateTask\ListTasksRequest;
-use App\Application\UseCase\ListUsers\ListUsersUseCase;
+use App\Application\UseCase\ListTasks\ListTasksRequest;
+use App\Application\UseCase\ListTasks\ListTasksUserCase;
 use App\Domain\Exception\Task\InvalidTaskPriorityException;
 use App\Domain\Exception\Task\InvalidTaskStatusException;
-use App\Domain\Exception\User\InvalidUserEmailException;
-use App\Domain\Exception\User\InvalidUserIdException;
-use App\Domain\Exception\User\InvalidUserNameException;
-use App\Domain\Exception\User\UserAlreadyExistsException;
+use App\Domain\Exception\Task\InvalidTaskTitleException;
+use App\Domain\Exception\Task\TaskDueDateInPastException;
 use App\Infrastructure\Exception\InvalidRequestArgumentException;
 use App\Infrastructure\Exception\ParametersValidatorException;
 use App\Infrastructure\Service\ParametersValidator;
@@ -31,7 +29,7 @@ class TaskController extends AbstractController
     public function __construct(
         private ParametersValidator $validator,
         private CreateTaskUserCase  $createTaskUserCase,
-        private ListUsersUseCase    $listUsersUseCase
+        private ListTasksUserCase   $listTasksUserCase
     ) {
     }
 
@@ -47,14 +45,14 @@ class TaskController extends AbstractController
                 $priority ? (string) $priority : null
             );
 
-            $response = ($this->listUsersUseCase)($listRequest);
+            $response = ($this->listTasksUserCase)($listRequest);
 
             if (empty($response)) {
                 return new JsonResponse(null, Response::HTTP_NO_CONTENT);
             }
 
             return new JsonResponse(['status' => 'success', 'data' => $response], Response::HTTP_OK);
-        } catch (InvalidTaskStatusException | InvalidTaskPriorityException $exception) {
+        } catch (InvalidTaskStatusException|InvalidTaskPriorityException $exception) {
             return new JsonResponse(['status' => 'error', 'reason' => $exception->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (Throwable $exception) {
             return new JsonResponse(['status' => 'error', 'reason' => 'Generic Error'], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -83,10 +81,8 @@ class TaskController extends AbstractController
             return new JsonResponse(['status' => 'error', 'reason' => 'Invalid request payload', 'extra' => $exception->getErrorMessage($error)], Response::HTTP_BAD_REQUEST);
         } catch (TypeError $exception) {
             return new JsonResponse(['status' => 'error', 'reason' => 'Invalid request payload'], Response::HTTP_BAD_REQUEST);
-        } catch (InvalidRequestArgumentException|InvalidUserEmailException|InvalidUserIdException|InvalidUserNameException $exception) {
+        } catch (InvalidRequestArgumentException|TaskDueDateInPastException|InvalidTaskPriorityException|InvalidTaskTitleException $exception) {
             return new JsonResponse(['status' => 'error', 'reason' => $exception->getMessage()], Response::HTTP_BAD_REQUEST);
-        } catch (UserAlreadyExistsException $exception) {
-            return new JsonResponse(['status' => 'error', 'reason' => $exception->getMessage()], Response::HTTP_FORBIDDEN);
         } catch (Throwable $exception) {
             return new JsonResponse(['status' => 'error', 'reason' => 'Generic Error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

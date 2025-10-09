@@ -4,6 +4,7 @@ namespace App\Domain\Factory;
 
 use App\Domain\Model\Task;
 use App\Domain\ValueObject\Task\TaskDescription;
+use App\Domain\ValueObject\Task\TaskDueDate;
 use App\Domain\ValueObject\Task\TaskId;
 use App\Domain\ValueObject\Task\TaskPriority;
 use App\Domain\ValueObject\Task\TaskStatus;
@@ -16,7 +17,7 @@ final class TaskFactory
         TaskTitle         $title,
         TaskDescription   $description,
         TaskPriority      $priority = TaskPriority::LOW,
-        DateTimeImmutable $dueDate = null,
+        TaskDueDate $dueDate = null,
     ) : Task {
         return new Task(
             TaskId::new(),

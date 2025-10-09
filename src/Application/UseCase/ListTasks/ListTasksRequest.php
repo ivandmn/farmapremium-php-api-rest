@@ -15,12 +15,12 @@ final class ListTasksRequest
     ) {
     }
 
-    public function getStatus() : string
+    public function getStatus() : ?string
     {
         return $this->status;
     }
 
-    public function getPriority() : string
+    public function getPriority() : ?string
     {
         return $this->priority;
     }

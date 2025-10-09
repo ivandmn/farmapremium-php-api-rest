@@ -6,6 +6,7 @@ namespace App\Application\UseCase\CreateTask;
 
 use App\Domain\Model\Task;
 use App\Domain\Model\User;
+use App\Domain\ValueObject\Task\TaskDueDate;
 use DateTime;
 use DateTimeImmutable;
 
@@ -23,7 +24,7 @@ final class CreateTaskResponse implements \JsonSerializable
 
     private ?User $assignedTo;
 
-    private ?DateTime $dueDate;
+    private ?TaskDueDate $dueDate;
 
     private DateTimeImmutable $createdAt;
 
@@ -47,7 +48,7 @@ final class CreateTaskResponse implements \JsonSerializable
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'description' => $this->priority,
+            'description' => $this->description,
             'status' => $this->status,
             'priority' => $this->priority,
             'assignedTo' => $this->assignedTo ? [

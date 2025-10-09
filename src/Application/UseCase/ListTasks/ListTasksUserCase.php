@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace App\Application\UseCase\ListTasks;
 
-use App\Application\UseCase\ListUsers\ListsUserResponse;
 use App\Domain\Repository\TaskRepositoryInterface;
 
 final class ListTasksUserCase
@@ -14,7 +13,7 @@ final class ListTasksUserCase
     ) {
     }
 
-    public function __invoke(ListTasksRequest $request) : ListsUserResponse
+    public function __invoke(ListTasksRequest $request) : ListTasksResponse
     {
         $filters = array_filter([
             'status' => $request->getStatus(),
@@ -26,6 +25,6 @@ final class ListTasksUserCase
 
         $users = $this->taskRepository->findByFilters($filters, $page, $limit);
 
-        return new ListsUserResponse($users);
+        return new ListTasksResponse($users);
     }
 }
