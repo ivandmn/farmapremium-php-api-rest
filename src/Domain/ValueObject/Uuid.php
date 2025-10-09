@@ -9,6 +9,8 @@ use Ramsey\Uuid\Uuid as RamseyUuid;
 
 readonly class Uuid
 {
+    public const LENGTH = 36;
+
     public function __construct(private string $value)
     {
         if (!RamseyUuid::isValid($value)) {

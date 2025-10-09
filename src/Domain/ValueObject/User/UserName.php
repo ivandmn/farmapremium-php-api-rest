@@ -8,7 +8,7 @@ use App\Domain\Exception\User\InvalidUserNameException;
 
 final readonly class UserName
 {
-    private const MAX_LENGTH = 255;
+    public const MAX_LENGTH = 255;
 
     public function __construct(private string $value)
     {

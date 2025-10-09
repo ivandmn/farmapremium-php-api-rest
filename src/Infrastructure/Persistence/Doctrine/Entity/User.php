@@ -2,6 +2,9 @@
 
 namespace App\Infrastructure\Persistence\Doctrine\Entity;
 
+use App\Domain\ValueObject\User\UserEmail;
+use App\Domain\ValueObject\User\UserId;
+use App\Domain\ValueObject\User\UserName;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -10,13 +13,13 @@ use Doctrine\ORM\Mapping as ORM;
 class User
 {
     #[ORM\Id]
-    #[ORM\Column(type: 'string', length: 36, options: ['fixed' => true])]
+    #[ORM\Column(type: 'string', length: UserId::LENGTH, unique: true, options: ['fixed' => true])]
     private string $id;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: false)]
+    #[ORM\Column(type: 'string', length: UserEmail::MAX_LENGTH, unique: true, nullable: false)]
     private string $email;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: false)]
+    #[ORM\Column(type: 'string', length: UserName::MAX_LENGTH, nullable: false)]
     private string $name;
 
     #[ORM\Column(type: 'datetime_immutable', name: 'created_at')]

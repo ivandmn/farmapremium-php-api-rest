@@ -20,7 +20,7 @@ class UserMapper
         );
     }
 
-    public static function toEntity(DomainUser $user) : DoctrineUser
+    public static function toDoctrine(DomainUser $user) : DoctrineUser
     {
         $entity = new DoctrineUser();
 

@@ -8,7 +8,7 @@ use App\Domain\Exception\InvalidEmailException;
 
 readonly class Email
 {
-    public const MAX_EMAIL_LENGTH = 255;
+    public const MAX_LENGTH = 255;
 
     public function __construct(private string $value)
     {
@@ -16,7 +16,7 @@ readonly class Email
             throw new InvalidEmailException('Invalid email format');
         }
 
-        if (strlen($value) > self::MAX_EMAIL_LENGTH) {
+        if (strlen($value) > self::MAX_LENGTH) {
             throw new InvalidEmailException('Email exceeds maximum length');
         }
     }
