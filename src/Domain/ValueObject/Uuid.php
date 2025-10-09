@@ -18,7 +18,7 @@ readonly class Uuid
         }
     }
 
-    public static function from(string $uuid) : static
+    public static function fromString(string $uuid) : static
     {
         return new static($uuid);
     }

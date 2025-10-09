@@ -21,7 +21,7 @@ readonly class Email
         }
     }
 
-    public static function from(string $email) : static
+    public static function fromString(string $email) : static
     {
         return new static($email);
     }

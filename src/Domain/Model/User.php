@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace App\Domain\Model;
 
-use App\Domain\ValueObject\Email;
 use App\Domain\ValueObject\User\UserEmail;
 use App\Domain\ValueObject\User\UserId;
 use App\Domain\ValueObject\User\UserName;
@@ -25,7 +24,7 @@ final class User
         return $this->id;
     }
 
-    public function getEmail() : Email
+    public function getEmail() : UserEmail
     {
         return $this->email;
     }
@@ -38,23 +37,5 @@ final class User
     public function getCreatedAt() : DateTimeImmutable
     {
         return $this->createdAt;
-    }
-
-    public function changeEmail(UserEmail $newEmail) : void
-    {
-        if ($this->email->equals($newEmail)) {
-            return;
-        }
-
-        $this->email = $newEmail;
-    }
-
-    public function changeName(UserName $newName) : void
-    {
-        if ($this->name->equals($newName)) {
-            return;
-        }
-
-        $this->name = $newName;
     }
 }

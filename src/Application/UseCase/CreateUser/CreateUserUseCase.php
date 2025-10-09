@@ -6,6 +6,9 @@ namespace App\Application\UseCase\CreateUser;
 
 use App\Domain\Factory\UserFactory;
 use App\Domain\Repository\UserRepositoryInterface;
+use App\Domain\ValueObject\User\UserEmail;
+use App\Domain\Exception\User\UserAlreadyExistsException;
+use App\Domain\ValueObject\User\UserName;
 
 final class CreateUserUseCase
 {
@@ -17,9 +20,16 @@ final class CreateUserUseCase
 
     public function __invoke(CreateUserRequest $request) : CreateUserResponse
     {
+        $emailUser = UserEmail::fromString($request->getEmail());
+        $nameUser = UserName::fromString($request->getName());
+
+        if ($this->userRepository->findByEmail($emailUser)) {
+            throw new UserAlreadyExistsException(sprintf('User already exists with email %s', $request->getEmail()));
+        }
+
         $user = $this->userFactory->register(
-            $request->getName(),
-            $request->getEmail()
+            $emailUser,
+            $nameUser
         );
 
         $this->userRepository->save($user);

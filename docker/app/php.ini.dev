@@ -11,7 +11,7 @@ error_log = /proc/self/fd/2
 upload_max_filesize = 50M
 post_max_size = 50M
 
-xdebug.mode = debug,develop
+xdebug.mode = debug,develop,coverage
 xdebug.start_with_request = yes
 xdebug.client_host = host.docker.internal
 xdebug.client_port = 9003

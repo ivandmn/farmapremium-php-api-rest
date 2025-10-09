@@ -10,12 +10,12 @@ use DateTimeImmutable;
 
 final class UserFactory
 {
-    public function register(string $email, string $name) : User
+    public function register(UserEmail $email, UserName $name) : User
     {
         return new User(
             UserId::new(),
-            UserEmail::from($email),
-            UserName::from($name),
+            $email,
+            $name,
             new DateTimeImmutable('now')
         );
     }

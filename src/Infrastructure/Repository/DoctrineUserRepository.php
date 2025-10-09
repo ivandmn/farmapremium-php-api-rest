@@ -12,7 +12,7 @@ use App\Domain\ValueObject\User\UserId;
 use App\Infrastructure\Persistence\Doctrine\Mapper\UserMapper;
 use Doctrine\ORM\EntityManagerInterface;
 
-class DoctrineUserRepository implements UserRepositoryInterface
+readonly class DoctrineUserRepository implements UserRepositoryInterface
 {
     public function __construct(
         private EntityManagerInterface $entityManager

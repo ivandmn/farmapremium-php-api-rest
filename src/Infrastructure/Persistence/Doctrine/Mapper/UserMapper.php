@@ -13,9 +13,9 @@ class UserMapper
     public static function toDomain(DoctrineUser $entity) : DomainUser
     {
         return new DomainUser(
-            UserId::from($entity->getId()),
-            UserEmail::from($entity->getEmail()),
-            UserName::from($entity->getName()),
+            UserId::fromString($entity->getId()),
+            UserEmail::fromString($entity->getEmail()),
+            UserName::fromString($entity->getName()),
             $entity->getCreatedAt()
         );
     }

@@ -21,9 +21,9 @@ final readonly class UserName
         }
     }
 
-    public static function from(string $uuid) : static
+    public static function fromString(string $value) : static
     {
-        return new static($uuid);
+        return new static($value);
     }
 
     public function value() : string
