@@ -33,7 +33,7 @@ class Task
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
-    private ?User $user;
+    private ?User $assignedTo;
 
     #[ORM\Column(name: 'due_date', type: 'datetime', nullable: true)]
     private ?DateTime $dueDate;
@@ -43,18 +43,6 @@ class Task
 
     #[ORM\Column(name: 'created_at', type: 'datetime', nullable: true)]
     private ?DateTime $updatedAt;
-
-    public function getDescription() : ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(?string $description) : Task
-    {
-        $this->description = $description;
-
-        return $this;
-    }
 
     public function getId() : string
     {
@@ -76,6 +64,18 @@ class Task
     public function setTitle(string $title) : Task
     {
         $this->title = $title;
+
+        return $this;
+    }
+
+    public function getDescription() : string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description) : Task
+    {
+        $this->description = $description;
 
         return $this;
     }
@@ -104,14 +104,14 @@ class Task
         return $this;
     }
 
-    public function getUser() : ?User
+    public function getAssignedTo() : ?User
     {
-        return $this->user;
+        return $this->assignedTo;
     }
 
-    public function setUser(?User $user) : Task
+    public function setAssignedTo(?User $assignedTo) : Task
     {
-        $this->user = $user;
+        $this->assignedTo = $assignedTo;
 
         return $this;
     }

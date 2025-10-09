@@ -38,4 +38,9 @@ final class User
     {
         return $this->createdAt;
     }
+
+    public function equals(self $other): bool
+    {
+        return $this->id->equals($other->id);
+    }
 }

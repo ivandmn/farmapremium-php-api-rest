@@ -4,7 +4,10 @@ declare(strict_types = 1);
 
 namespace App\Application\UseCase\CreateTask;
 
+use App\Domain\Model\Task;
 use App\Domain\Model\User;
+use DateTime;
+use DateTimeImmutable;
 
 final class CreateTaskResponse implements \JsonSerializable
 {
@@ -17,6 +20,7 @@ final class CreateTaskResponse implements \JsonSerializable
     private string $status;
 
     private string $priority;
+
     private ?User $assignedTo;
 
     private ?DateTime $dueDate;
@@ -30,17 +34,29 @@ final class CreateTaskResponse implements \JsonSerializable
         $this->id = $task->getId()->value();
         $this->title = $task->getTitle()->value();
         $this->description = $task->getDescription()->value();
-        $this->status = $task->getStatus()->value();
-        $this->assignedTo = $task->get()->format(\DATE_ATOM);
+        $this->status = $task->getStatus()->value;
+        $this->priority = $task->getPriority()->value;
+        $this->assignedTo = $task->getAssignedUser();
+        $this->dueDate = $task->getDueDate();
+        $this->createdAt = $task->getCreatedAt();
+        $this->updatedAt = $task->getUpdatedAt();
     }
 
     public function jsonSerialize() : array
     {
         return [
             'id' => $this->id,
-            'email' => $this->email,
-            'name' => $this->name,
-            'createdAt' => $this->createdAt,
+            'title' => $this->title,
+            'description' => $this->priority,
+            'status' => $this->status,
+            'priority' => $this->priority,
+            'assignedTo' => $this->assignedTo ? [
+                'id' => $this->assignedTo->getId()->value(),
+                'name' => $this->assignedTo->getName()->value(),
+            ] : null,
+            'dueDate' => $this->dueDate?->value()->format(\DATE_ATOM),
+            'createdAt' => $this->createdAt->format(\DATE_ATOM),
+            'updatedAt' => $this->updatedAt?->format(\DATE_ATOM),
         ];
     }
 

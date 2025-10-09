@@ -4,35 +4,32 @@ declare(strict_types = 1);
 
 namespace App\Domain\Model;
 
-use App\Domain\Exception\InvalidArgumentException;
-use App\Domain\Exception\Task\AssignedUserDoesNotExistException;
 use App\Domain\Exception\Task\InvalidTaskStatusTransitionException;
 use App\Domain\ValueObject\Task\TaskDescription;
+use App\Domain\ValueObject\Task\TaskDueDate;
 use App\Domain\ValueObject\Task\TaskId;
 use App\Domain\ValueObject\Task\TaskPriority;
 use App\Domain\ValueObject\Task\TaskStatus;
 use App\Domain\ValueObject\Task\TaskTitle;
-use App\Domain\ValueObject\User\UserId;
 use App\Domain\ValueObject\Uuid;
 use DateTime;
 use DateTimeImmutable;
 
 final class Task
 {
+    private bool $isUpdated = false;
+
     public function __construct(
         private readonly TaskId            $id,
         private TaskTitle                  $title,
         private TaskDescription            $description,
         private TaskStatus                 $status = TaskStatus::PENDING,
         private TaskPriority               $priority = TaskPriority::LOW,
-        private ?UserId                    $assignedUser = null,
-        private ?DateTime                  $dueDate = null,
+        private ?User                      $assignedUser = null,
+        private ?TaskDueDate               $dueDate = null,
         private readonly DateTimeImmutable $createdAt = new DateTimeImmutable(),
-        private ?DateTime                  $updatedAt = null,
-        ?callable                          $userExistsChecker = null
+        private ?DateTime                  $updatedAt = null
     ) {
-        $this->assertDueDateIsValid($this->dueDate);
-        $this->assertAssignedUserExists($this->assignedUser, $userExistsChecker);
     }
 
     public function getId() : Uuid
@@ -60,12 +57,12 @@ final class Task
         return $this->priority;
     }
 
-    public function getAssignedUser() : ?UserId
+    public function getAssignedUser() : ?User
     {
         return $this->assignedUser;
     }
 
-    public function getDueDate() : ?DateTime
+    public function getDueDate() : ?TaskDueDate
     {
         return $this->dueDate;
     }
@@ -78,43 +75,6 @@ final class Task
     public function getUpdatedAt() : ?DateTime
     {
         return $this->updatedAt;
-    }
-
-    public function isCompleted() : bool
-    {
-        return $this->status->isCompleted();
-    }
-
-    public function isInProgress() : bool
-    {
-        return $this->status->isInProgress();
-    }
-
-    public function isPending() : bool
-    {
-        return $this->status->isPending();
-    }
-
-    public function isUnassigned() : bool
-    {
-        return $this->assignedUser !== null;
-    }
-
-    public function isAssigned() : bool
-    {
-        return !$this->isUnassigned();
-    }
-
-    public function isOverdue() : bool
-    {
-        return $this->dueDate !== null
-            && $this->dueDate < new DateTime()
-            && !$this->isCompleted();
-    }
-
-    public function isOnTime() : bool
-    {
-        return !$this->isOverdue();
     }
 
     public function changeTitle(TaskTitle $newTitle) : void
@@ -167,17 +127,12 @@ final class Task
         $this->markAsUpdated();
     }
 
-    public function assignTo(UserId $userId, ?callable $userExistsChecker = null) : void
+    public function assignTo(User $user) : void
     {
-        if ($this->assignedUser?->equals($userId)) {
+        if ($this->assignedUser?->equals($user)) {
             return;
         }
-
-        if ($userExistsChecker !== null && !$userExistsChecker($userId)) {
-            throw new AssignedUserDoesNotExistException('Assigned user does not exist');
-        }
-
-        $this->assignedUser = $userId;
+        $this->assignedUser = $user;
         $this->markAsUpdated();
     }
 
@@ -191,37 +146,62 @@ final class Task
         $this->markAsUpdated();
     }
 
-    public function changeDueDate(?DateTime $newDueDate) : void
+    public function changeDueDate(?DateTimeImmutable $taskDueDate) : void
     {
-        if ($newDueDate !== null && $newDueDate < new DateTime()) {
-            throw new InvalidArgumentException('Due date cannot be in the past');
-        }
-
-        $this->dueDate = $newDueDate;
+        $this->dueDate = $taskDueDate ? new TaskDueDate($taskDueDate) : null;
         $this->markAsUpdated();
+    }
+
+    private function markAsUpdated() : void
+    {
+        $this->isUpdated = true;
+        $this->updatedAt = new DateTime('now');
+    }
+
+    public function isUpdated() : bool
+    {
+        return $this->isUpdated;
+    }
+
+    public function isCompleted() : bool
+    {
+        return $this->status->isCompleted();
+    }
+
+    public function isInProgress() : bool
+    {
+        return $this->status->isInProgress();
+    }
+
+    public function isPending() : bool
+    {
+        return $this->status->isPending();
+    }
+
+    public function isAssigned() : bool
+    {
+        return !$this->isUnassigned();
+    }
+
+    public function isUnassigned() : bool
+    {
+        return $this->assignedUser !== null;
+    }
+
+    public function isOverdue() : bool
+    {
+        return $this->dueDate !== null
+            && $this->dueDate->value() < new DateTimeImmutable('now')
+            && !$this->isCompleted();
+    }
+
+    public function isOnTime() : bool
+    {
+        return !$this->isOverdue();
     }
 
     public function canBeDeleted() : bool
     {
         return $this->status->isPending();
-    }
-
-    private function assertDueDateIsValid(?DateTime $dueDate) : void
-    {
-        if ($dueDate !== null && $dueDate < new DateTime()) {
-            throw new InvalidArgumentException('Due date cannot be in the past');
-        }
-    }
-
-    private function assertAssignedUserExists(?Uuid $userId, ?callable $userExistsChecker) : void
-    {
-        if ($userId !== null && $userExistsChecker !== null && !$userExistsChecker($userId)) {
-            throw new InvalidArgumentException('Assigned user does not exist');
-        }
-    }
-
-    private function markAsUpdated() : void
-    {
-        $this->updatedAt = new DateTime();
     }
 }
