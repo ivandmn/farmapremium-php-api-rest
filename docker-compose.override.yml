@@ -35,7 +35,6 @@ services:
       - app-network
     volumes:
       - db_data:/var/lib/postgresql/data
-      - db_logs:/var/lib/postgresql/logs
       - ./docker/postgresql/postgresql.dev.conf:/etc/postgresql/postgresql.conf:ro
       - ./docker/postgresql/pg_hba.dev.conf:/etc/postgresql/pg_hba.conf:ro
     environment:
@@ -65,4 +64,3 @@ services:
 
 volumes:
   db_data:
-  db_logs:
