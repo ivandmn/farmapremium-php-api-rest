@@ -4,62 +4,48 @@ declare(strict_types = 1);
 
 namespace App\Infrastructure\Service;
 
+use App\Infrastructure\Exception\InvalidRequestException;
 use App\Infrastructure\Exception\InvalidRequestParameterException;
-use App\Infrastructure\Exception\MissingRequestParameterException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Serializer\Exception\ExtraAttributesException;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 
 final class ApiRequestValidator
 {
-    private array $data = [];
+    public function __construct(
+        private readonly SerializerInterface $serializer,
+        private readonly ValidatorInterface  $validator
+    ) {
+    }
 
-    public function validate(Request $request, array $schema) : void
+    public function validate(Request $request, string $dtoClass) : object
     {
-        $content = $request->getContent();
-        $data = json_decode($content, true);
+        try {
+            $dto = $request->isMethod('GET')
+                ? $this->serializer->denormalize($request->query->all(), $dtoClass)
+                : $this->serializer->deserialize($request->getContent(), $dtoClass, 'json');
 
-        if (!is_array($data)) {
-            throw new InvalidRequestParameterException('Invalid or empty JSON payload.');
-        }
-
-        foreach ($schema as $param => $rules) {
-            $isRequired = $rules['required'] ?? false;
-            $expectedType = $rules['type'] ?? null;
-
-            if ($isRequired && !array_key_exists($param, $data)) {
-                throw new MissingRequestParameterException(sprintf(
-                    'Missing required parameter "%s".',
-                    $param
-                ));
-            }
-
-            if (!array_key_exists($param, $data)) {
-                continue;
-            }
-
-            $actualType = get_debug_type($data[$param]);
-
-            if ($expectedType && $actualType !== $expectedType) {
-                throw new InvalidRequestParameterException(sprintf(
-                    'Parameter "%s" must be of type "%s", "%s" given.',
-                    $param,
-                    $expectedType,
-                    $actualType
-                ));
-            }
-
-            $this->data[$param] = is_string($data[$param])
-                ? trim($data[$param])
-                : $data[$param];
+            return $this->validateDto($dto);
+        } catch (NotEncodableValueException) {
+            throw new InvalidRequestException('Invalid JSON');
+        } catch (ExtraAttributesException) {
+            throw new InvalidRequestException('Invalid payload');
         }
     }
 
-    public function getData() : array
+    private function validateDto(object $dto) : object
     {
-        return $this->data;
-    }
+        $violations = $this->validator->validate($dto);
 
-    public function get(string $key, mixed $default = null) : mixed
-    {
-        return $this->data[$key] ?? $default;
+        if (empty($violations)) {
+            return $dto;
+        }
+
+        $violation = $violations[0];
+        $message = $violation->getMessage();
+
+        throw new InvalidRequestParameterException($message);
     }
 }
