@@ -12,7 +12,6 @@ use App\Domain\Exception\User\InvalidUserEmailException;
 use App\Domain\Exception\User\InvalidUserIdException;
 use App\Domain\Exception\User\InvalidUserNameException;
 use App\Domain\Exception\User\UserAlreadyExistsException;
-use App\Infrastructure\Exception\InvalidParameterException;
 use App\Infrastructure\Exception\InvalidRequestArgumentException;
 use App\Infrastructure\Exception\InvalidRequestParameterException;
 use App\Infrastructure\Exception\MissingRequestParameterException;

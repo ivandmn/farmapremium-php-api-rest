@@ -11,11 +11,11 @@ ARG GROUP_ID=1000
 ARG USER_NAME=appuser
 
 ENV APP_ENV=${APP_ENV}
-ENV TZ=Europe/Madrid
+ENV TZ=UTC
 ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV COMPOSER_MEMORY_LIMIT=-1
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libicu-dev \
     libpq-dev \
     libzip-dev \
@@ -42,7 +42,7 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 # =======================================
 FROM base AS dev
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     unzip \
     wget \
@@ -53,7 +53,7 @@ RUN apt-get update && apt-get install -y \
     net-tools \
     && pecl install xdebug \
     && docker-php-ext-enable xdebug \
-	&& rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -g ${GROUP_ID} ${USER_NAME} \
     && useradd -u ${USER_ID} -g ${USER_NAME} -m -s /bin/bash ${USER_NAME}
