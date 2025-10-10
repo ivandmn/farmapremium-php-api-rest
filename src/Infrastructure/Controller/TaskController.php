@@ -13,8 +13,11 @@ use App\Domain\Exception\Task\InvalidTaskStatusException;
 use App\Domain\Exception\Task\InvalidTaskTitleException;
 use App\Domain\Exception\Task\TaskDueDateInPastException;
 use App\Infrastructure\Exception\InvalidRequestArgumentException;
-use App\Infrastructure\Exception\ParametersValidatorException;
-use App\Infrastructure\Service\ParametersValidator;
+use App\Infrastructure\Exception\InvalidParameterException;
+use App\Infrastructure\Exception\InvalidRequestParameterException;
+use App\Infrastructure\Exception\MissingRequestParameterException;
+use App\Infrastructure\Http\ApiResponse;
+use App\Infrastructure\Service\ApiRequestValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,7 +30,7 @@ use TypeError;
 class TaskController extends AbstractController
 {
     public function __construct(
-        private ParametersValidator $validator,
+        private ApiRequestValidator $apiRequestValidator,
         private CreateTaskUserCase  $createTaskUserCase,
         private ListTasksUserCase   $listTasksUserCase
     ) {
@@ -37,54 +40,57 @@ class TaskController extends AbstractController
     public function list(Request $request) : JsonResponse
     {
         try {
-            $status = $request->request->get('status') ?: null;
-            $priority = $request->request->get('priority') ?: null;
+            $this->apiRequestValidator->validate($request, [
+                'status' => ['type' => 'string', 'required' => false],
+                'priority' => ['type' => 'string', 'required' => false],
+            ]);
+
+            $data = $this->apiRequestValidator->getData();
 
             $listRequest = new ListTasksRequest(
-                $status ? (string) $status : null,
-                $priority ? (string) $priority : null
+                $data['status'] ?: null,
+                $data['priority'] ?: null
             );
 
             $response = ($this->listTasksUserCase)($listRequest);
 
-            if (empty($response)) {
-                return new JsonResponse(null, Response::HTTP_NO_CONTENT);
-            }
-
-            return new JsonResponse(['status' => 'success', 'data' => $response], Response::HTTP_OK);
-        } catch (InvalidTaskStatusException|InvalidTaskPriorityException $exception) {
-            return new JsonResponse(['status' => 'error', 'reason' => $exception->getMessage()], Response::HTTP_BAD_REQUEST);
-        } catch (Throwable $exception) {
-            return new JsonResponse(['status' => 'error', 'reason' => 'Generic Error'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return empty($response) ? ApiResponse::empty() : ApiResponse::success($response);
+        } catch (MissingRequestParameterException|InvalidRequestParameterException|InvalidTaskStatusException|InvalidTaskPriorityException $exception) {
+            return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        } catch (Throwable) {
+            return ApiResponse::internalError();
         }
     }
 
     #[Route('', name: 'task_create', methods: ['POST'])]
     public function create(Request $request) : JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
-
-        if (!is_array($data)) {
-            return new JsonResponse(['status' => 'error', 'reason' => 'Invalid JSON'], Response::HTTP_BAD_REQUEST);
-        }
-
         try {
-            $this->validator->checkParameters($data, ['title', 'description', 'priority'], ['userId', 'dueDate']);
+            $this->apiRequestValidator->validate($request, [
+                'title' => ['type' => 'string', 'required' => true],
+                'description' => ['type' => 'string', 'required' => true],
+                'priority' => ['type' => 'string', 'required' => true],
+                'userId' => ['type' => 'string', 'required' => false],
+                'dueDate' => ['type' => 'string', 'required' => false],
+            ]);
 
-            $request = new CreateTaskRequest($data['title'] ?? '', $data['description'] ?? '', $data['priority'] ?? '', $data['userId'] ?? null, $data['dueDate'] ?? null);
+            $data = $this->apiRequestValidator->getData();
+
+            $request = new CreateTaskRequest(
+                $data['title'],
+                $data['description'],
+                $data['priority'],
+                $data['userId'],
+                $data['dueDate']
+            );
+
             $response = ($this->createTaskUserCase)($request);
 
-            return new JsonResponse(['status' => 'success', 'data' => $response], Response::HTTP_CREATED);
-        } catch (ParametersValidatorException $exception) {
-            $error = $exception->getFirstError();
-
-            return new JsonResponse(['status' => 'error', 'reason' => 'Invalid request payload', 'extra' => $exception->getErrorMessage($error)], Response::HTTP_BAD_REQUEST);
-        } catch (TypeError $exception) {
-            return new JsonResponse(['status' => 'error', 'reason' => 'Invalid request payload'], Response::HTTP_BAD_REQUEST);
-        } catch (InvalidRequestArgumentException|TaskDueDateInPastException|InvalidTaskPriorityException|InvalidTaskTitleException $exception) {
-            return new JsonResponse(['status' => 'error', 'reason' => $exception->getMessage()], Response::HTTP_BAD_REQUEST);
-        } catch (Throwable $exception) {
-            return new JsonResponse(['status' => 'error', 'reason' => 'Generic Error'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::success($response);
+        } catch (MissingRequestParameterException|InvalidRequestParameterException|InvalidRequestArgumentException|TaskDueDateInPastException|InvalidTaskPriorityException|InvalidTaskTitleException $exception) {
+            return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        } catch (Throwable) {
+            return ApiResponse::internalError();
         }
     }
 }
