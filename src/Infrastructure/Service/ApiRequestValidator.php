@@ -41,12 +41,14 @@ final class ApiRequestValidator
     {
         $violations = $this->validator->validate($dto);
 
-        if (empty($violations)) {
+        if (count($violations) === 0) {
             return $dto;
         }
 
         $violation = $violations[0];
-        $message = $violation->getMessage();
+        $field = $violation->getPropertyPath();
+
+        $message = str_replace('{{ label }}', $field, $violation->getMessage());
 
         throw new InvalidRequestParameterException($message);
     }

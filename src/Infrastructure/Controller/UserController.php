@@ -12,7 +12,8 @@ use App\Domain\Exception\User\InvalidUserEmailException;
 use App\Domain\Exception\User\InvalidUserIdException;
 use App\Domain\Exception\User\InvalidUserNameException;
 use App\Domain\Exception\User\UserAlreadyExistsException;
-use App\Infrastructure\Dto\User\CreateUserRequestDto;
+use App\Infrastructure\Exception\InvalidRequestParameterException;
+use App\Infrastructure\Http\Request\User\CreateUserRequestDto;
 use App\Infrastructure\Exception\InvalidRequestException;
 use App\Infrastructure\Http\ApiResponse;
 use App\Infrastructure\Service\ApiRequestValidator;
@@ -61,13 +62,13 @@ class UserController extends AbstractController
             $response = ($this->createUserUseCase)($request);
 
             return ApiResponse::success($response);
-        } catch (InvalidRequestException $exception) {
+        } catch (InvalidRequestParameterException|InvalidRequestException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        } catch (InvalidUserEmailException|InvalidUserIdException|InvalidUserNameException $exception) {
+        } catch (InvalidUserEmailException|InvalidUserNameException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         } catch (UserAlreadyExistsException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_FORBIDDEN);
-        } catch (Throwable) {
+        } catch (Throwable $exception) {
             return ApiResponse::internalError();
         }
     }

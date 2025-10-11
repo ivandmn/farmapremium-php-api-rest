@@ -3,194 +3,95 @@
     "_postman_id": "7b3f8b4a-01d2-4c9e-9c21-111222333444",
     "name": "Farmapremium API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "Colección de endpoints de la API Farmapremium (usuarios y tareas)"
+    "description": "Colección simplificada con cuerpo principal variable y ejemplos estáticos."
   },
   "item": [
     {
       "name": "List Users (GET /api/users)",
       "request": {
         "method": "GET",
-        "header": [
-          {
-            "key": "Accept",
-            "value": "application/json"
-          }
-        ],
-        "url": {
-          "raw": "{{base_url}}/api/users",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "api",
-            "users"
-          ]
-        }
+        "header": [{ "key": "Accept", "value": "application/json" }],
+        "url": {"raw": "{{base_url}}/api/users", "host": ["{{base_url}}"], "path": ["api", "users"]}
       }
     },
     {
       "name": "Create User (POST /api/users)",
       "request": {
         "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          },
-          {
-            "key": "Accept",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"name\": \"{{test_user_name}}\",\n  \"email\": \"{{test_user_email}}\"\n}"
-        },
-        "url": {
-          "raw": "{{base_url}}/api/users",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "api",
-            "users"
-          ]
-        }
-      }
-    },
-    {
-      "name": "List Tasks (GET /api/tasks)",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Accept",
-            "value": "application/json"
-          }
-        ],
-        "url": {
-          "raw": "{{base_url}}/api/tasks?status={{test_task_status}}&priority={{test_task_priority}}&page={{test_page}}&limit={{test_limit}}",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "api",
-            "tasks"
-          ],
-          "query": [
-            {
-              "key": "status",
-              "value": "{{test_task_status}}"
-            },
-            {
-              "key": "priority",
-              "value": "{{test_task_priority}}"
-            },
-            {
-              "key": "page",
-              "value": "{{test_page}}"
-            },
-            {
-              "key": "limit",
-              "value": "{{test_limit}}"
-            }
-          ]
-        }
+        "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+        "body": {"mode": "raw", "raw": "{\n  \"name\": \"{{test_user_name}}\",\n  \"email\": \"{{test_user_email}}\"\n}"},
+        "url": {"raw": "{{base_url}}/api/users", "host": ["{{base_url}}"], "path": ["api", "users"]}
       },
       "response": [
         {
-          "code": 200,
-          "name": "Example Response",
-          "body": "{\n  \"data\": [\n    {\n      \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n      \"title\": \"Implementar nueva feature\",\n      \"status\": \"pending\",\n      \"priority\": \"high\",\n      \"assignedTo\": {\n        \"id\": \"660e8400-e29b-41d4-a716-446655440001\",\n        \"name\": \"John Doe\"\n      },\n      \"dueDate\": \"2024-12-31T23:59:59Z\"\n    }\n  ],\n  \"meta\": {\n    \"total\": 1,\n    \"page\": 1,\n    \"limit\": 10\n  }\n}"
+          "name": "✅ Valid User",
+          "originalRequest": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"name\": \"Test Name\",\n  \"email\": \"test@example.com\"\n}"},
+            "url": {"raw": "{{base_url}}/api/users", "host": ["{{base_url}}"], "path": ["api", "users"]}
+          }
+        },
+        {
+          "name": "❌ Missing name field",
+          "originalRequest": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"test@example.com\"\n}" },
+            "url": {"raw": "{{base_url}}/api/users", "host": ["{{base_url}}"], "path": ["api", "users"]}
+          }
+        },
+        {
+          "name": "❌ Missing email field",
+          "originalRequest": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Test Name\"\n}" },
+            "url": {"raw": "{{base_url}}/api/users", "host": ["{{base_url}}"], "path": ["api", "users"]}
+          }
+        },
+        {
+          "name": "❌ Extra parameter not allowed",
+          "originalRequest": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"name\": \"Test Name\",\n  \"email\": \"test@example.com\",\n  \"age\": 30\n}"},
+            "url": {"raw": "{{base_url}}/api/users", "host": ["{{base_url}}"], "path": ["api", "users"]}
+          }
+        },
+        {
+          "name": "❌ Invalid email format",
+          "originalRequest": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"name\": \"Test Name\",\n  \"email\": \"invalid-email\"\n}"},
+            "url": {"raw": "{{base_url}}/api/users", "host": ["{{base_url}}"], "path": ["api", "users"]}
+          }
+        },
+        {
+          "name": "❌ Name too short (<5 chars)",
+          "originalRequest": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"name\": \"John\",\n  \"email\": \"test@example.com\"\n}"},
+            "url": {"raw": "{{base_url}}/api/users", "host": ["{{base_url}}"], "path": ["api", "users"]}
+          }
+        },
+        {
+          "name": "❌ Name too long (>255 chars)",
+          "originalRequest": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"name\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"email\": \"test@example.com\"\n}"},
+            "url": {"raw": "{{base_url}}/api/users", "host": ["{{base_url}}"], "path": ["api", "users"]}
+          }
         }
       ]
-    },
-    {
-      "name": "Create Task (POST /api/tasks)",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          },
-          {
-            "key": "Accept",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"title\": \"{{test_task_title}}\",\n  \"description\": \"{{test_task_description}}\",\n  \"priority\": \"{{test_task_priority}}\",\n  \"userId\": \"{{test_user_id}}\",\n  \"dueDate\": \"{{test_task_due_date}}\"\n}"
-        },
-        "url": {
-          "raw": "{{base_url}}/api/tasks",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "api",
-            "tasks"
-          ]
-        }
-      }
     }
   ],
   "variable": [
-    {
-      "key": "base_url",
-      "value": "http://localhost:8080",
-      "type": "string"
-    },
-    {
-      "key": "test_user_name",
-      "value": "Test User",
-      "type": "string"
-    },
-    {
-      "key": "test_user_email",
-      "value": "test@example.com",
-      "type": "string"
-    },
-    {
-      "key": "test_user_id",
-      "value": "660e8400-e29b-41d4-a716-446655440001",
-      "type": "string"
-    },
-    {
-      "key": "test_task_title",
-      "value": "Implementar nueva feature",
-      "type": "string"
-    },
-    {
-      "key": "test_task_description",
-      "value": "Añadir la nueva funcionalidad al módulo de usuarios",
-      "type": "string"
-    },
-    {
-      "key": "test_task_priority",
-      "value": "high",
-      "type": "string"
-    },
-    {
-      "key": "test_task_status",
-      "value": "pending",
-      "type": "string"
-    },
-    {
-      "key": "test_task_due_date",
-      "value": "2024-12-31T23:59:59Z",
-      "type": "string"
-    },
-    {
-      "key": "test_page",
-      "value": "1",
-      "type": "string"
-    },
-    {
-      "key": "test_limit",
-      "value": "10",
-      "type": "string"
-    }
+    { "key": "base_url", "value": "http://localhost:8080", "type": "string" },
+    { "key": "test_user_name", "value": "Dynamic User", "type": "string" },
+    { "key": "test_user_email", "value": "dynamic@example.com", "type": "string" }
   ]
 }

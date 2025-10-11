@@ -6,10 +6,10 @@ namespace App\Infrastructure\Http\Request;
 
 final class ValidationMessages
 {
-    public const REQUIRED = 'Missing required parameter "{{ propertyPath }}"';
-    public const TYPE = 'Parameter "{{ propertyPath }}" must be of type {{ type }}';
-    public const LENGTH_MIN = 'Parameter "{{ propertyPath }}" must have at least {{ limit }} characters';
-    public const LENGTH_MAX = 'Parameter "{{ propertyPath }}" cannot exceed {{ limit }} characters';
-    public const CHOICE = 'Parameter "{{ propertyPath }}" must be one of the allowed values';
-    public const DATE_ATOM = 'Parameter "{{ propertyPath }}" must be a valid ISO8601 (ATOM) datetime';
+    public const REQUIRED = 'Missing required parameter "{{ label }}"';
+    public const TYPE = 'Parameter "{{ label }}" must be of type {{ type }}';
+    public const LENGTH_MIN = 'Parameter "{{ label }}" must have at least {{ limit }} characters';
+    public const LENGTH_MAX = 'Parameter "{{ label }}" cannot exceed {{ limit }} characters';
+    public const CHOICE = 'Parameter "{{ label }}" must be one of the allowed values';
+    public const DATE_ATOM = 'Parameter "{{ label }}" must be a valid ISO8601 (ATOM) datetime';
 }
