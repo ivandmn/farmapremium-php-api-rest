@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace App\Application\UseCase\DeleteTask;
 
 use App\Application\Service\LoggerInterface;
+use App\Domain\Exception\Task\TaskDeletionNotAllowedException;
 use App\Domain\Exception\Task\TaskNotFoundException;
 use App\Domain\Repository\TaskRepositoryInterface;
 use App\Domain\ValueObject\Task\TaskId;
@@ -25,6 +26,12 @@ final readonly class DeleteTaskUserCase
 
         if (!$task) {
             throw new TaskNotFoundException('Task with this ID does not exist');
+        }
+
+        if (!$task->canBeDeleted()) {
+            throw new TaskDeletionNotAllowedException(
+                sprintf('Tasks with status "%s" cannot be deleted', $task->getStatus()->value)
+            );
         }
 
         $this->taskRepository->delete($task);

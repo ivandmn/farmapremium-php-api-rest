@@ -1,0 +1,68 @@
+<?php
+
+declare(strict_types = 1);
+
+namespace App\Application\UseCase\UpdateTask;
+
+use App\Application\Service\LoggerInterface;
+use App\Domain\Exception\Task\TaskNotFoundException;
+use App\Domain\Repository\TaskRepositoryInterface;
+use App\Domain\ValueObject\Task\TaskDescription;
+use App\Domain\ValueObject\Task\TaskDueDate;
+use App\Domain\ValueObject\Task\TaskId;
+use App\Domain\ValueObject\Task\TaskPriority;
+use App\Domain\ValueObject\Task\TaskStatus;
+use App\Domain\ValueObject\Task\TaskTitle;
+
+final class UpdateTaskUserCase
+{
+    public function __construct(
+        private TaskRepositoryInterface $taskRepository,
+        private LoggerInterface         $logger
+    ) {
+    }
+
+    public function __invoke(UpdateTaskRequest $request) : UpdateTaskResponse
+    {
+        $taskId = TaskId::fromString($request->getTaskId());
+        $task = $this->taskRepository->findById($taskId);
+
+        if (!$task) {
+            throw new TaskNotFoundException('Task with this ID does not exist');
+        }
+
+        if ($request->getTitle() !== null) {
+            $task->changeTitle(TaskTitle::fromString($request->getTitle()));
+        }
+
+        if ($request->getDescription() !== null) {
+            $task->changeDescription(TaskDescription::fromString($request->getDescription()));
+        }
+
+        if ($request->getStatus() !== null) {
+            $task->changeStatus(TaskStatus::fromString($request->getStatus()));
+        }
+
+        if ($request->getPriority() !== null) {
+            $task->changePriority(TaskPriority::fromString($request->getPriority()));
+        }
+
+        if ($request->getDueDate() !== null) {
+            $task->changeDueDate(TaskDueDate::fromDate($request->getDueDate()));
+        }
+
+        if (!$task->isUpdated()) {
+            $this->logger->info('Task not updated (no changes detected)', [
+                'task_id' => $task->getId()->value(),
+            ]);
+
+            return new UpdateTaskResponse($task);
+        }
+
+        $this->taskRepository->update($task);
+
+        $this->logger->info('Task Updated', ['task_id' => $task->getId()->value()]);
+
+        return new UpdateTaskResponse($task);
+    }
+}

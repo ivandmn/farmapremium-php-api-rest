@@ -35,6 +35,7 @@ readonly class DoctrineTaskRepository implements TaskRepositoryInterface
 
     public function update(TaskDomain $task) : void
     {
+        //TAKE REFERENCE FROM TASK ENTITY
         $taskRef = $this->entityManager->getReference(\App\Infrastructure\Persistence\Doctrine\Entity\Task::class, $task->getId()->value());
 
         if ($user = $task->getAssignedUser()) {

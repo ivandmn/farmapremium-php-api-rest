@@ -14,7 +14,11 @@ use App\Application\UseCase\GetTaskDetails\GetTaskDetailsRequest;
 use App\Application\UseCase\GetTaskDetails\GetTaskDetailsUserCase;
 use App\Application\UseCase\ListTasks\ListTasksRequest;
 use App\Application\UseCase\ListTasks\ListTasksUserCase;
+use App\Application\UseCase\UpdateTask\UpdateTaskRequest;
+use App\Application\UseCase\UpdateTask\UpdateTaskUserCase;
 use App\Domain\Exception\Task\InvalidTaskDescription;
+use App\Domain\Exception\Task\InvalidTaskStatusTransitionException;
+use App\Domain\Exception\Task\TaskDeletionNotAllowedException;
 use App\Domain\Exception\Task\UserNotFoundException;
 use App\Domain\Exception\Task\InvalidTaskIdException;
 use App\Domain\Exception\Task\InvalidTaskPriorityException;
@@ -30,6 +34,7 @@ use App\Infrastructure\Http\ApiResponse;
 use App\Infrastructure\Http\Request\Task\AssignTaskToUserDto;
 use App\Infrastructure\Http\Request\Task\CreateTaskRequestDto;
 use App\Infrastructure\Http\Request\Task\ListTaskRequestDto;
+use App\Infrastructure\Http\Request\Task\UpdateTaskRequestDto;
 use App\Infrastructure\Service\ApiRequestValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -47,7 +52,8 @@ class TaskController extends AbstractController
         private readonly ListTasksUserCase        $listTasksUserCase,
         private readonly GetTaskDetailsUserCase   $getTaskDetailsUserCase,
         private readonly DeleteTaskUserCase       $deleteTaskUserCase,
-        private readonly AssignTaskToUserUserCase $assignTaskToUserUserCase
+        private readonly AssignTaskToUserUserCase $assignTaskToUserUserCase,
+        private readonly UpdateTaskUserCase       $updateTaskUserCase,
     ) {
     }
 
@@ -108,7 +114,7 @@ class TaskController extends AbstractController
             $response = ($this->createTaskUserCase)($request);
 
             return ApiResponse::success($response);
-        } catch (InvalidRequestParameterException|InvalidRequestException|InvalidDateFormat|TaskDueDateInPastException|InvalidTaskPriorityException|InvalidTaskTitleException|InvalidTaskDescription $exception) {
+        } catch (InvalidRequestParameterException|InvalidRequestException|InvalidTaskTitleException|InvalidTaskDescription|InvalidDateFormat|TaskDueDateInPastException|InvalidTaskPriorityException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         } catch (Throwable $exception) {
             return ApiResponse::internalError();
@@ -124,7 +130,7 @@ class TaskController extends AbstractController
             $response = ($this->deleteTaskUserCase)($request);
 
             return ApiResponse::success($response);
-        } catch (TaskNotFoundException|InvalidTaskIdException $exception) {
+        } catch (TaskNotFoundException|InvalidTaskIdException|TaskDeletionNotAllowedException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         } catch (Throwable) {
             return ApiResponse::internalError();
@@ -153,19 +159,26 @@ class TaskController extends AbstractController
         }
     }
 
-    #[Route('/{id}', name: 'task_update', requirements: ['id' => '\d+'], methods: ['PUT'])]
+    #[Route('/{id}', name: 'task_update', methods: ['PUT'])]
     public function update(Request $request, string $id) : JsonResponse
     {
         try {
-            $data = json_decode($request->getContent(), true);
+            /** @var UpdateTaskRequestDto $data */
+            $data = $this->apiRequestValidator->validate($request, UpdateTaskRequestDto::class);
 
-            // $response = ($this->updateTaskUserCase)($id, $data);
-            return ApiResponse::success([
-                'id' => $id,
-                'message' => 'Task updated (mocked)',
-                'data' => $data,
-            ]);
-        } catch (InvalidRequestException|InvalidRequestParameterException $exception) {
+            $request = new UpdateTaskRequest(
+                $id,
+                $data->title,
+                $data->description,
+                $data->status,
+                $data->priority,
+                $data->dueDate
+            );
+
+            $response = ($this->updateTaskUserCase)($request);
+
+            return ApiResponse::success($response);
+        } catch (InvalidRequestParameterException|InvalidRequestException|InvalidTaskTitleException|InvalidTaskDescription|InvalidDateFormat|TaskDueDateInPastException|InvalidTaskStatusException|InvalidTaskStatusTransitionException|InvalidTaskPriorityException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         } catch (Throwable) {
             return ApiResponse::internalError();

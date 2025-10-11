@@ -103,10 +103,14 @@ final class Task
             return;
         }
 
+        if ($this->isCompleted()) {
+            throw new InvalidTaskStatusTransitionException('Cannot change status of a completed task');
+        }
+
         if (!$this->status->canTransitionTo($newStatus)) {
             throw new InvalidTaskStatusTransitionException(
                 sprintf(
-                    'Status transition from "%s" to "%s" is not allowed',
+                    'Task Status transition from "%s" to "%s" is not allowed',
                     $this->status->value,
                     $newStatus->value
                 )
@@ -146,21 +150,18 @@ final class Task
         $this->markAsUpdated();
     }
 
-    public function changeDueDate(?TaskDueDate $taskDueDate) : void
+    public function changeDueDate(?TaskDueDate $newTaskDueDate) : void
     {
-        $this->dueDate = $taskDueDate ?? null;
+        if ($this->dueDate === null && $newTaskDueDate === null) {
+            return;
+        }
+
+        if ($newTaskDueDate !== null && $this->dueDate?->equals($newTaskDueDate)) {
+            return;
+        }
+
+        $this->dueDate = $newTaskDueDate;
         $this->markAsUpdated();
-    }
-
-    private function markAsUpdated() : void
-    {
-        $this->isUpdated = true;
-        $this->updatedAt = new DateTime('now');
-    }
-
-    public function isUpdated() : bool
-    {
-        return $this->isUpdated;
     }
 
     public function isCompleted() : bool
@@ -168,40 +169,24 @@ final class Task
         return $this->status->isCompleted();
     }
 
-    public function isInProgress() : bool
-    {
-        return $this->status->isInProgress();
-    }
-
     public function isPending() : bool
     {
         return $this->status->isPending();
     }
 
-    public function isAssigned() : bool
+    public function isUpdated() : bool
     {
-        return !$this->isUnassigned();
-    }
-
-    public function isUnassigned() : bool
-    {
-        return $this->assignedUser !== null;
-    }
-
-    public function isOverdue() : bool
-    {
-        return $this->dueDate !== null
-            && $this->dueDate->value() < new DateTimeImmutable('now')
-            && !$this->isCompleted();
-    }
-
-    public function isOnTime() : bool
-    {
-        return !$this->isOverdue();
+        return $this->isUpdated;
     }
 
     public function canBeDeleted() : bool
     {
-        return $this->status->isPending();
+        return $this->isPending();
+    }
+
+    private function markAsUpdated() : void
+    {
+        $this->isUpdated = true;
+        $this->updatedAt = new DateTime('now');
     }
 }
