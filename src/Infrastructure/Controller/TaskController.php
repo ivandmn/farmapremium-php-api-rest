@@ -13,6 +13,7 @@ use App\Domain\Exception\Task\InvalidTaskPriorityException;
 use App\Domain\Exception\Task\InvalidTaskStatusException;
 use App\Domain\Exception\Task\InvalidTaskTitleException;
 use App\Domain\Exception\Task\TaskDueDateInPastException;
+use App\Domain\Exception\User\InvalidUserIdException;
 use App\Infrastructure\Exception\InvalidRequestArgumentException;
 use App\Infrastructure\Exception\InvalidRequestException;
 use App\Infrastructure\Exception\InvalidRequestParameterException;
@@ -46,7 +47,9 @@ class TaskController extends AbstractController
 
             $listRequest = new ListTasksRequest(
                 $data->status,
-                $data->priority
+                $data->priority,
+                $data->page ? (int) $data->page : null,
+                $data->limit ? (int) $data->limit : null,
             );
 
             $response = ($this->listTasksUserCase)($listRequest);
@@ -54,7 +57,7 @@ class TaskController extends AbstractController
             return $response->isEmpty() ? ApiResponse::empty() : ApiResponse::success($response);
         } catch (InvalidRequestParameterException|InvalidRequestException|InvalidTaskStatusException|InvalidTaskPriorityException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        } catch (Throwable) {
+        } catch (Throwable $exception) {
             return ApiResponse::internalError();
         }
     }
@@ -77,9 +80,9 @@ class TaskController extends AbstractController
             $response = ($this->createTaskUserCase)($request);
 
             return ApiResponse::success($response);
-        } catch (InvalidRequestParameterException|InvalidRequestException|InvalidRequestArgumentException|TaskDueDateInPastException|InvalidTaskPriorityException|InvalidTaskTitleException|AssignedUserDoesNotExistException $exception) {
+        } catch (InvalidRequestParameterException|InvalidRequestException|InvalidRequestArgumentException|TaskDueDateInPastException|InvalidTaskPriorityException|InvalidTaskTitleException|InvalidUserIdException|AssignedUserDoesNotExistException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        } catch (Throwable) {
+        } catch (Throwable $exception) {
             return ApiResponse::internalError();
         }
     }

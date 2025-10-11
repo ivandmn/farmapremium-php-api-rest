@@ -15,11 +15,11 @@ final class ListTaskRequestDto
     #[Assert\Type(type: 'string', message: ValidationMessages::TYPE)]
     public $priority;
 
-    #[Assert\Type(type: 'int', message: ValidationMessages::TYPE)]
+    #[Assert\Type(type: 'numeric', message: ValidationMessages::TYPE)]
     #[Assert\Positive(message: ValidationMessages::POSITIVE_NUMBER)]
     public $page;
 
-    #[Assert\Type(type: 'int', message: ValidationMessages::TYPE)]
+    #[Assert\Type(type: 'numeric', message: ValidationMessages::TYPE)]
     #[Assert\Positive(message: ValidationMessages::POSITIVE_NUMBER)]
     public $limit;
 }

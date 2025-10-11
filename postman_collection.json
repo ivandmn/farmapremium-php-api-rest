@@ -33,16 +33,7 @@
           }
         },
         {
-          "name": "❌ Missing name field",
-          "originalRequest": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"email\": \"test@example.com\"\n}" },
-            "url": {"raw": "{{base_url}}/api/users", "host": ["{{base_url}}"], "path": ["api", "users"]}
-          }
-        },
-        {
-          "name": "❌ Missing email field",
+          "name": "❌ Missing required field",
           "originalRequest": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
@@ -87,11 +78,192 @@
           }
         }
       ]
+    },
+    {
+      "name": "List Tasks (GET /api/tasks)",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Accept", "value": "application/json" }],
+        "url": {
+          "raw": "{{base_url}}/api/tasks?status={{test_task_status}}&priority={{test_task_priority}}&page={{test_page}}&limit={{test_limit}}",
+          "host": ["{{base_url}}"],
+          "path": ["api", "tasks"],
+          "query": [
+            { "key": "status", "value": "{{test_task_status}}" },
+            { "key": "priority", "value": "{{test_task_priority}}" },
+            { "key": "page", "value": "{{test_page}}" },
+            { "key": "limit", "value": "{{test_limit}}" }
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "✅ Valid - No filters",
+          "originalRequest": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/tasks", "host": ["{{base_url}}"], "path": ["api", "tasks"] }
+          }
+        },
+        {
+          "name": "✅ Valid - Filtered and paginated",
+          "originalRequest": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/tasks?status=pending&priority=high&page=1&limit=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tasks"],
+              "query": [
+                { "key": "status", "value": "pending" },
+                { "key": "priority", "value": "high" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "1" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "❌ Invalid priority value",
+          "originalRequest": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/tasks?priority=test",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tasks"],
+              "query": [{ "key": "priority", "value": "test" }]
+            }
+          }
+        },
+        {
+          "name": "❌ Invalid status value",
+          "originalRequest": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/tasks?status=unknown",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tasks"],
+              "query": [{ "key": "status", "value": "unknown" }]
+            }
+          }
+        },
+        {
+          "name": "❌ Invalid type for page",
+          "originalRequest": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/tasks?page=abc",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tasks"],
+              "query": [{ "key": "page", "value": "abc" }]
+            }
+          }
+        },
+        {
+          "name": "❌ Invalid type for limit",
+          "originalRequest": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/tasks?limit=-5",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tasks"],
+              "query": [{ "key": "limit", "value": "-5" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create Task (POST /api/tasks)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+        "body": {"mode": "raw", "raw": "{\n  \"title\": \"{{test_task_title}}\",\n  \"description\": \"{{test_task_description}}\",\n  \"priority\": \"{{test_task_priority}}\",\n  \"userId\": \"{{test_user_id}}\",\n  \"dueDate\": \"{{test_task_due_date}}\"\n}"},
+        "url": {"raw": "{{base_url}}/api/tasks", "host": ["{{base_url}}"], "path": ["api", "tasks"]}
+      },
+      "response": [
+        {
+          "name": "✅ Valid Task",
+          "originalRequest": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"title\": \"Test Task\",\n  \"description\": \"This is a valid task.\",\n  \"priority\": \"high\",\n  \"userId\": \"018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2\",\n  \"dueDate\": \"2030-01-01T10:00:00+00:00\"\n}"},
+            "url": {"raw": "{{base_url}}/api/tasks", "host": ["{{base_url}}"], "path": ["api", "tasks"]}
+          }
+        },
+        {
+          "name": "❌ Missing required field",
+          "originalRequest": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"userId\": \"018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2\"\n}"},
+            "url": {"raw": "{{base_url}}/api/tasks", "host": ["{{base_url}}"], "path": ["api", "tasks"]}
+          }
+        },
+        {
+          "name": "❌ Extra parameter not allowed",
+          "originalRequest": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"title\": \"Test Task\",\n  \"description\": \"Has extra field.\",\n  \"priority\": \"low\",\n  \"userId\": \"018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2\",\n  \"dueDate\": \"2030-01-01T10:00:00+00:00\",\n  \"unexpected\": \"value\"\n}"},
+            "url": {"raw": "{{base_url}}/api/tasks", "host": ["{{base_url}}"], "path": ["api", "tasks"]}
+          }
+        },
+        {
+          "name": "❌ Invalid priority value",
+          "originalRequest": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"title\": \"Test Task\",\n  \"description\": \"Priority must be low, medium or high.\",\n  \"priority\": \"urgent\",\n  \"userId\": \"018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2\",\n  \"dueDate\": \"2030-01-01T10:00:00+00:00\"\n}"},
+            "url": {"raw": "{{base_url}}/api/tasks", "host": ["{{base_url}}"], "path": ["api", "tasks"]}
+          }
+        },
+        {
+          "name": "❌ Invalid UUID for User",
+          "originalRequest": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"title\": \"Test Task\",\n  \"description\": \"Invalid UUID format for userId.\",\n  \"priority\": \"low\",\n  \"userId\": \"12345\",\n  \"dueDate\": \"2030-01-01T10:00:00+00:00\"\n}"},
+            "url": {"raw": "{{base_url}}/api/tasks", "host": ["{{base_url}}"], "path": ["api", "tasks"]}
+          }
+        },
+        {
+          "name": "❌ User not found with UUID",
+          "originalRequest": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"title\": \"Test Task\",\n  \"description\": \"This is a valid task.\",\n  \"priority\": \"high\",\n  \"userId\": \"018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2\",\n  \"dueDate\": \"2030-01-01T10:00:00+00:00\"\n}"},
+            "url": {"raw": "{{base_url}}/api/tasks", "host": ["{{base_url}}"], "path": ["api", "tasks"]}
+          }
+        },
+        {
+          "name": "❌ Due date in the past",
+          "originalRequest": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"title\": \"Test Task\",\n  \"description\": \"Due date cannot be in the past.\",\n  \"priority\": \"medium\",\n  \"userId\": \"018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2\",\n  \"dueDate\": \"2020-01-01T10:00:00+00:00\"\n}"},
+            "url": {"raw": "{{base_url}}/api/tasks", "host": ["{{base_url}}"], "path": ["api", "tasks"]}
+          }
+        }
+      ]
     }
   ],
   "variable": [
     { "key": "base_url", "value": "http://localhost:8080", "type": "string" },
     { "key": "test_user_name", "value": "Dynamic User", "type": "string" },
-    { "key": "test_user_email", "value": "dynamic@example.com", "type": "string" }
+    { "key": "test_user_email", "value": "dynamic@example.com", "type": "string" },
+    { "key": "test_task_title", "value": "Implementar nueva feature", "type": "string" },
+    { "key": "test_task_description", "value": "Añadir la nueva funcionalidad al módulo de usuarios", "type": "string" },
+    { "key": "test_task_priority", "value": "high", "type": "string" },
+    { "key": "test_user_id", "value": "018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2", "type": "string" },
+    { "key": "test_task_due_date", "value": "2030-01-01T10:00:00+00:00", "type": "string" },
+    { "key": "test_task_status", "value": "pending", "type": "string" },
+    { "key": "test_task_priority", "value": "high", "type": "string" },
+    { "key": "test_task_page", "value": "1", "type": "string" },
+    { "key": "test_task_limit", "value": "1", "type": "string" }
   ]
 }

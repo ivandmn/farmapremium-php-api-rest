@@ -31,6 +31,6 @@ final class ListTasksUserCase
             ? $this->taskRepository->findAll()
             : $this->taskRepository->findByFilters($filters, $request->getPage(), $request->getLimit());
 
-        return new ListTasksResponse($tasks);
+        return new ListTasksResponse($tasks, $request->getPage(), $request->getLimit());
     }
 }

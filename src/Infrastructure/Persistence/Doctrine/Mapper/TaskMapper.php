@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Persistence\Doctrine\Mapper;
 
+use App\Domain\ValueObject\Task\TaskDueDate;
 use App\Infrastructure\Persistence\Doctrine\Entity\Task as DoctrineTask;
 use App\Domain\Model\Task as DomainTask;
 use App\Domain\ValueObject\Task\TaskDescription;
@@ -41,7 +42,7 @@ final class TaskMapper
             $entity->getStatus(),
             $entity->getPriority(),
             $userDomain,
-            $entity->getDueDate(),
+            $entity->getDueDate() ? TaskDueDate::fromDate($entity->getDueDate()) : null,
             $entity->getCreatedAt(),
             $entity->getUpdatedAt()
         );
