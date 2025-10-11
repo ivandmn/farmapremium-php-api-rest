@@ -6,6 +6,8 @@ namespace App\Infrastructure\Controller;
 
 use App\Application\UseCase\CreateTask\CreateTaskRequest;
 use App\Application\UseCase\CreateTask\CreateTaskUserCase;
+use App\Application\UseCase\DeleteTask\DeleteTaskRequest;
+use App\Application\UseCase\DeleteTask\DeleteTaskUserCase;
 use App\Application\UseCase\GetTaskDetails\GetTaskDetailsRequest;
 use App\Application\UseCase\GetTaskDetails\GetTaskDetailsUserCase;
 use App\Application\UseCase\ListTasks\ListTasksRequest;
@@ -36,10 +38,11 @@ use Throwable;
 class TaskController extends AbstractController
 {
     public function __construct(
-        private ApiRequestValidator             $apiRequestValidator,
-        private CreateTaskUserCase              $createTaskUserCase,
-        private ListTasksUserCase               $listTasksUserCase,
-        private readonly GetTaskDetailsUserCase $getTaskDetailsUserCase
+        private readonly ApiRequestValidator    $apiRequestValidator,
+        private readonly CreateTaskUserCase     $createTaskUserCase,
+        private readonly ListTasksUserCase      $listTasksUserCase,
+        private readonly GetTaskDetailsUserCase $getTaskDetailsUserCase,
+        private readonly DeleteTaskUserCase     $deleteTaskUserCase
     ) {
     }
 
@@ -108,12 +111,17 @@ class TaskController extends AbstractController
         }
     }
 
-    #[Route('/{id}', name: 'task_delete', requirements: ['id' => '\d+'], methods: ['DELETE'])]
+    #[Route('/{id}', name: 'task_delete', methods: ['DELETE'])]
     public function delete(string $id) : JsonResponse
     {
         try {
-            // $this->deleteTaskUserCase->execute($id);
-            return ApiResponse::success(['message' => sprintf('Task %s deleted (mocked)', $id)]);
+            $request = new DeleteTaskRequest($id);
+
+            $response = ($this->deleteTaskUserCase)($request);
+
+            return ApiResponse::success($response);
+        } catch (TaskNotFoundException|InvalidTaskIdException $exception) {
+            return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         } catch (Throwable) {
             return ApiResponse::internalError();
         }

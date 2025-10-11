@@ -10,7 +10,7 @@
       "name": "List Users (GET /api/users)",
       "request": {
         "method": "GET",
-        "header": [{ "key": "Accept", "value": "application/json" }],
+        "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
         "url": {"raw": "{{base_url}}/api/users", "host": ["{{base_url}}"], "path": ["api", "users"]}
       }
     },
@@ -83,16 +83,16 @@
       "name": "List Tasks (GET /api/tasks)",
       "request": {
         "method": "GET",
-        "header": [{ "key": "Accept", "value": "application/json" }],
+        "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
         "url": {
-          "raw": "{{base_url}}/api/tasks?status={{test_task_status}}&priority={{test_task_priority}}&page={{test_page}}&limit={{test_limit}}",
+          "raw": "{{base_url}}/api/tasks?status={{test_task_status}}&priority={{test_task_priority}}&page={{test_task_page}}&limit={{test_task_limit}}",
           "host": ["{{base_url}}"],
           "path": ["api", "tasks"],
           "query": [
             { "key": "status", "value": "{{test_task_status}}" },
             { "key": "priority", "value": "{{test_task_priority}}" },
-            { "key": "page", "value": "{{test_page}}" },
-            { "key": "limit", "value": "{{test_limit}}" }
+            { "key": "page", "value": "{{test_task_page}}" },
+            { "key": "limit", "value": "{{test_task_limit}}" }
           ]
         }
       },
@@ -101,7 +101,7 @@
           "name": "✅ Valid - No filters",
           "originalRequest": {
             "method": "GET",
-            "header": [{ "key": "Accept", "value": "application/json" }],
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
             "url": { "raw": "{{base_url}}/api/tasks", "host": ["{{base_url}}"], "path": ["api", "tasks"] }
           }
         },
@@ -109,7 +109,7 @@
           "name": "✅ Valid - Filtered and paginated",
           "originalRequest": {
             "method": "GET",
-            "header": [{ "key": "Accept", "value": "application/json" }],
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
             "url": {
               "raw": "{{base_url}}/api/tasks?status=pending&priority=high&page=1&limit=1",
               "host": ["{{base_url}}"],
@@ -127,7 +127,7 @@
           "name": "❌ Invalid priority value",
           "originalRequest": {
             "method": "GET",
-            "header": [{ "key": "Accept", "value": "application/json" }],
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
             "url": {
               "raw": "{{base_url}}/api/tasks?priority=test",
               "host": ["{{base_url}}"],
@@ -140,7 +140,7 @@
           "name": "❌ Invalid status value",
           "originalRequest": {
             "method": "GET",
-            "header": [{ "key": "Accept", "value": "application/json" }],
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
             "url": {
               "raw": "{{base_url}}/api/tasks?status=unknown",
               "host": ["{{base_url}}"],
@@ -153,7 +153,7 @@
           "name": "❌ Invalid type for page",
           "originalRequest": {
             "method": "GET",
-            "header": [{ "key": "Accept", "value": "application/json" }],
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
             "url": {
               "raw": "{{base_url}}/api/tasks?page=abc",
               "host": ["{{base_url}}"],
@@ -166,7 +166,7 @@
           "name": "❌ Invalid type for limit",
           "originalRequest": {
             "method": "GET",
-            "header": [{ "key": "Accept", "value": "application/json" }],
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
             "url": {
               "raw": "{{base_url}}/api/tasks?limit=-5",
               "host": ["{{base_url}}"],
@@ -199,7 +199,7 @@
           "name": "❌ Missing required field",
           "originalRequest": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
             "body": {"mode": "raw", "raw": "{\n  \"userId\": \"018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2\"\n}"},
             "url": {"raw": "{{base_url}}/api/tasks", "host": ["{{base_url}}"], "path": ["api", "tasks"]}
           }
@@ -208,7 +208,7 @@
           "name": "❌ Extra parameter not allowed",
           "originalRequest": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
             "body": {"mode": "raw", "raw": "{\n  \"title\": \"Test Task\",\n  \"description\": \"Has extra field.\",\n  \"priority\": \"low\",\n  \"userId\": \"018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2\",\n  \"dueDate\": \"2030-01-01T10:00:00+00:00\",\n  \"unexpected\": \"value\"\n}"},
             "url": {"raw": "{{base_url}}/api/tasks", "host": ["{{base_url}}"], "path": ["api", "tasks"]}
           }
@@ -217,7 +217,7 @@
           "name": "❌ Invalid priority value",
           "originalRequest": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
             "body": {"mode": "raw", "raw": "{\n  \"title\": \"Test Task\",\n  \"description\": \"Priority must be low, medium or high.\",\n  \"priority\": \"urgent\",\n  \"userId\": \"018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2\",\n  \"dueDate\": \"2030-01-01T10:00:00+00:00\"\n}"},
             "url": {"raw": "{{base_url}}/api/tasks", "host": ["{{base_url}}"], "path": ["api", "tasks"]}
           }
@@ -226,7 +226,7 @@
           "name": "❌ Invalid UUID for User",
           "originalRequest": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
             "body": {"mode": "raw", "raw": "{\n  \"title\": \"Test Task\",\n  \"description\": \"Invalid UUID format for userId.\",\n  \"priority\": \"low\",\n  \"userId\": \"12345\",\n  \"dueDate\": \"2030-01-01T10:00:00+00:00\"\n}"},
             "url": {"raw": "{{base_url}}/api/tasks", "host": ["{{base_url}}"], "path": ["api", "tasks"]}
           }
@@ -244,9 +244,77 @@
           "name": "❌ Due date in the past",
           "originalRequest": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
             "body": {"mode": "raw", "raw": "{\n  \"title\": \"Test Task\",\n  \"description\": \"Due date cannot be in the past.\",\n  \"priority\": \"medium\",\n  \"userId\": \"018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2\",\n  \"dueDate\": \"2020-01-01T10:00:00+00:00\"\n}"},
             "url": {"raw": "{{base_url}}/api/tasks", "host": ["{{base_url}}"], "path": ["api", "tasks"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Task Details (GET /api/tasks/{id})",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+        "url": {"raw": "{{base_url}}/api/tasks/{{test_task_id}}", "host": ["{{base_url}}"], "path": ["api", "tasks", "{{test_task_id}}"]}
+      },
+      "response": [
+        {
+          "name": "✅ Valid Task Found",
+          "originalRequest": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "url": {"raw": "{{base_url}}/api/tasks/018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2", "host": ["{{base_url}}"], "path": ["api", "tasks", "018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2"]}
+          }
+        },
+        {
+          "name": "❌ Invalid Task ID format",
+          "originalRequest": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "url": {"raw": "{{base_url}}/api/tasks/12345", "host": ["{{base_url}}"], "path": ["api", "tasks", "12345"]}
+          }
+        },
+        {
+          "name": "❌ Task not found",
+          "originalRequest": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "url": {"raw": "{{base_url}}/api/tasks/018f63a8-bb93-7e5b-b0e1-49d24fa4ffff", "host": ["{{base_url}}"], "path": ["api", "tasks", "018f63a8-bb93-7e5b-b0e1-49d24fa4ffff"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Delete Task (DELETE /api/tasks/{id})",
+      "request": {
+        "method": "DELETE",
+        "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+        "url": {"raw": "{{base_url}}/api/tasks/{{test_task_id}}", "host": ["{{base_url}}"], "path": ["api", "tasks", "{{test_task_id}}"]}
+      },
+      "response": [
+        {
+          "name": "✅ Task Deleted Successfully",
+          "originalRequest": {
+            "method": "DELETE",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "url": {"raw": "{{base_url}}/api/tasks/018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2", "host": ["{{base_url}}"], "path": ["api", "tasks", "018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2"]}
+          }
+        },
+        {
+          "name": "❌ Invalid Task ID format",
+          "originalRequest": {
+            "method": "DELETE",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "url": {"raw": "{{base_url}}/api/tasks/invalid-id", "host": ["{{base_url}}"], "path": ["api", "tasks", "invalid-id"]}
+          }
+        },
+        {
+          "name": "❌ Task not found",
+          "originalRequest": {
+            "method": "DELETE",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "url": {"raw": "{{base_url}}/api/tasks/018f63a8-bb93-7e5b-b0e1-49d24fa4ffff", "host": ["{{base_url}}"], "path": ["api", "tasks", "018f63a8-bb93-7e5b-b0e1-49d24fa4ffff"]}
           }
         }
       ]
@@ -264,6 +332,7 @@
     { "key": "test_task_status", "value": "pending", "type": "string" },
     { "key": "test_task_priority", "value": "high", "type": "string" },
     { "key": "test_task_page", "value": "1", "type": "string" },
-    { "key": "test_task_limit", "value": "1", "type": "string" }
+    { "key": "test_task_limit", "value": "1", "type": "string" },
+    { "key": "test_task_id", "value": "018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2", "type": "string" }
   ]
 }

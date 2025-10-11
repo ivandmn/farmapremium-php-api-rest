@@ -38,12 +38,8 @@ readonly class DoctrineTaskRepository implements TaskRepositoryInterface
     {
         $taskDoctrine = TaskMapper::toDoctrine($task);
 
-        if ($user = $taskDoctrine->getAssignedTo()) {
-            //TAKE REFERENCE FROM DOMAIN ENTITY
-            $taskDoctrine->setAssignedTo(
-                $this->entityManager->getReference($user::class, $user->getId())
-            );
-        }
+        //TAKE REFERENCE FROM TASK ENTITY
+        $taskDoctrine = $this->entityManager->getReference($taskDoctrine::class, $taskDoctrine->getId());
 
         $this->entityManager->remove($taskDoctrine);
         $this->entityManager->flush();
