@@ -18,6 +18,12 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Application\Service\LoggerInterface:
+      class: App\Infrastructure\Service\MonologLogger
+      arguments:
+        - '@logger'
+
     App\Infrastructure\Service\ApiRequestValidator:
       arguments:
         - '@serializer'
