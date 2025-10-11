@@ -90,8 +90,10 @@ class TaskController extends AbstractController
             $response = ($this->getTaskDetailsUserCase)($request);
 
             return ApiResponse::success($response);
-        } catch (TaskNotFoundException|InvalidTaskIdException $exception) {
+        } catch (InvalidTaskIdException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        } catch (TaskNotFoundException $exception) {
+            return ApiResponse::error($exception->getMessage(), Response::HTTP_NOT_FOUND);
         } catch (Throwable) {
             return ApiResponse::internalError();
         }
@@ -114,9 +116,11 @@ class TaskController extends AbstractController
             $response = ($this->createTaskUserCase)($request);
 
             return ApiResponse::success($response);
-        } catch (InvalidRequestParameterException|InvalidRequestException|InvalidTaskTitleException|InvalidTaskDescription|InvalidDateFormat|TaskDueDateInPastException|InvalidTaskPriorityException $exception) {
+        } catch (InvalidRequestParameterException|InvalidRequestException|InvalidTaskTitleException|InvalidTaskDescription|InvalidDateFormat|InvalidTaskPriorityException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        } catch (Throwable $exception) {
+        } catch (TaskDueDateInPastException $exception) {
+            return ApiResponse::error($exception->getMessage(), Response::HTTP_CONFLICT);
+        } catch (Throwable) {
             return ApiResponse::internalError();
         }
     }
@@ -130,8 +134,12 @@ class TaskController extends AbstractController
             $response = ($this->deleteTaskUserCase)($request);
 
             return ApiResponse::success($response);
-        } catch (TaskNotFoundException|InvalidTaskIdException|TaskDeletionNotAllowedException $exception) {
+        } catch (InvalidTaskIdException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        } catch (TaskNotFoundException $exception) {
+            return ApiResponse::error($exception->getMessage(), Response::HTTP_NOT_FOUND);
+        } catch (TaskDeletionNotAllowedException $exception) {
+            return ApiResponse::error($exception->getMessage(), Response::HTTP_CONFLICT);
         } catch (Throwable) {
             return ApiResponse::internalError();
         }
@@ -152,8 +160,10 @@ class TaskController extends AbstractController
             $response = ($this->assignTaskToUserUserCase)($request);
 
             return ApiResponse::success($response);
-        } catch (InvalidRequestParameterException|InvalidRequestException|InvalidUserIdException|InvalidTaskIdException|UserNotFoundException|TaskNotFoundException $exception) {
+        } catch (InvalidRequestParameterException|InvalidRequestException|InvalidUserIdException|InvalidTaskIdException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        } catch (UserNotFoundException|TaskNotFoundException $exception) {
+            return ApiResponse::error($exception->getMessage(), Response::HTTP_NOT_FOUND);
         } catch (Throwable) {
             return ApiResponse::internalError();
         }
@@ -178,8 +188,12 @@ class TaskController extends AbstractController
             $response = ($this->updateTaskUserCase)($request);
 
             return ApiResponse::success($response);
-        } catch (InvalidRequestParameterException|InvalidRequestException|InvalidTaskTitleException|InvalidTaskDescription|InvalidDateFormat|TaskDueDateInPastException|InvalidTaskStatusException|InvalidTaskStatusTransitionException|InvalidTaskPriorityException $exception) {
+        } catch (InvalidRequestParameterException|InvalidRequestException|InvalidTaskTitleException|InvalidTaskDescription|InvalidDateFormat|InvalidTaskStatusException|InvalidTaskPriorityException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        } catch (TaskNotFoundException $exception) {
+            return ApiResponse::error($exception->getMessage(), Response::HTTP_NOT_FOUND);
+        } catch (TaskDueDateInPastException|InvalidTaskStatusTransitionException $exception) {
+            return ApiResponse::error($exception->getMessage(), Response::HTTP_CONFLICT);
         } catch (Throwable) {
             return ApiResponse::internalError();
         }

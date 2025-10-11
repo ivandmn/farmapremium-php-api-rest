@@ -61,13 +61,11 @@ class UserController extends AbstractController
             $response = ($this->createUserUseCase)($request);
 
             return ApiResponse::success($response);
-        } catch (InvalidRequestParameterException|InvalidRequestException $exception) {
-            return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        } catch (InvalidUserEmailException|InvalidUserNameException $exception) {
+        } catch (InvalidRequestParameterException|InvalidRequestException|InvalidUserEmailException|InvalidUserNameException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         } catch (UserAlreadyExistsException $exception) {
-            return ApiResponse::error($exception->getMessage(), Response::HTTP_FORBIDDEN);
-        } catch (Throwable $exception) {
+            return ApiResponse::error($exception->getMessage(), Response::HTTP_CONFLICT);
+        } catch (Throwable) {
             return ApiResponse::internalError();
         }
     }
