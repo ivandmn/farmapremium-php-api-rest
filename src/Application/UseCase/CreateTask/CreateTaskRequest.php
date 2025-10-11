@@ -4,13 +4,12 @@ declare(strict_types = 1);
 
 namespace App\Application\UseCase\CreateTask;
 
+use App\Domain\ValueObject\Task\TaskDueDate;
 use App\Infrastructure\Exception\InvalidRequestArgumentException;
 use DateTime;
 
 final class CreateTaskRequest
 {
-    private const DATE_FORMAT = \DATE_ATOM;
-
     private DateTime $dueDate;
 
     public function __construct(
@@ -20,9 +19,9 @@ final class CreateTaskRequest
         private ?string $userId,
         ?string         $dueDate
     ) {
-        $date = $dueDate !== null ? DateTime::createFromFormat(\DATE_ATOM, $dueDate) : null;
+        $date = $dueDate !== null ? DateTime::createFromFormat(TaskDueDate::FORMAT, $dueDate) : null;
         if ($date === false) {
-            throw new InvalidRequestArgumentException(sprintf('Invalid Due date, must be in format "%s"', self::DATE_FORMAT));
+            throw new InvalidRequestArgumentException(sprintf('Invalid Due date, must be in format "%s"', TaskDueDate::FORMAT));
         }
 
         $this->dueDate = $date;

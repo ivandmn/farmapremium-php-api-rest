@@ -3,6 +3,7 @@
 namespace App\Domain\Factory;
 
 use App\Domain\Model\Task;
+use App\Domain\Model\User;
 use App\Domain\ValueObject\Task\TaskDescription;
 use App\Domain\ValueObject\Task\TaskDueDate;
 use App\Domain\ValueObject\Task\TaskId;
@@ -14,10 +15,11 @@ use DateTimeImmutable;
 final class TaskFactory
 {
     public function register(
-        TaskTitle         $title,
-        TaskDescription   $description,
-        TaskPriority      $priority = TaskPriority::LOW,
-        TaskDueDate $dueDate = null,
+        TaskTitle       $title,
+        TaskDescription $description,
+        TaskPriority    $priority = TaskPriority::LOW,
+        TaskDueDate     $dueDate = null,
+        User            $assignedUser = null
     ) : Task {
         return new Task(
             TaskId::new(),
@@ -25,7 +27,7 @@ final class TaskFactory
             $description,
             TaskStatus::PENDING,
             $priority,
-            null,
+            $assignedUser,
             $dueDate,
             new DateTimeImmutable('now'),
             null

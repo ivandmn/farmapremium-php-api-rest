@@ -29,7 +29,7 @@ final readonly class TaskDescription
 
     public function equals(TaskDescription $other) : bool
     {
-        return $this === $other;
+        return $this->value === $other->value;
     }
 
     public function __toString() : string

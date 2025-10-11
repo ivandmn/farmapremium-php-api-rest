@@ -8,18 +8,17 @@ use App\Domain\Exception\Task\InvalidTaskTitleException;
 
 final readonly class TaskTitle
 {
+    public const MIN_LENGTH = 5;
     public const MAX_LENGTH = 255;
 
     public function __construct(private string $value)
     {
-        if (empty($value)) {
-            throw new InvalidTaskTitleException(
-                'Task title cannot be empty'
-            );
+        if (strlen($value) < self::MIN_LENGTH) {
+            throw new InvalidTaskTitleException('Task title does not reach minimum characters length');
         }
 
         if (strlen($value) > self::MAX_LENGTH) {
-            throw new InvalidTaskTitleException('Task description exceeds maximum characters length');
+            throw new InvalidTaskTitleException('Task title exceeds maximum characters length');
         }
     }
 
@@ -35,7 +34,7 @@ final readonly class TaskTitle
 
     public function equals(TaskTitle $other) : bool
     {
-        return $this === $other;
+        return $this->value === $other->value;
     }
 
     public function __toString() : string

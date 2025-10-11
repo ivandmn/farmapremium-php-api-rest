@@ -4,10 +4,11 @@ namespace App\Domain\ValueObject\Task;
 
 use App\Domain\Exception\Task\TaskDueDateInPastException;
 use DateTime;
-use DateTimeImmutable;
 
 final class TaskDueDate
 {
+    public const FORMAT = \DATE_ATOM;
+
     public function __construct(private DateTime $date)
     {
         if ($date < new DateTime('now')) {
@@ -28,5 +29,10 @@ final class TaskDueDate
     public function value() : DateTime
     {
         return $this->date;
+    }
+
+    public function __toString() : string
+    {
+        return $this->date->format(\DATE_ATOM);
     }
 }
