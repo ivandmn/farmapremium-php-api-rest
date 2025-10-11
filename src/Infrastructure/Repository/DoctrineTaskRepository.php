@@ -36,7 +36,16 @@ readonly class DoctrineTaskRepository implements TaskRepositoryInterface
 
     public function delete(TaskDomain $task) : void
     {
-        $this->entityManager->remove(TaskMapper::toDoctrine($task));
+        $taskDoctrine = TaskMapper::toDoctrine($task);
+
+        if ($user = $taskDoctrine->getAssignedTo()) {
+            //TAKE REFERENCE FROM DOMAIN ENTITY
+            $taskDoctrine->setAssignedTo(
+                $this->entityManager->getReference($user::class, $user->getId())
+            );
+        }
+
+        $this->entityManager->remove($taskDoctrine);
         $this->entityManager->flush();
     }
 
