@@ -9,7 +9,6 @@ use App\Application\UseCase\CreateUser\CreateUserUseCase;
 use App\Application\UseCase\ListUsers\ListUsersRequest;
 use App\Application\UseCase\ListUsers\ListUsersUseCase;
 use App\Domain\Exception\User\InvalidUserEmailException;
-use App\Domain\Exception\User\InvalidUserIdException;
 use App\Domain\Exception\User\InvalidUserNameException;
 use App\Domain\Exception\User\UserAlreadyExistsException;
 use App\Infrastructure\Exception\InvalidRequestParameterException;

@@ -5,6 +5,8 @@ declare(strict_types = 1);
 namespace App\Application\UseCase\ListTasks;
 
 use App\Domain\Repository\TaskRepositoryInterface;
+use App\Domain\ValueObject\Task\TaskPriority;
+use App\Domain\ValueObject\Task\TaskStatus;
 
 final class ListTasksUserCase
 {
@@ -15,16 +17,20 @@ final class ListTasksUserCase
 
     public function __invoke(ListTasksRequest $request) : ListTasksResponse
     {
-        $filters = array_filter([
-            'status' => $request->getStatus(),
-            'priority' => $request->getPriority(),
-        ]);
+        $filters = [];
 
-        $page = $request->getPage() ?? 1;
-        $limit = $request->getLimit() ?? 10;
+        if ($request->getStatus()) {
+            $filters['status'] = TaskStatus::fromString($request->getStatus())->value;
+        }
 
-        $users = $this->taskRepository->findByFilters($filters, $page, $limit);
+        if ($request->getPriority()) {
+            $filters['priority'] = TaskPriority::fromString($request->getPriority())->value;
+        }
 
-        return new ListTasksResponse($users);
+        $tasks = empty($filters)
+            ? $this->taskRepository->findAll()
+            : $this->taskRepository->findByFilters($filters, $request->getPage(), $request->getLimit());
+
+        return new ListTasksResponse($tasks);
     }
 }

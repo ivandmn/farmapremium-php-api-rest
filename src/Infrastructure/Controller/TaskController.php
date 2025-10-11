@@ -13,10 +13,10 @@ use App\Domain\Exception\Task\InvalidTaskStatusException;
 use App\Domain\Exception\Task\InvalidTaskTitleException;
 use App\Domain\Exception\Task\TaskDueDateInPastException;
 use App\Infrastructure\Exception\InvalidRequestArgumentException;
-use App\Infrastructure\Exception\InvalidParameterException;
+use App\Infrastructure\Exception\InvalidRequestException;
 use App\Infrastructure\Exception\InvalidRequestParameterException;
-use App\Infrastructure\Exception\MissingRequestParameterException;
 use App\Infrastructure\Http\ApiResponse;
+use App\Infrastructure\Http\Request\Task\ListTaskRequestDto;
 use App\Infrastructure\Service\ApiRequestValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -40,22 +40,20 @@ class TaskController extends AbstractController
     public function list(Request $request) : JsonResponse
     {
         try {
-            $this->apiRequestValidator->validate($request, [
-                'status' => ['type' => 'string', 'required' => false],
-                'priority' => ['type' => 'string', 'required' => false],
-            ]);
-
-            $data = $this->apiRequestValidator->getData();
+            /** @var ListTaskRequestDto $data */
+            $data = $this->apiRequestValidator->validate($request, ListTaskRequestDto::class)
 
             $listRequest = new ListTasksRequest(
-                $data['status'] ?: null,
-                $data['priority'] ?: null
+                $data->status,
+                $data->priority
             );
 
             $response = ($this->listTasksUserCase)($listRequest);
 
-            return empty($response) ? ApiResponse::empty() : ApiResponse::success($response);
-        } catch (MissingRequestParameterException|InvalidRequestParameterException|InvalidTaskStatusException|InvalidTaskPriorityException $exception) {
+            return $response->isEmpty() ? ApiResponse::empty() : ApiResponse::success($response);
+        } catch (InvalidRequestParameterException|InvalidRequestException $exception) {
+            return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        } catch (InvalidTaskStatusException|InvalidTaskPriorityException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         } catch (Throwable) {
             return ApiResponse::internalError();
