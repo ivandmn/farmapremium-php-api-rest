@@ -286,6 +286,62 @@
       ]
     },
     {
+      "name": "Assign Task to User (PATCH /api/tasks/{id}/assign)",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+        "body": {"mode": "raw", "raw": "{\n  \"userId\": \"{{test_user_id}}\"\n}"},
+        "url": {"raw": "{{base_url}}/api/tasks/{{test_task_id}}/assign", "host": ["{{base_url}}"], "path": ["api", "tasks", "{{test_task_id}}", "assign"]}
+      },
+      "response": [
+        {
+          "name": "✅ Valid assignment",
+          "originalRequest": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"userId\": \"018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2\"\n}"},
+            "url": {"raw": "{{base_url}}/api/tasks/018f63a8-bb93-7e5b-b0e1-49d24fa4b123/assign", "host": ["{{base_url}}"], "path": ["api", "tasks", "018f63a8-bb93-7e5b-b0e1-49d24fa4b123", "assign"]}
+          }
+        },
+        {
+          "name": "❌ Extra parameter not allowed",
+          "originalRequest": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"userId\": \"018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2\",\n  \"extra\": \"not_allowed\"\n}"},
+            "url": {"raw": "{{base_url}}/api/tasks/018f63a8-bb93-7e5b-b0e1-49d24fa4b123/assign", "host": ["{{base_url}}"], "path": ["api", "tasks", "018f63a8-bb93-7e5b-b0e1-49d24fa4b123", "assign"]}
+          }
+        },
+        {
+          "name": "❌ Invalid Task ID",
+          "originalRequest": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"userId\": \"018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2\"\n}"},
+            "url": {"raw": "{{base_url}}/api/tasks/12345/assign", "host": ["{{base_url}}"], "path": ["api", "tasks", "12345", "assign"]}
+          }
+        },
+        {
+          "name": "❌ Invalid User ID Type",
+          "originalRequest": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"userId\": 12345\n}"},
+            "url": {"raw": "{{base_url}}/api/tasks/018f63a8-bb93-7e5b-b0e1-49d24fa4b123/assign", "host": ["{{base_url}}"], "path": ["api", "tasks", "018f63a8-bb93-7e5b-b0e1-49d24fa4b123", "assign"]}
+          }
+        },
+        {
+          "name": "❌ Invalid User ID",
+          "originalRequest": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"userId\": \"invalid-uuid\"\n}"},
+            "url": {"raw": "{{base_url}}/api/tasks/018f63a8-bb93-7e5b-b0e1-49d24fa4b123/assign", "host": ["{{base_url}}"], "path": ["api", "tasks", "018f63a8-bb93-7e5b-b0e1-49d24fa4b123", "assign"]}
+          }
+        }
+      ]
+    },
+    {
       "name": "Delete Task (DELETE /api/tasks/{id})",
       "request": {
         "method": "DELETE",

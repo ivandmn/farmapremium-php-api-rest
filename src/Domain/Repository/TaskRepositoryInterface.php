@@ -10,7 +10,8 @@ use App\Domain\ValueObject\User\UserId;
 
 interface TaskRepositoryInterface
 {
-    public function save(Task $task) : void;
+    public function create(Task $task) : void;
+    public function update(Task $task) : void;
 
     public function delete(Task $task) : void;
 

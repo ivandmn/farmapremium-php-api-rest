@@ -7,8 +7,9 @@ namespace App\Infrastructure\Repository;
 use App\Domain\Model\Task as TaskDomain;
 use App\Domain\Repository\TaskRepositoryInterface;
 use App\Domain\ValueObject\Task\TaskId;
-use App\Infrastructure\Persistence\Doctrine\Entity\Task as TaskDoctrine;
+use App\Infrastructure\Persistence\Doctrine\Entity\Task;
 use App\Domain\ValueObject\User\UserId;
+use App\Infrastructure\Persistence\Doctrine\Entity\User;
 use App\Infrastructure\Persistence\Doctrine\Mapper\TaskMapper;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -19,16 +20,29 @@ readonly class DoctrineTaskRepository implements TaskRepositoryInterface
     ) {
     }
 
-    public function save(TaskDomain $task) : void
+    public function create(TaskDomain $task) : void
     {
-        $taskDoctrine = TaskMapper::toDoctrine($task);
-
-        if ($user = $taskDoctrine->getAssignedTo()) {
+        if ($user = $task->getAssignedUser()) {
             //TAKE REFERENCE FROM DOMAIN ENTITY
-            $taskDoctrine->setAssignedTo(
-                $this->entityManager->getReference($user::class, $user->getId())
-            );
+            $userRef = $this->entityManager->getReference(\App\Infrastructure\Persistence\Doctrine\Entity\User::class, $user->getId());
         }
+
+        $taskDoctrine = TaskMapper::toDoctrine($task, null, $userRef ?? null);
+
+        $this->entityManager->persist($taskDoctrine);
+        $this->entityManager->flush();
+    }
+
+    public function update(TaskDomain $task) : void
+    {
+        $taskRef = $this->entityManager->getReference(\App\Infrastructure\Persistence\Doctrine\Entity\Task::class, $task->getId()->value());
+
+        if ($user = $task->getAssignedUser()) {
+            //TAKE REFERENCE FROM DOMAIN ENTITY
+            $userRef = $this->entityManager->getReference(\App\Infrastructure\Persistence\Doctrine\Entity\User::class, $user->getId());
+        }
+
+        $taskDoctrine = TaskMapper::toDoctrine($task, $taskRef, $userRef ?? null);
 
         $this->entityManager->persist($taskDoctrine);
         $this->entityManager->flush();
@@ -47,21 +61,21 @@ readonly class DoctrineTaskRepository implements TaskRepositoryInterface
 
     public function findAll() : array
     {
-        $entities = $this->entityManager->getRepository(TaskDoctrine::class)->findAll();
+        $entities = $this->entityManager->getRepository(Task::class)->findAll();
 
         return array_map([TaskMapper::class, 'toDomain'], $entities);
     }
 
     public function findById(TaskId $id) : ?TaskDomain
     {
-        $user = $this->entityManager->getRepository(TaskDoctrine::class)->find($id->value());
+        $user = $this->entityManager->getRepository(Task::class)->find($id->value());
 
         return $user ? TaskMapper::toDomain($user) : null;
     }
 
     public function findByUserId(UserId $userId) : array
     {
-        $entities = $this->entityManager->getRepository(TaskDoctrine::class)->findBy(['assignedTo' => $userId->value()]);
+        $entities = $this->entityManager->getRepository(Task::class)->findBy(['assignedTo' => $userId->value()]);
 
         return array_map([TaskMapper::class, 'toDomain'], $entities);
     }
@@ -70,7 +84,7 @@ readonly class DoctrineTaskRepository implements TaskRepositoryInterface
     {
         $offset = ($page - 1) * $maxItems;
 
-        $entities = $this->entityManager->getRepository(TaskDoctrine::class)->findBy(
+        $entities = $this->entityManager->getRepository(Task::class)->findBy(
             $filters,
             ['id' => 'DESC'],
             $maxItems,

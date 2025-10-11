@@ -40,7 +40,7 @@ final readonly class AssignTaskToUserUserCase
 
         $task->assignTo($user);
 
-        $this->taskRepository->save($task);
+        $this->taskRepository->update($task);
 
         $this->logger->info('Task Assigned to User',
             [

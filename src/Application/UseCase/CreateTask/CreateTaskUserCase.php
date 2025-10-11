@@ -49,7 +49,7 @@ final class CreateTaskUserCase
             $user ?? null
         );
 
-        $this->taskRepository->save($task);
+        $this->taskRepository->create($task);
 
         $this->logger->info('Task Created', ['task_id' => $task->getId()->value()]);
 
