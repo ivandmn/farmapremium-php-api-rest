@@ -10,7 +10,7 @@ use App\Domain\ValueObject\User\UserEmail;
 use App\Domain\Exception\User\UserAlreadyExistsException;
 use App\Domain\ValueObject\User\UserName;
 
-final class CreateUserUseCase
+final readonly class CreateUserUseCase
 {
     public function __construct(
         private UserFactory             $userFactory,
@@ -24,7 +24,7 @@ final class CreateUserUseCase
         $nameUser = UserName::fromString($request->getName());
 
         if ($this->userRepository->findByEmail($emailUser)) {
-            throw new UserAlreadyExistsException(sprintf('User already exists with email %s', $request->getEmail()));
+            throw new UserAlreadyExistsException('User with this email already exists');
         }
 
         $user = $this->userFactory->register(

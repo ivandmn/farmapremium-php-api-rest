@@ -9,13 +9,13 @@ use App\Domain\ValueObject\User\UserId;
 use App\Domain\ValueObject\User\UserName;
 use DateTimeImmutable;
 
-final class User
+final readonly class User
 {
     public function __construct(
-        private readonly UserId            $id,
-        private UserEmail                  $email,
-        private UserName                   $name,
-        private readonly DateTimeImmutable $createdAt = new DateTimeImmutable()
+        private UserId            $id,
+        private UserEmail         $email,
+        private UserName          $name,
+        private DateTimeImmutable $createdAt = new DateTimeImmutable()
     ) {
     }
 

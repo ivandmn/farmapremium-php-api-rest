@@ -6,7 +6,7 @@ namespace App\Application\UseCase\ListUsers;
 
 use App\Domain\Repository\UserRepositoryInterface;
 
-final class ListUsersUseCase
+final readonly class ListUsersUseCase
 {
     public function __construct(
         private UserRepositoryInterface $userRepository

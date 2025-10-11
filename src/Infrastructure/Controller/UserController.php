@@ -12,9 +12,8 @@ use App\Domain\Exception\User\InvalidUserEmailException;
 use App\Domain\Exception\User\InvalidUserIdException;
 use App\Domain\Exception\User\InvalidUserNameException;
 use App\Domain\Exception\User\UserAlreadyExistsException;
-use App\Infrastructure\Exception\InvalidRequestArgumentException;
-use App\Infrastructure\Exception\InvalidRequestParameterException;
-use App\Infrastructure\Exception\MissingRequestParameterException;
+use App\Infrastructure\Dto\User\CreateUserRequestDto;
+use App\Infrastructure\Exception\InvalidRequestException;
 use App\Infrastructure\Http\ApiResponse;
 use App\Infrastructure\Service\ApiRequestValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -41,7 +40,7 @@ class UserController extends AbstractController
             $request = new ListUsersRequest();
             $response = ($this->listUsersUseCase)($request);
 
-            return empty($response) ? ApiResponse::empty() : ApiResponse::success($response);
+            return $response->isEmpty() ? ApiResponse::empty() : ApiResponse::success($response);
         } catch (Throwable) {
             return ApiResponse::internalError();
         }
@@ -51,24 +50,20 @@ class UserController extends AbstractController
     public function create(Request $request) : JsonResponse
     {
         try {
-            $this->apiRequestValidator->validate($request, [
-                'email' => ['type' => 'string', 'required' => true],
-                'name' => ['type' => 'string', 'required' => true],
-            ]);
-
-            $data = $this->apiRequestValidator->getData();
+            /** @var CreateUserRequestDto $data */
+            $data = $this->apiRequestValidator->validate($request, CreateUserRequestDto::class);
 
             $request = new CreateUserRequest(
-                $data['email'],
-                $data['name']
+                $data->email,
+                $data->name
             );
 
             $response = ($this->createUserUseCase)($request);
 
             return ApiResponse::success($response);
-        } catch (MissingRequestParameterException|InvalidRequestParameterException $exception) {
+        } catch (InvalidRequestException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        } catch (InvalidRequestArgumentException|InvalidUserEmailException|InvalidUserIdException|InvalidUserNameException $exception) {
+        } catch (InvalidUserEmailException|InvalidUserIdException|InvalidUserNameException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         } catch (UserAlreadyExistsException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_FORBIDDEN);

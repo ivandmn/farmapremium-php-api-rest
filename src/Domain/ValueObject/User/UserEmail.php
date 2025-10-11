@@ -15,7 +15,7 @@ final readonly class UserEmail extends Email
         try {
             parent::__construct(strtolower($value));
         } catch (InvalidEmailException $exception) {
-            throw new InvalidUserEmailException('Invalid user email', $exception->getCode(), $exception);
+            throw new InvalidUserEmailException('Invalid User email', $exception->getCode(), $exception);
         }
     }
 }

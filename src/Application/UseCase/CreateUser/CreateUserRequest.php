@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Application\UseCase\CreateUser;
 
-final class CreateUserRequest
+final readonly class CreateUserRequest
 {
     public function __construct(
         private string $email,

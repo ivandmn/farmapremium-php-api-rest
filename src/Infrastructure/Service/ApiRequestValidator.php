@@ -14,6 +14,8 @@ use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 
 final class ApiRequestValidator
 {
+    private const DATA_REQUEST_TYPE = 'json';
+
     public function __construct(
         private readonly SerializerInterface $serializer,
         private readonly ValidatorInterface  $validator
@@ -25,7 +27,7 @@ final class ApiRequestValidator
         try {
             $dto = $request->isMethod('GET')
                 ? $this->serializer->denormalize($request->query->all(), $dtoClass)
-                : $this->serializer->deserialize($request->getContent(), $dtoClass, 'json');
+                : $this->serializer->deserialize($request->getContent(), $dtoClass, self::DATA_REQUEST_TYPE);
 
             return $this->validateDto($dto);
         } catch (NotEncodableValueException) {

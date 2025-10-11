@@ -34,7 +34,7 @@ final class CreateUserResponse implements \JsonSerializable
         ];
     }
 
-    public function toArray(): array
+    public function toArray() : array
     {
         return $this->jsonSerialize();
     }
