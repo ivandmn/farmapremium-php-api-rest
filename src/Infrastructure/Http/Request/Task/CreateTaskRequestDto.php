@@ -11,7 +11,7 @@ final class CreateTaskRequestDto
 {
     #[Assert\NotBlank(message: ValidationMessages::REQUIRED)]
     #[Assert\Type(type: 'string', message: ValidationMessages::TYPE)]
-    public string $title;
+    public $title;
 
     #[Assert\NotBlank(message: ValidationMessages::REQUIRED)]
     #[Assert\Type(type: 'string', message: ValidationMessages::TYPE)]
@@ -20,9 +20,6 @@ final class CreateTaskRequestDto
     #[Assert\NotBlank(message: ValidationMessages::REQUIRED)]
     #[Assert\Type(type: 'string', message: ValidationMessages::TYPE)]
     public $priority;
-
-    #[Assert\Type(type: 'string', message: ValidationMessages::TYPE)]
-    public $userId;
 
     #[Assert\Type(type: 'string', message: ValidationMessages::TYPE)]
     public $dueDate;

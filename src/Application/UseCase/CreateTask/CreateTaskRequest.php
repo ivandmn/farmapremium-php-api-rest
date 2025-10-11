@@ -16,7 +16,6 @@ final class CreateTaskRequest
         private string  $title,
         private string  $description,
         private string  $priority,
-        private ?string $userId,
         ?string         $dueDate
     ) {
         $date = $dueDate !== null ? DateTime::createFromFormat(TaskDueDate::FORMAT, $dueDate) : null;
@@ -40,11 +39,6 @@ final class CreateTaskRequest
     public function getPriority() : string
     {
         return $this->priority;
-    }
-
-    public function getUserId() : ?string
-    {
-        return $this->userId;
     }
 
     public function getDueDate() : ?DateTime

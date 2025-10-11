@@ -11,5 +11,5 @@ final class AssignTaskToUserDto
 {
     #[Assert\NotBlank(message: ValidationMessages::REQUIRED)]
     #[Assert\Type(type: 'string', message: ValidationMessages::TYPE)]
-    public string $userId;
+    public $userId;
 }

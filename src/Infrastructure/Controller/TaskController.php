@@ -14,6 +14,7 @@ use App\Application\UseCase\GetTaskDetails\GetTaskDetailsRequest;
 use App\Application\UseCase\GetTaskDetails\GetTaskDetailsUserCase;
 use App\Application\UseCase\ListTasks\ListTasksRequest;
 use App\Application\UseCase\ListTasks\ListTasksUserCase;
+use App\Domain\Exception\Task\InvalidTaskDescription;
 use App\Domain\Exception\Task\UserNotFoundException;
 use App\Domain\Exception\Task\InvalidTaskIdException;
 use App\Domain\Exception\Task\InvalidTaskPriorityException;
@@ -69,7 +70,7 @@ class TaskController extends AbstractController
             return $response->isEmpty() ? ApiResponse::empty() : ApiResponse::success($response);
         } catch (InvalidRequestParameterException|InvalidRequestException|InvalidTaskStatusException|InvalidTaskPriorityException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        } catch (Throwable $exception) {
+        } catch (Throwable) {
             return ApiResponse::internalError();
         }
     }
@@ -101,14 +102,13 @@ class TaskController extends AbstractController
                 $data->title,
                 $data->description,
                 $data->priority,
-                $data->userId,
                 $data->dueDate
             );
 
             $response = ($this->createTaskUserCase)($request);
 
             return ApiResponse::success($response);
-        } catch (InvalidRequestParameterException|InvalidRequestException|InvalidDateFormat|TaskDueDateInPastException|InvalidTaskPriorityException|InvalidTaskTitleException|InvalidUserIdException|UserNotFoundException $exception) {
+        } catch (InvalidRequestParameterException|InvalidRequestException|InvalidDateFormat|TaskDueDateInPastException|InvalidTaskPriorityException|InvalidTaskTitleException|InvalidTaskDescription $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         } catch (Throwable $exception) {
             return ApiResponse::internalError();

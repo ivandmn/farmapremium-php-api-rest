@@ -106,7 +106,7 @@ final class Task
         if (!$this->status->canTransitionTo($newStatus)) {
             throw new InvalidTaskStatusTransitionException(
                 sprintf(
-                    'Status transition from %s to %s is not allowed',
+                    'Status transition from "%s" to "%s" is not allowed',
                     $this->status->value,
                     $newStatus->value
                 )
@@ -146,9 +146,9 @@ final class Task
         $this->markAsUpdated();
     }
 
-    public function changeDueDate(?DateTimeImmutable $taskDueDate) : void
+    public function changeDueDate(?TaskDueDate $taskDueDate) : void
     {
-        $this->dueDate = $taskDueDate ? new TaskDueDate($taskDueDate) : null;
+        $this->dueDate = $taskDueDate ?? null;
         $this->markAsUpdated();
     }
 

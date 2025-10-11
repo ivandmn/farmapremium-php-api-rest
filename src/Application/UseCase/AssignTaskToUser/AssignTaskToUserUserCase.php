@@ -45,7 +45,7 @@ final readonly class AssignTaskToUserUserCase
         $this->logger->info('Task Assigned to User',
             [
                 'task_id' => $task->getId()->value(),
-                'user_id' => $task->getAssignedUser()->getId()->value(),
+                'user_id' => $task->getAssignedUser()?->getId()->value(),
             ]
         );
 
