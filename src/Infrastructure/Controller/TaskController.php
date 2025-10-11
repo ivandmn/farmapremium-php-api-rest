@@ -22,7 +22,7 @@ use App\Domain\Exception\Task\InvalidTaskTitleException;
 use App\Domain\Exception\Task\TaskDueDateInPastException;
 use App\Domain\Exception\Task\TaskNotFoundException;
 use App\Domain\Exception\User\InvalidUserIdException;
-use App\Infrastructure\Exception\InvalidRequestArgumentException;
+use App\Infrastructure\Exception\InvalidDateFormat;
 use App\Infrastructure\Exception\InvalidRequestException;
 use App\Infrastructure\Exception\InvalidRequestParameterException;
 use App\Infrastructure\Http\ApiResponse;
@@ -108,7 +108,7 @@ class TaskController extends AbstractController
             $response = ($this->createTaskUserCase)($request);
 
             return ApiResponse::success($response);
-        } catch (InvalidRequestParameterException|InvalidRequestException|InvalidRequestArgumentException|TaskDueDateInPastException|InvalidTaskPriorityException|InvalidTaskTitleException|InvalidUserIdException|UserNotFoundException $exception) {
+        } catch (InvalidRequestParameterException|InvalidRequestException|InvalidDateFormat|TaskDueDateInPastException|InvalidTaskPriorityException|InvalidTaskTitleException|InvalidUserIdException|UserNotFoundException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         } catch (Throwable $exception) {
             return ApiResponse::internalError();

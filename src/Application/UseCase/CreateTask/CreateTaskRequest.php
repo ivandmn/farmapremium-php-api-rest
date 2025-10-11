@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace App\Application\UseCase\CreateTask;
 
 use App\Domain\ValueObject\Task\TaskDueDate;
-use App\Infrastructure\Exception\InvalidRequestArgumentException;
+use App\Infrastructure\Exception\InvalidDateFormat;
 use DateTime;
 
 final class CreateTaskRequest
@@ -21,7 +21,7 @@ final class CreateTaskRequest
     ) {
         $date = $dueDate !== null ? DateTime::createFromFormat(TaskDueDate::FORMAT, $dueDate) : null;
         if ($date === false) {
-            throw new InvalidRequestArgumentException(sprintf('Invalid Due date, must be in format "%s"', TaskDueDate::FORMAT));
+            throw new InvalidDateFormat(sprintf('Invalid Due date, must be in format "%s"', TaskDueDate::FORMAT));
         }
 
         $this->dueDate = $date;

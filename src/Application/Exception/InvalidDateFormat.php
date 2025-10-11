@@ -6,6 +6,6 @@ namespace App\Infrastructure\Exception;
 
 use App\Domain\Exception\ApplicationException;
 
-final class InvalidRequestArgumentException extends ApplicationException
+final class InvalidDateFormat extends ApplicationException
 {
 }

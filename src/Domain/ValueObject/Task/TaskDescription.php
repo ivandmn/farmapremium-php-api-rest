@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Domain\ValueObject\Task;
 
-use App\Domain\Exception\InvalidArgumentException;
+use App\Domain\Exception\Task\InvalidTaskDescription;
 
 final readonly class TaskDescription
 {
@@ -13,7 +13,7 @@ final readonly class TaskDescription
     public function __construct(private ?string $value)
     {
         if (strlen($value) > self::MAX_LENGTH) {
-            throw new InvalidArgumentException('Task description exceeds maximum characters length');
+            throw new InvalidTaskDescription('Task description exceeds maximum characters length');
         }
     }
 
