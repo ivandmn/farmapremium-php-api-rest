@@ -4,7 +4,8 @@ declare(strict_types = 1);
 
 namespace App\Application\UseCase\CreateTask;
 
-use App\Domain\Exception\Task\AssignedUserDoesNotExistException;
+use App\Application\Service\LoggerInterface;
+use App\Domain\Exception\Task\UserNotFoundException;
 use App\Domain\Factory\TaskFactory;
 use App\Domain\Repository\TaskRepositoryInterface;
 use App\Domain\Repository\UserRepositoryInterface;
@@ -19,7 +20,8 @@ final class CreateTaskUserCase
     public function __construct(
         private TaskFactory             $taskFactory,
         private TaskRepositoryInterface $taskRepository,
-        private UserRepositoryInterface $userRepository
+        private UserRepositoryInterface $userRepository,
+        private LoggerInterface         $logger
     ) {
     }
 
@@ -35,7 +37,7 @@ final class CreateTaskUserCase
             $user = $this->userRepository->findById($userId);
 
             if (!$user) {
-                throw new AssignedUserDoesNotExistException('User with this ID does not exist');
+                throw new UserNotFoundException('User with this ID does not exist');
             }
         }
 
@@ -48,6 +50,17 @@ final class CreateTaskUserCase
         );
 
         $this->taskRepository->save($task);
+
+        $this->logger->info('Task Created', ['task_id' => $task->getId()->value()]);
+
+        if ($task->getAssignedUser()) {
+            $this->logger->info('Task Assigned to User',
+                [
+                    'task_id' => $task->getId()->value(),
+                    'user_id' => $task->getAssignedUser()->getId()->value(),
+                ]
+            );
+        }
 
         return new CreateTaskResponse($task);
     }

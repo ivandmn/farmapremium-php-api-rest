@@ -4,6 +4,8 @@ declare(strict_types = 1);
 
 namespace App\Infrastructure\Controller;
 
+use App\Application\UseCase\AssignTaskToUser\AssignTaskToUserRequest;
+use App\Application\UseCase\AssignTaskToUser\AssignTaskToUserUserCase;
 use App\Application\UseCase\CreateTask\CreateTaskRequest;
 use App\Application\UseCase\CreateTask\CreateTaskUserCase;
 use App\Application\UseCase\DeleteTask\DeleteTaskRequest;
@@ -12,7 +14,7 @@ use App\Application\UseCase\GetTaskDetails\GetTaskDetailsRequest;
 use App\Application\UseCase\GetTaskDetails\GetTaskDetailsUserCase;
 use App\Application\UseCase\ListTasks\ListTasksRequest;
 use App\Application\UseCase\ListTasks\ListTasksUserCase;
-use App\Domain\Exception\Task\AssignedUserDoesNotExistException;
+use App\Domain\Exception\Task\UserNotFoundException;
 use App\Domain\Exception\Task\InvalidTaskIdException;
 use App\Domain\Exception\Task\InvalidTaskPriorityException;
 use App\Domain\Exception\Task\InvalidTaskStatusException;
@@ -24,6 +26,7 @@ use App\Infrastructure\Exception\InvalidRequestArgumentException;
 use App\Infrastructure\Exception\InvalidRequestException;
 use App\Infrastructure\Exception\InvalidRequestParameterException;
 use App\Infrastructure\Http\ApiResponse;
+use App\Infrastructure\Http\Request\Task\AssignTaskToUserDto;
 use App\Infrastructure\Http\Request\Task\CreateTaskRequestDto;
 use App\Infrastructure\Http\Request\Task\ListTaskRequestDto;
 use App\Infrastructure\Service\ApiRequestValidator;
@@ -38,11 +41,12 @@ use Throwable;
 class TaskController extends AbstractController
 {
     public function __construct(
-        private readonly ApiRequestValidator    $apiRequestValidator,
-        private readonly CreateTaskUserCase     $createTaskUserCase,
-        private readonly ListTasksUserCase      $listTasksUserCase,
-        private readonly GetTaskDetailsUserCase $getTaskDetailsUserCase,
-        private readonly DeleteTaskUserCase     $deleteTaskUserCase
+        private readonly ApiRequestValidator      $apiRequestValidator,
+        private readonly CreateTaskUserCase       $createTaskUserCase,
+        private readonly ListTasksUserCase        $listTasksUserCase,
+        private readonly GetTaskDetailsUserCase   $getTaskDetailsUserCase,
+        private readonly DeleteTaskUserCase       $deleteTaskUserCase,
+        private readonly AssignTaskToUserUserCase $assignTaskToUserUserCase
     ) {
     }
 
@@ -70,6 +74,22 @@ class TaskController extends AbstractController
         }
     }
 
+    #[Route('/{id}', name: 'task_detail', methods: ['GET'])]
+    public function getById(string $id) : JsonResponse
+    {
+        try {
+            $request = new GetTaskDetailsRequest($id);
+
+            $response = ($this->getTaskDetailsUserCase)($request);
+
+            return ApiResponse::success($response);
+        } catch (TaskNotFoundException|InvalidTaskIdException $exception) {
+            return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        } catch (Throwable) {
+            return ApiResponse::internalError();
+        }
+    }
+
     #[Route('', name: 'task_create', methods: ['POST'])]
     public function create(Request $request) : JsonResponse
     {
@@ -88,25 +108,9 @@ class TaskController extends AbstractController
             $response = ($this->createTaskUserCase)($request);
 
             return ApiResponse::success($response);
-        } catch (InvalidRequestParameterException|InvalidRequestException|InvalidRequestArgumentException|TaskDueDateInPastException|InvalidTaskPriorityException|InvalidTaskTitleException|InvalidUserIdException|AssignedUserDoesNotExistException $exception) {
+        } catch (InvalidRequestParameterException|InvalidRequestException|InvalidRequestArgumentException|TaskDueDateInPastException|InvalidTaskPriorityException|InvalidTaskTitleException|InvalidUserIdException|UserNotFoundException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         } catch (Throwable $exception) {
-            return ApiResponse::internalError();
-        }
-    }
-
-    #[Route('/{id}', name: 'task_detail', methods: ['GET'])]
-    public function getById(string $id) : JsonResponse
-    {
-        try {
-            $request = new GetTaskDetailsRequest($id);
-
-            $response = ($this->getTaskDetailsUserCase)($request);
-
-            return ApiResponse::success($response);
-        } catch (TaskNotFoundException|InvalidTaskIdException $exception) {
-            return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        } catch (Throwable) {
             return ApiResponse::internalError();
         }
     }
@@ -127,22 +131,22 @@ class TaskController extends AbstractController
         }
     }
 
-    #[Route('/{id}/assign', name: 'task_assign', methods: ['PATCH'], requirements: ['id' => '\d+'])]
+    #[Route('/{id}/assign', name: 'task_assign', methods: ['PATCH'])]
     public function assign(Request $request, string $id) : JsonResponse
     {
         try {
-            $data = json_decode($request->getContent(), true);
-            $userId = $data['userId'] ?? null;
+            /** @var AssignTaskToUserDto $data */
+            $data = $this->apiRequestValidator->validate($request, AssignTaskToUserDto::class);
 
-            if (!$userId) {
-                return ApiResponse::error('Missing userId parameter', Response::HTTP_BAD_REQUEST);
-            }
+            $request = new AssignTaskToUserRequest(
+                $id,
+                $data->userId
+            );
 
-            // $this->assignTaskUserCase->execute($id, $userId);
-            return ApiResponse::success([
-                'message' => sprintf('Task %s assigned to user %s (mocked)', $id, $userId),
-            ]);
-        } catch (InvalidUserIdException|AssignedUserDoesNotExistException $exception) {
+            $response = ($this->assignTaskToUserUserCase)($request);
+
+            return ApiResponse::success($response);
+        } catch (InvalidRequestParameterException|InvalidRequestException|InvalidUserIdException|InvalidTaskIdException|UserNotFoundException|TaskNotFoundException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         } catch (Throwable) {
             return ApiResponse::internalError();

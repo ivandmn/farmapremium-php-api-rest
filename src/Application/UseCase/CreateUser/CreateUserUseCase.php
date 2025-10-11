@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Application\UseCase\CreateUser;
 
+use App\Application\Service\LoggerInterface;
 use App\Domain\Factory\UserFactory;
 use App\Domain\Repository\UserRepositoryInterface;
 use App\Domain\ValueObject\User\UserEmail;
@@ -14,7 +15,8 @@ final readonly class CreateUserUseCase
 {
     public function __construct(
         private UserFactory             $userFactory,
-        private UserRepositoryInterface $userRepository
+        private UserRepositoryInterface $userRepository,
+        private LoggerInterface         $logger
     ) {
     }
 
@@ -33,6 +35,8 @@ final readonly class CreateUserUseCase
         );
 
         $this->userRepository->save($user);
+
+        $this->logger->info('User Created', ['userId' => $user->getId()->value()]);
 
         return new CreateUserResponse($user);
     }

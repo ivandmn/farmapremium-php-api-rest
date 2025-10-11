@@ -31,6 +31,6 @@ final readonly class DeleteTaskUserCase
 
         $this->logger->info('Task deleted', ['task_id' => $taskId->value()]);
 
-        return new DeleteTaskResponse();
+        return new DeleteTaskResponse($taskId);
     }
 }
