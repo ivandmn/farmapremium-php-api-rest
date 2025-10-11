@@ -10,7 +10,7 @@ readonly class Email
 {
     public const MAX_LENGTH = 255;
 
-    public function __construct(private string $value)
+    public function __construct(protected string $value)
     {
         if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
             throw new InvalidEmailException('Invalid email format');

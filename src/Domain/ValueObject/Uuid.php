@@ -11,7 +11,7 @@ readonly class Uuid
 {
     public const LENGTH = 36;
 
-    public function __construct(private string $value)
+    public function __construct(protected string $value)
     {
         if (!RamseyUuid::isValid($value)) {
             throw new InvalidUuidException('Invalid Uuid format');

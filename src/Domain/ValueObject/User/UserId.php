@@ -10,7 +10,7 @@ use App\Domain\ValueObject\Uuid;
 
 final readonly class UserId extends Uuid
 {
-    public function __construct(private string $value)
+    public function __construct(string $value)
     {
         try {
             parent::__construct($value);

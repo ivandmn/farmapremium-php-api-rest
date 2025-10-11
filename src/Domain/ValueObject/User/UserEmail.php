@@ -10,7 +10,7 @@ use App\Domain\ValueObject\Email;
 
 final readonly class UserEmail extends Email
 {
-    public function __construct(private string $value)
+    public function __construct(string $value)
     {
         try {
             parent::__construct(strtolower($value));
