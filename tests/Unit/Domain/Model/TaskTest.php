@@ -174,6 +174,23 @@ final class TaskTest extends TestCase
         $this->assertNotSame($firstUpdatedAt, $task->getUpdatedAt());
     }
 
+    public function test_change_due_date_from_non_null_to_null_marks_updated() : void
+    {
+        $task = new Task(TaskId::new(), TaskTitle::fromString('Test Title'), TaskDescription::fromString('Test Description'));
+        $due = TaskDueDate::fromDate((new DateTime('now'))->modify('+3 days'));
+        $task->changeDueDate($due);
+
+        $this->assertSame($due, $task->getDueDate());
+        $this->assertTrue($task->isUpdated());
+        $firstUpdatedAt = $task->getUpdatedAt();
+
+        $task->changeDueDate(null);
+
+        $this->assertNull($task->getDueDate());
+        $this->assertNotSame($firstUpdatedAt, $task->getUpdatedAt());
+        $this->assertTrue($task->isUpdated());
+    }
+
     public function test_change_due_date_to_null_when_already_null_is_noop() : void
     {
         $task = new Task(TaskId::new(), TaskTitle::fromString('Test Title'), TaskDescription::fromString('Test Description'));
@@ -218,6 +235,36 @@ final class TaskTest extends TestCase
 
         $this->expectException(InvalidTaskStatusTransitionException::class);
         $task->changeStatus(TaskStatus::IN_PROGRESS);
+    }
+
+    public function test_change_status_noop_when_same_status_from_pending() : void
+    {
+        $task = new Task(TaskId::new(), TaskTitle::fromString('Test Title'), TaskDescription::fromString('Test Description'));
+
+        $this->assertSame(TaskStatus::PENDING, $task->getStatus());
+        $this->assertFalse($task->isUpdated());
+        $this->assertNull($task->getUpdatedAt());
+
+        $task->changeStatus(TaskStatus::PENDING);
+
+        $this->assertSame(TaskStatus::PENDING, $task->getStatus());
+        $this->assertFalse($task->isUpdated());
+        $this->assertNull($task->getUpdatedAt());
+    }
+
+    public function test_change_status_noop_when_same_status_from_in_progress() : void
+    {
+        $task = new Task(TaskId::new(), TaskTitle::fromString('Test Title'), TaskDescription::fromString('Test Description'));
+        $task->changeStatus(TaskStatus::IN_PROGRESS);
+
+        $this->assertSame(TaskStatus::IN_PROGRESS, $task->getStatus());
+        $this->assertTrue($task->isUpdated());
+        $firstUpdatedAt = $task->getUpdatedAt();
+
+        $task->changeStatus(TaskStatus::IN_PROGRESS);
+
+        $this->assertSame(TaskStatus::IN_PROGRESS, $task->getStatus());
+        $this->assertSame($firstUpdatedAt, $task->getUpdatedAt());
     }
 
     public function test_is_pending_completed_and_can_be_deleted_flags() : void
