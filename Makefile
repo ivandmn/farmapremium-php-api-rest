@@ -68,6 +68,8 @@ composer-update:
 	docker compose $(ENV_FILES_FILTERED) $(COMPOSE_FILES) exec app composer update
 
 test:
+	docker compose $(ENV_FILES_FILTERED) $(COMPOSE_FILES) exec app bash -lc 'APP_ENV=test bin/console doctrine:database:create --if-not-exists'
+	docker compose $(ENV_FILES_FILTERED) $(COMPOSE_FILES) exec app bash -lc 'APP_ENV=test bin/console doctrine:migrations:migrate -n'
 	docker compose $(ENV_FILES_FILTERED) $(COMPOSE_FILES) exec app bash -c "APP_ENV=test ./bin/phpunit"
 
 show-config:

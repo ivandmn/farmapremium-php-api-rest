@@ -12,7 +12,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 
-final class ApiRequestValidator
+class ApiRequestValidator
 {
     private const DATA_REQUEST_TYPE = 'json';
 
