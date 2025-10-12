@@ -12,7 +12,17 @@
         "method": "GET",
         "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
         "url": {"raw": "{{base_url}}/api/users", "host": ["{{base_url}}"], "path": ["api", "users"]}
-      }
+      },
+      "response": [
+        {
+          "name": "✅ Valid",
+          "originalRequest": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "url": {"raw": "{{base_url}}/api/users", "host": ["{{base_url}}"], "path": ["api", "users"]}
+          }
+        }
+      ]
     },
     {
       "name": "Create User (POST /api/users)",
@@ -282,6 +292,125 @@
       ]
     },
     {
+      "name": "Update Task (PUT /api/tasks/{id})",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+        "body": {"mode": "raw", "raw": "{\n  \"title\": \"{{update_task_new_title}}\",\n  \"description\": \"{{update_task_new_description}}\",\n  \"status\": \"{{update_task_new_status}}\",\n  \"priority\": \"{{update_task_new_priority}}\",\n  \"dueDate\": \"{{update_task_new_due_date}}\"\n}"},
+        "url": {"raw": "{{base_url}}/api/tasks/{{test_task_id}}", "host": ["{{base_url}}"], "path": ["api", "tasks", "{{test_task_id}}"]}
+      },
+      "response": [
+        {
+          "name": "✅ Valid Task Update",
+          "originalRequest": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"title\": \"Updated Task Title\",\n  \"description\": \"This is an updated task.\",\n  \"status\": \"completed\",\n  \"priority\": \"high\",\n  \"dueDate\": \"2030-01-01T10:00:00+00:00\"\n}"},
+            "url": {"raw": "{{base_url}}/api/tasks/{{test_task_id}}", "host": ["{{base_url}}"], "path": ["api", "tasks", "{{test_task_id}}"]}
+          }
+        },
+        {
+          "name": "✅ Partial Update (Only Title)",
+          "originalRequest": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"title\": \"Only Update Title\"\n}"},
+            "url": {"raw": "{{base_url}}/api/tasks/{{test_task_id}}", "host": ["{{base_url}}"], "path": ["api", "tasks", "{{test_task_id}}"]}
+          }
+        },
+        {
+          "name": "✅ Update With Null Value",
+          "originalRequest": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"title\": \"Updated Task Title\",\n  \"dueDate\": null\n}"},
+            "url": {"raw": "{{base_url}}/api/tasks/{{test_task_id}}", "host": ["{{base_url}}"], "path": ["api", "tasks", "{{test_task_id}}"]}
+          }
+        },
+        {
+          "name": "❌ Extra Parameter Not Allowed",
+          "originalRequest": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"title\": \"Updated Task Title\",\n  \"unexpected\": \"value\"\n}"},
+            "url": {"raw": "{{base_url}}/api/tasks/018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2", "host": ["{{base_url}}"], "path": ["api", "tasks", "018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2"]}
+          }
+        },
+        {
+          "name": "❌ Invalid Parameter Type",
+          "originalRequest": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"title\": 12345\n}"},
+            "url": {"raw": "{{base_url}}/api/tasks/018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2", "host": ["{{base_url}}"], "path": ["api", "tasks", "018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2"]}
+          }
+        },
+        {
+          "name": "❌ Invalid Task ID",
+          "originalRequest": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"title\": \"Updated Task Title\"\n}"},
+            "url": {"raw": "{{base_url}}/api/tasks/invalid-id", "host": ["{{base_url}}"], "path": ["api", "tasks", "invalid-id"]}
+          }
+        },
+        {
+          "name": "❌ Task Not Found",
+          "originalRequest": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"title\": \"Updated Task Title\"\n}"},
+            "url": {"raw": "{{base_url}}/api/tasks/018f63a8-bb93-7e5b-b0e1-49d24fa4ffff", "host": ["{{base_url}}"], "path": ["api", "tasks", "018f63a8-bb93-7e5b-b0e1-49d24fa4ffff"]}
+          }
+        },
+        {
+          "name": "❌ Unsupported Status Value",
+          "originalRequest": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"status\": \"unknown_status\"\n}"},
+            "url": {"raw": "{{base_url}}/api/tasks/{{test_task_id}}", "host": ["{{base_url}}"], "path": ["api", "tasks", "{{test_task_id}}"]}
+          }
+        },
+        {
+          "name": "❌ Unsupported Priority Value",
+          "originalRequest": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"priority\": \"urgent\"\n}"},
+            "url": {"raw": "{{base_url}}/api/tasks/{{test_task_id}}", "host": ["{{base_url}}"], "path": ["api", "tasks", "{{test_task_id}}"]}
+          }
+        },
+        {
+          "name": "❌ Invalid Due Date Format",
+          "originalRequest": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"dueDate\": \"2030-01-01 10:00:00\"\n}"},
+            "url": {"raw": "{{base_url}}/api/tasks/{{test_task_id}}", "host": ["{{base_url}}"], "path": ["api", "tasks", "{{test_task_id}}"]}
+          }
+        },
+        {
+          "name": "❌ Due Date In The Past",
+          "originalRequest": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"dueDate\": \"2020-01-01T10:00:00+00:00\"\n}"},
+            "url": {"raw": "{{base_url}}/api/tasks/{{test_task_id}}", "host": ["{{base_url}}"], "path": ["api", "tasks", "{{test_task_id}}"]}
+          }
+        },
+        {
+          "name": "❌ Unsupported Status Transition",
+          "originalRequest": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"status\": \"completed\"\n}"},
+            "url": {"raw": "{{base_url}}/api/tasks/{{test_task_id}}", "host": ["{{base_url}}"], "path": ["api", "tasks", "{{test_task_id}}"]}
+          }
+        }
+      ]
+    },
+    {
       "name": "Assign Task to User (PATCH /api/tasks/{id}/assign)",
       "request": {
         "method": "PATCH",
@@ -412,13 +541,18 @@
     { "key": "test_user_name", "value": "Dynamic User", "type": "string" },
     { "key": "test_user_email", "value": "dynamic@example.com", "type": "string" },
     { "key": "test_user_id", "value": "018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2", "type": "string" },
+    { "key": "test_task_id", "value": "018f63b9-bc03-7b20-bc21-6f6a3f1da9b5", "type": "string" },
     { "key": "test_task_title", "value": "Implement new feature", "type": "string" },
     { "key": "test_task_description", "value": "Description of implement new feature", "type": "string" },
     { "key": "test_task_status", "value": "pending", "type": "string" },
     { "key": "test_task_priority", "value": "medium", "type": "string" },
     { "key": "test_task_due_date", "value": "2028-01-01T10:00:00+00:00", "type": "string" },
+    { "key": "update_task_new_title", "value": "Refactor feature module", "type": "string" },
+    { "key": "update_task_new_description", "value": "Refactor and improve performance of feature module", "type": "string" },
+    { "key": "update_task_new_status", "value": "in_progress", "type": "string" },
+    { "key": "update_task_new_priority", "value": "high", "type": "string" },
+    { "key": "update_task_new_due_date", "value": "2029-06-01T09:00:00+00:00", "type": "string" },
     { "key": "test_task_page", "value": "1", "type": "string" },
-    { "key": "test_task_limit", "value": "1", "type": "string" },
-    { "key": "test_task_id", "value": "018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2", "type": "string" }
+    { "key": "test_task_limit", "value": "1", "type": "string" }
   ]
 }

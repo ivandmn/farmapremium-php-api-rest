@@ -4,8 +4,8 @@ declare(strict_types = 1);
 
 namespace App\Domain\Exception;
 
-use RuntimeException;
+use Exception;
 
-abstract class DomainException extends RuntimeException
+abstract class DomainException extends Exception
 {
 }

@@ -15,7 +15,7 @@ final readonly class TaskId extends Uuid
         try {
             parent::__construct($value);
         } catch (InvalidUuidException $exception) {
-            throw new InvalidTaskIdException('Invalid Task Id', $exception->getCode(), $exception);
+            throw new InvalidTaskIdException('Invalid Task ID', $exception->getCode(), $exception);
         }
     }
 }

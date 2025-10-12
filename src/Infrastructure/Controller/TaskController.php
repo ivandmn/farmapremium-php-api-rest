@@ -27,7 +27,7 @@ use App\Domain\Exception\Task\InvalidTaskTitleException;
 use App\Domain\Exception\Task\TaskDueDateInPastException;
 use App\Domain\Exception\Task\TaskNotFoundException;
 use App\Domain\Exception\User\InvalidUserIdException;
-use App\Infrastructure\Exception\InvalidDateFormat;
+use App\Application\Exception\InvalidDateFormat;
 use App\Infrastructure\Exception\InvalidRequestException;
 use App\Infrastructure\Exception\InvalidRequestParameterException;
 use App\Infrastructure\Http\ApiResponse;
@@ -36,6 +36,7 @@ use App\Infrastructure\Http\Request\Task\CreateTaskRequestDto;
 use App\Infrastructure\Http\Request\Task\ListTaskRequestDto;
 use App\Infrastructure\Http\Request\Task\UpdateTaskRequestDto;
 use App\Infrastructure\Service\ApiRequestValidator;
+use App\Infrastructure\Service\MonologLogger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -47,6 +48,7 @@ use Throwable;
 class TaskController extends AbstractController
 {
     public function __construct(
+        private readonly MonologLogger            $logger,
         private readonly ApiRequestValidator      $apiRequestValidator,
         private readonly CreateTaskUserCase       $createTaskUserCase,
         private readonly ListTasksUserCase        $listTasksUserCase,
@@ -67,8 +69,8 @@ class TaskController extends AbstractController
             $listRequest = new ListTasksRequest(
                 $data->status,
                 $data->priority,
-                $data->page ? (int) $data->page : null,
-                $data->limit ? (int) $data->limit : null,
+                $data->page ? (int) $data->page : 1,
+                $data->limit ? (int) $data->limit : 50,
             );
 
             $response = ($this->listTasksUserCase)($listRequest);
@@ -76,7 +78,12 @@ class TaskController extends AbstractController
             return $response->isEmpty() ? ApiResponse::empty() : ApiResponse::success($response);
         } catch (InvalidRequestParameterException|InvalidRequestException|InvalidTaskStatusException|InvalidTaskPriorityException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        } catch (Throwable) {
+        } catch (Throwable $exception) {
+            $this->logger->error(
+                sprintf('Error Listing Tasks: %s', $exception->getMessage()),
+                ['exception' => $exception]
+            );
+
             return ApiResponse::internalError();
         }
     }
@@ -94,7 +101,12 @@ class TaskController extends AbstractController
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         } catch (TaskNotFoundException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_NOT_FOUND);
-        } catch (Throwable) {
+        } catch (Throwable $exception) {
+            $this->logger->error(
+                sprintf('Error Getting Task Details: %s', $exception->getMessage()),
+                ['exception' => $exception]
+            );
+
             return ApiResponse::internalError();
         }
     }
@@ -120,7 +132,12 @@ class TaskController extends AbstractController
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         } catch (TaskDueDateInPastException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_CONFLICT);
-        } catch (Throwable) {
+        } catch (Throwable $exception) {
+            $this->logger->error(
+                sprintf('Error Creating Task: %s', $exception->getMessage()),
+                ['exception' => $exception]
+            );
+
             return ApiResponse::internalError();
         }
     }
@@ -140,7 +157,12 @@ class TaskController extends AbstractController
             return ApiResponse::error($exception->getMessage(), Response::HTTP_NOT_FOUND);
         } catch (TaskDeletionNotAllowedException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_CONFLICT);
-        } catch (Throwable) {
+        } catch (Throwable $exception) {
+            $this->logger->error(
+                sprintf('Error Deleting Task: %s', $exception->getMessage()),
+                ['exception' => $exception]
+            );
+
             return ApiResponse::internalError();
         }
     }
@@ -164,7 +186,12 @@ class TaskController extends AbstractController
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         } catch (UserNotFoundException|TaskNotFoundException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_NOT_FOUND);
-        } catch (Throwable) {
+        } catch (Throwable $exception) {
+            $this->logger->error(
+                sprintf('Error Assigning Task To User: %s', $exception->getMessage()),
+                ['exception' => $exception]
+            );
+
             return ApiResponse::internalError();
         }
     }
@@ -194,7 +221,12 @@ class TaskController extends AbstractController
             return ApiResponse::error($exception->getMessage(), Response::HTTP_NOT_FOUND);
         } catch (TaskDueDateInPastException|InvalidTaskStatusTransitionException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_CONFLICT);
-        } catch (Throwable) {
+        } catch (Throwable $exception) {
+            $this->logger->error(
+                sprintf('Error Updating Task: %s', $exception->getMessage()),
+                ['exception' => $exception]
+            );
+
             return ApiResponse::internalError();
         }
     }

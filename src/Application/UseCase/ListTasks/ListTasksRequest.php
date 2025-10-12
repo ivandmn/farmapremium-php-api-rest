@@ -10,8 +10,8 @@ final class ListTasksRequest
     public function __construct(
         private ?string $status,
         private ?string $priority,
-        private ?int    $page = 1,
-        private ?int    $limit = 10
+        private ?int    $page,
+        private ?int    $limit
     ) {
     }
 

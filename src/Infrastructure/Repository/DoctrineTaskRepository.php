@@ -9,7 +9,6 @@ use App\Domain\Repository\TaskRepositoryInterface;
 use App\Domain\ValueObject\Task\TaskId;
 use App\Infrastructure\Persistence\Doctrine\Entity\Task;
 use App\Domain\ValueObject\User\UserId;
-use App\Infrastructure\Persistence\Doctrine\Entity\User;
 use App\Infrastructure\Persistence\Doctrine\Mapper\TaskMapper;
 use Doctrine\ORM\EntityManagerInterface;
 

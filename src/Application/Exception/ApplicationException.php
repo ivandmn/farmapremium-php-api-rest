@@ -4,6 +4,8 @@ declare(strict_types = 1);
 
 namespace App\Application\Exception;
 
-final class InvalidDateFormat extends ApplicationException
+use Exception;
+
+abstract class ApplicationException extends Exception
 {
 }

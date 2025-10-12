@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace App\Application\UseCase\UpdateTask;
 
 use App\Domain\ValueObject\Task\TaskDueDate;
-use App\Infrastructure\Exception\InvalidDateFormat;
+use App\Application\Exception\InvalidDateFormat;
 use DateTime;
 
 final class UpdateTaskRequest

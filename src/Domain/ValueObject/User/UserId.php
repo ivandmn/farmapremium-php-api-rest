@@ -15,7 +15,7 @@ final readonly class UserId extends Uuid
         try {
             parent::__construct($value);
         } catch (InvalidUuidException $exception) {
-            throw new InvalidUserIdException('Invalid User Id', $exception->getCode(), $exception);
+            throw new InvalidUserIdException('Invalid User ID', $exception->getCode(), $exception);
         }
     }
 }

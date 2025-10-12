@@ -110,7 +110,7 @@ final class Task
         if (!$this->status->canTransitionTo($newStatus)) {
             throw new InvalidTaskStatusTransitionException(
                 sprintf(
-                    'Task Status transition from "%s" to "%s" is not allowed',
+                    'Task status transition from "%s" to "%s" is not allowed',
                     $this->status->value,
                     $newStatus->value
                 )
@@ -140,16 +140,6 @@ final class Task
         $this->markAsUpdated();
     }
 
-    public function unassign() : void
-    {
-        if ($this->assignedUser === null) {
-            return;
-        }
-
-        $this->assignedUser = null;
-        $this->markAsUpdated();
-    }
-
     public function changeDueDate(?TaskDueDate $newTaskDueDate) : void
     {
         if ($this->dueDate === null && $newTaskDueDate === null) {
@@ -174,14 +164,14 @@ final class Task
         return $this->status->isPending();
     }
 
-    public function isUpdated() : bool
-    {
-        return $this->isUpdated;
-    }
-
     public function canBeDeleted() : bool
     {
         return $this->isPending();
+    }
+
+    public function isUpdated() : bool
+    {
+        return $this->isUpdated;
     }
 
     private function markAsUpdated() : void

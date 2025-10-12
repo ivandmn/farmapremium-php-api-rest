@@ -16,6 +16,7 @@ use App\Infrastructure\Http\Request\User\CreateUserRequestDto;
 use App\Infrastructure\Exception\InvalidRequestException;
 use App\Infrastructure\Http\ApiResponse;
 use App\Infrastructure\Service\ApiRequestValidator;
+use App\Infrastructure\Service\MonologLogger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,9 +28,10 @@ use Throwable;
 class UserController extends AbstractController
 {
     public function __construct(
-        private ApiRequestValidator $apiRequestValidator,
-        private CreateUserUseCase   $createUserUseCase,
-        private ListUsersUseCase    $listUsersUseCase
+        private readonly MonologLogger       $logger,
+        private readonly ApiRequestValidator $apiRequestValidator,
+        private readonly CreateUserUseCase   $createUserUseCase,
+        private readonly ListUsersUseCase    $listUsersUseCase
     ) {
     }
 
@@ -41,7 +43,12 @@ class UserController extends AbstractController
             $response = ($this->listUsersUseCase)($request);
 
             return $response->isEmpty() ? ApiResponse::empty() : ApiResponse::success($response);
-        } catch (Throwable) {
+        } catch (Throwable $exception) {
+            $this->logger->error(
+                sprintf('Error Listing Users: %s', $exception->getMessage()),
+                ['exception' => $exception]
+            );
+
             return ApiResponse::internalError();
         }
     }
@@ -65,7 +72,12 @@ class UserController extends AbstractController
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         } catch (UserAlreadyExistsException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_CONFLICT);
-        } catch (Throwable) {
+        } catch (Throwable $exception) {
+            $this->logger->error(
+                sprintf('Error Creating User: %s', $exception->getMessage()),
+                ['exception' => $exception]
+            );
+
             return ApiResponse::internalError();
         }
     }

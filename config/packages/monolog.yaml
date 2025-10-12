@@ -18,6 +18,18 @@ when@dev:
             #chromephp:
             #    type: chromephp
             #    level: info
+            app:
+              app_info:
+                type: stream
+                path: "%kernel.logs_dir%/dev_app_info.log"
+                level: info
+                channels: [ "app" ]
+
+                app_error:
+                  type: stream
+                  path: "%kernel.logs_dir%/dev_app_error.log"
+                  level: error
+                  channels: [ "app" ]
             console:
                 type: console
                 process_psr_3_messages: false

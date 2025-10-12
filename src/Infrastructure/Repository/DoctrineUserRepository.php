@@ -27,7 +27,12 @@ readonly class DoctrineUserRepository implements UserRepositoryInterface
 
     public function delete(UserDomain $user) : void
     {
-        $this->entityManager->remove(UserMapper::toDoctrine($user));
+        $userDoctrine = UserMapper::toDoctrine($user);
+
+        //TAKE REFERENCE FROM USER ENTITY
+        $userDoctrine = $this->entityManager->getReference($userDoctrine::class, $userDoctrine->getId());
+
+        $this->entityManager->remove($userDoctrine);
         $this->entityManager->flush();
     }
 
