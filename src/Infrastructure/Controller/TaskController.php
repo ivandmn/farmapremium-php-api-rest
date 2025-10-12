@@ -215,7 +215,7 @@ class TaskController extends AbstractController
             $response = ($this->updateTaskUserCase)($request);
 
             return ApiResponse::success($response);
-        } catch (InvalidRequestParameterException|InvalidRequestException|InvalidTaskTitleException|InvalidTaskDescription|InvalidDateFormat|InvalidTaskStatusException|InvalidTaskPriorityException $exception) {
+        } catch (InvalidRequestParameterException|InvalidRequestException|InvalidTaskIdException|InvalidTaskTitleException|InvalidTaskDescription|InvalidDateFormat|InvalidTaskStatusException|InvalidTaskPriorityException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         } catch (TaskNotFoundException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_NOT_FOUND);

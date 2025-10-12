@@ -10,7 +10,7 @@ use DateTime;
 
 final class UpdateTaskRequest
 {
-    private DateTime $dueDate;
+    private ?DateTime $dueDate;
 
     public function __construct(
         private string  $taskId,
@@ -22,7 +22,7 @@ final class UpdateTaskRequest
     ) {
         $date = $dueDate !== null ? DateTime::createFromFormat(TaskDueDate::FORMAT, $dueDate) : null;
         if ($date === false) {
-            throw new InvalidDateFormat(sprintf('Invalid Due date, must be in format "%s"', TaskDueDate::FORMAT));
+            throw new InvalidDateFormat(sprintf('Invalid Due date, must be in format "%s"', TaskDueDate::FORMAT_NAME));
         }
 
         $this->dueDate = $date;

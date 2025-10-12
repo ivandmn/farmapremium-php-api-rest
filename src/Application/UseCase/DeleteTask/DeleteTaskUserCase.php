@@ -36,8 +36,8 @@ final readonly class DeleteTaskUserCase
 
         $this->taskRepository->delete($task);
 
-        $this->logger->info('Task deleted', ['task_id' => $taskId->value()]);
+        $this->logger->info('Task deleted', ['task_id' => $taskId->value(), 'task_title' => $task->getTitle()]);
 
-        return new DeleteTaskResponse($taskId);
+        return new DeleteTaskResponse($task);
     }
 }

@@ -43,10 +43,12 @@ final readonly class AssignTaskToUserUserCase
         if (!$task->isUpdated()) {
             $this->logger->info('Task not Assigned to User (no changes detected)', [
                 'task_id' => $task->getId()->value(),
+                'task_title' => $task->getTitle()->value(),
                 'user_id' => $task->getAssignedUser()?->getId()->value(),
+                'user_email' => $user->getEmail()->value(),
             ]);
 
-            return new AssignTaskToUserResponse($taskId, $userId);
+            return new AssignTaskToUserResponse($task, $user);
         }
 
         $this->taskRepository->update($task);
@@ -54,10 +56,12 @@ final readonly class AssignTaskToUserUserCase
         $this->logger->info('Task Assigned to User',
             [
                 'task_id' => $task->getId()->value(),
+                'task_title' => $task->getTitle()->value(),
                 'user_id' => $task->getAssignedUser()?->getId()->value(),
+                'user_email' => $user->getEmail()->value(),
             ]
         );
 
-        return new AssignTaskToUserResponse($taskId, $userId);
+        return new AssignTaskToUserResponse($task, $user);
     }
 }

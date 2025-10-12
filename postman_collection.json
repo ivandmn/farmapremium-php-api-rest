@@ -95,6 +95,15 @@
             "body": {"mode": "raw", "raw": "{\n  \"name\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"email\": \"test@example.com\"\n}"},
             "url": {"raw": "{{base_url}}/api/users", "host": ["{{base_url}}"], "path": ["api", "users"]}
           }
+        },
+        {
+          "name": "❌ User with email already exits",
+          "originalRequest": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": {"mode": "raw", "raw": "{\n  \"name\": \"{{test_user_name}}\",\n  \"email\": \"{{test_user_email}}\"\n}"},
+            "url": {"raw": "{{base_url}}/api/users", "host": ["{{base_url}}"], "path": ["api", "users"]}
+          }
         }
       ]
     },
@@ -117,7 +126,7 @@
       },
       "response": [
         {
-          "name": "✅ Valid - No filters",
+          "name": "✅ Valid",
           "originalRequest": {
             "method": "GET",
             "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
@@ -193,7 +202,7 @@
       },
       "response": [
         {
-          "name": "✅ Valid Task",
+          "name": "✅ Valid",
           "originalRequest": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
@@ -266,11 +275,11 @@
       },
       "response": [
         {
-          "name": "✅ Valid Task Found",
+          "name": "✅ Valid",
           "originalRequest": {
             "method": "GET",
             "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
-            "url": {"raw": "{{base_url}}/api/tasks/018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2", "host": ["{{base_url}}"], "path": ["api", "tasks", "018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2"]}
+            "url": {"raw": "{{base_url}}/api/tasks/{{test_task_id}}", "host": ["{{base_url}}"], "path": ["api", "tasks", "{{test_task_id}}"]}
           }
         },
         {
@@ -301,7 +310,7 @@
       },
       "response": [
         {
-          "name": "✅ Valid Task Update",
+          "name": "✅ Valid Update",
           "originalRequest": {
             "method": "PUT",
             "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
@@ -315,15 +324,6 @@
             "method": "PUT",
             "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
             "body": {"mode": "raw", "raw": "{\n  \"title\": \"Only Update Title\"\n}"},
-            "url": {"raw": "{{base_url}}/api/tasks/{{test_task_id}}", "host": ["{{base_url}}"], "path": ["api", "tasks", "{{test_task_id}}"]}
-          }
-        },
-        {
-          "name": "✅ Update With Null Value",
-          "originalRequest": {
-            "method": "PUT",
-            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
-            "body": {"mode": "raw", "raw": "{\n  \"title\": \"Updated Task Title\",\n  \"dueDate\": null\n}"},
             "url": {"raw": "{{base_url}}/api/tasks/{{test_task_id}}", "host": ["{{base_url}}"], "path": ["api", "tasks", "{{test_task_id}}"]}
           }
         },
@@ -502,11 +502,11 @@
       },
       "response": [
         {
-          "name": "✅ Task Deleted Successfully",
+          "name": "✅ Valid Delete",
           "originalRequest": {
             "method": "DELETE",
             "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
-            "url": {"raw": "{{base_url}}/api/tasks/018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2", "host": ["{{base_url}}"], "path": ["api", "tasks", "018f63a8-bb93-7e5b-b0e1-49d24fa4c9a2"]}
+            "url": {"raw": "{{base_url}}/api/tasks/{{test_task_id}}", "host": ["{{base_url}}"], "path": ["api", "tasks", "{{test_task_id}}"]}
           }
         },
         {

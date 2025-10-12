@@ -37,7 +37,7 @@ final readonly class CreateTaskUserCase
 
         $this->taskRepository->create($task);
 
-        $this->logger->info('Task Created', ['task_id' => $task->getId()->value()]);
+        $this->logger->info('Task Created', ['task_id' => $task->getId()->value(), 'task_title' => $task->getTitle()->value()]);
 
         return new CreateTaskResponse($task);
     }

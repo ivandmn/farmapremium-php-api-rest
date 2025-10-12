@@ -36,7 +36,7 @@ final readonly class CreateUserUseCase
 
         $this->userRepository->save($user);
 
-        $this->logger->info('User Created', ['user_id' => $user->getId()->value()]);
+        $this->logger->info('User Created', ['user_id' => $user->getId()->value(), 'user_email' => $user->getEmail()->value()]);
 
         return new CreateUserResponse($user);
     }

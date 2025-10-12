@@ -4,21 +4,27 @@ declare(strict_types = 1);
 
 namespace App\Application\UseCase\AssignTaskToUser;
 
-use App\Domain\ValueObject\Task\TaskId;
-use App\Domain\ValueObject\User\UserId;
+use App\Domain\Model\Task;
+use App\Domain\Model\User;
 
 final readonly class AssignTaskToUserResponse implements \JsonSerializable
 {
     public function __construct(
-        private TaskId $taskId,
-        private UserId $userId
+        private Task $task,
+        private User $user,
     ) {
     }
 
     public function jsonSerialize() : array
     {
         return [
-            'message' => sprintf('Task "%s" has been assigned to "%s"', $this->taskId->value(), $this->userId->value()),
+            'message' => sprintf(
+                'Task "%s" has been assigned to "%s"',
+                $this->task->getTitle()->value(),
+                $this->user->getEmail()->value()
+            ),
+            'task_id' => $this->task->getId()->value(),
+            'user_id' => $this->user->getId()->value(),
         ];
     }
 

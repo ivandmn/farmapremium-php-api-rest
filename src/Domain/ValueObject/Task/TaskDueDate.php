@@ -8,6 +8,7 @@ use DateTime;
 final class TaskDueDate
 {
     public const FORMAT = \DATE_RFC3339;
+    public const FORMAT_NAME = 'RFC3339';
 
     public function __construct(private DateTime $date)
     {

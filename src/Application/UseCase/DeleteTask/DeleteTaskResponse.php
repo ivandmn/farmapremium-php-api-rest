@@ -4,18 +4,19 @@ declare(strict_types = 1);
 
 namespace App\Application\UseCase\DeleteTask;
 
-use App\Domain\ValueObject\Task\TaskId;
+use App\Domain\Model\Task;
 
 final readonly class DeleteTaskResponse implements \JsonSerializable
 {
-    public function __construct(private TaskId $taskId)
+    public function __construct(private Task $task)
     {
     }
 
     public function jsonSerialize() : array
     {
         return [
-            'message' => sprintf('Task "%s" has been successfully deleted', $this->taskId->value()),
+            'message' => sprintf('Task "%s" has been successfully deleted', $this->task->getTitle()->value()),
+            'task_id' => $this->task->getId()->value(),
         ];
     }
 
