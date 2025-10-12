@@ -61,9 +61,13 @@ start:
 prune:
 	@echo "This will remove all unused Docker resources (containers, networks, images, volumes)"
 	@read -p "Are you sure? [y/N]: " confirm && [ "$$confirm" = "y" ] || [ "$$confirm" = "Y" ]
-	docker system prune -f
-	docker volume prune -f
-	docker network prune -f
+	docker stop $$(docker ps -aq) 2>/dev/null || true
+	docker rm -f $$(docker ps -aq) 2>/dev/null || true
+	docker network rm $$(docker network ls -q) 2>/dev/null || true
+	docker volume rm $$(docker volume ls -q) 2>/dev/null || true
+	docker rmi -f $$(docker images -q) 2>/dev/null || true
+	docker builder prune -af
+	docker system prune -af --volumes
 
 composer-install:
 	docker compose $(ENV_FILES_FILTERED) $(COMPOSE_FILES) exec app composer install
