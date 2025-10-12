@@ -32,6 +32,7 @@
         </include>
 
         <exclude>
+            <directory>src/Infrastructure</directory>
             <file>src/autoload.php</file>
         </exclude>
 

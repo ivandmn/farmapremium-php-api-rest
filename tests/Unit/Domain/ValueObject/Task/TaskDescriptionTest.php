@@ -1,0 +1,68 @@
+<?php
+
+declare(strict_types = 1);
+
+namespace App\Tests\Unit\Domain\ValueObject\Task;
+
+use App\Domain\Exception\Task\InvalidTaskDescription;
+use App\Domain\ValueObject\Task\TaskDescription;
+use PHPUnit\Framework\TestCase;
+use TypeError;
+
+final class TaskDescriptionTest extends TestCase
+{
+    public function test_creates_valid_task_description() : void
+    {
+        $desc = new TaskDescription('Valid description');
+
+        $this->assertInstanceOf(TaskDescription::class, $desc);
+        $this->assertSame('Valid description', $desc->value());
+        $this->assertSame('Valid description', (string) $desc);
+    }
+
+    public function test_from_string_creates_valid_task_description() : void
+    {
+        $desc = TaskDescription::fromString('Another description');
+
+        $this->assertInstanceOf(TaskDescription::class, $desc);
+        $this->assertSame('Another description', $desc->value());
+    }
+
+    public function test_allows_empty_string() : void
+    {
+        $desc = new TaskDescription('');
+
+        $this->assertSame('', $desc->value());
+        $this->assertSame('', (string) $desc);
+    }
+
+    public function test_throws_exception_when_too_long() : void
+    {
+        $this->expectException(InvalidTaskDescription::class);
+        $this->expectExceptionMessage('Task description exceeds maximum characters length');
+
+        new TaskDescription(str_repeat('a', TaskDescription::MAX_LENGTH + 1));
+    }
+
+    public function test_equals_returns_true_for_same_value() : void
+    {
+        $a = new TaskDescription('Same');
+        $b = new TaskDescription('Same');
+
+        $this->assertTrue($a->equals($b));
+    }
+
+    public function test_equals_returns_false_for_different_value() : void
+    {
+        $a = new TaskDescription('One');
+        $b = new TaskDescription('Two');
+
+        $this->assertFalse($a->equals($b));
+    }
+
+    public function test_constructor_with_null_throws_type_error() : void
+    {
+        $this->expectException(TypeError::class);
+        new TaskDescription(null);
+    }
+}

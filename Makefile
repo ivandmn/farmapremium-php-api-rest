@@ -68,7 +68,7 @@ composer-update:
 	docker compose $(ENV_FILES_FILTERED) $(COMPOSE_FILES) exec app composer update
 
 test:
-	docker compose $(ENV_FILES_FILTERED) $(COMPOSE_FILES) exec app APP_ENV=test ./bin/phpunit
+	docker compose $(ENV_FILES_FILTERED) $(COMPOSE_FILES) exec app bash -c "APP_ENV=test ./bin/phpunit"
 
 show-config:
 	@echo "Environment: $(ENV)"

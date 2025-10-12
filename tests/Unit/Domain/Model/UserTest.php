@@ -4,92 +4,64 @@ declare(strict_types = 1);
 
 namespace App\Tests\Unit\Domain\Model;
 
-use App\Domain\Exception\User\InvalidUserEmailException;
-use App\Domain\Exception\User\InvalidUserIdException;
-use App\Domain\Exception\User\InvalidUserNameException;
 use App\Domain\Model\User;
 use App\Domain\ValueObject\User\UserEmail;
 use App\Domain\ValueObject\User\UserId;
 use App\Domain\ValueObject\User\UserName;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
+use Ramsey\Uuid\Uuid as RamseyUuid;
 
 final class UserTest extends TestCase
 {
-    public function test_user_is_created_correctly() : void
+    public function test_constructs_with_defaults_and_getters() : void
     {
-        $id = new UserId('123e4567-e89b-12d3-a456-426614174000');
-        $email = new UserEmail('test@example.com');
-        $name = new UserName('Test User');
-        $created_at = new DateTimeImmutable('2025-01-01 10:00:00');
+        $id = UserId::new();
+        $email = UserEmail::fromString('test@example.com');
+        $name = UserName::fromString('Test User');
 
-        $user = new User($id, $email, $name, $created_at);
+        $before = new DateTimeImmutable('now');
+        $user = new User($id, $email, $name);
+        $after = new DateTimeImmutable('now');
 
         $this->assertInstanceOf(User::class, $user);
         $this->assertSame($id, $user->getId());
         $this->assertSame($email, $user->getEmail());
         $this->assertSame($name, $user->getName());
-        $this->assertSame($created_at, $user->getCreatedAt());
+        $this->assertInstanceOf(DateTimeImmutable::class, $user->getCreatedAt());
+        $this->assertGreaterThanOrEqual($before->getTimestamp(), $user->getCreatedAt()->getTimestamp());
+        $this->assertLessThanOrEqual($after->getTimestamp(), $user->getCreatedAt()->getTimestamp());
     }
 
-    public function test_user_created_at_defaults_to_now() : void
+    public function test_constructs_with_explicit_created_at() : void
     {
-        $id = new UserId('123e4567-e89b-12d3-a456-426614174000');
-        $email = new UserEmail('test@example.com');
-        $name = new UserName('Test User');
+        $id = UserId::new();
+        $email = UserEmail::fromString('a@b.com');
+        $name = UserName::fromString('Another User');
+        $created = new DateTimeImmutable('2030-01-01T10:00:00+00:00');
 
-        $before = new DateTimeImmutable();
-        $user = new User($id, $email, $name);
-        $after = new DateTimeImmutable();
+        $user = new User($id, $email, $name, $created);
 
-        $created_at = $user->getCreatedAt();
-        $this->assertInstanceOf(DateTimeImmutable::class, $created_at);
-        $this->assertGreaterThanOrEqual($before->getTimestamp(), $created_at->getTimestamp());
-        $this->assertLessThanOrEqual($after->getTimestamp(), $created_at->getTimestamp());
-        $this->assertLessThanOrEqual(2, abs($after->getTimestamp() - $created_at->getTimestamp()));
+        $this->assertSame($created->getTimestamp(), $user->getCreatedAt()->getTimestamp());
     }
 
-    public function test_user_id_invalid_throws_exception() : void
+    public function test_equals_true_when_same_id_even_if_other_fields_differ() : void
     {
-        $this->expectException(InvalidUserIdException::class);
-        $this->expectExceptionMessage('Invalid User Id');
+        $uuid = RamseyUuid::uuid7()->toString();
+        $id1 = UserId::fromString($uuid);
+        $id2 = UserId::fromString($uuid);
 
-        new UserId('not-a-uuid');
+        $u1 = new User($id1, UserEmail::fromString('one@example.com'), UserName::fromString('User One'), new DateTimeImmutable('2030-01-01T00:00:00+00:00'));
+        $u2 = new User($id2, UserEmail::fromString('two@example.com'), UserName::fromString('User Two'), new DateTimeImmutable('2035-01-01T00:00:00+00:00'));
+
+        $this->assertTrue($u1->equals($u2));
     }
 
-    public function test_user_email_invalid_throws_exception() : void
+    public function test_equals_false_when_different_id() : void
     {
-        $this->expectException(InvalidUserEmailException::class);
-        $this->expectExceptionMessage('Invalid user email');
+        $u1 = new User(UserId::new(), UserEmail::fromString('a@example.com'), UserName::fromString('Alpha User'));
+        $u2 = new User(UserId::new(), UserEmail::fromString('a@example.com'), UserName::fromString('Alpha User'));
 
-        new UserEmail('not-an-email');
-    }
-
-    public function test_user_email_max_length_throws_exception() : void
-    {
-        $this->expectException(InvalidUserEmailException::class);
-        $this->expectExceptionMessage('Invalid user email');
-
-        $localPart = str_repeat('a', 246);
-        $longEmail = 'b' . $localPart . '@ex.com';
-        $longEmail = str_pad($longEmail, 256, 'c');
-        new UserEmail($longEmail);
-    }
-
-    public function test_user_name_empty_throws_exception() : void
-    {
-        $this->expectException(InvalidUserNameException::class);
-        $this->expectExceptionMessage('User name cannot be empty');
-
-        new UserName('');
-    }
-
-    public function test_user_name_max_length_throws_exception() : void
-    {
-        $this->expectException(InvalidUserNameException::class);
-        $this->expectExceptionMessage('User name exceeds maximum characters length');
-
-        $longName = str_repeat('a', UserName::MAX_LENGTH + 1);
-        new UserName($longName);
+        $this->assertFalse($u1->equals($u2));
     }
 }
