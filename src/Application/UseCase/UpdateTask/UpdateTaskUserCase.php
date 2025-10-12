@@ -14,7 +14,7 @@ use App\Domain\ValueObject\Task\TaskPriority;
 use App\Domain\ValueObject\Task\TaskStatus;
 use App\Domain\ValueObject\Task\TaskTitle;
 
-final class UpdateTaskUserCase
+final readonly class UpdateTaskUserCase
 {
     public function __construct(
         private TaskRepositoryInterface $taskRepository,

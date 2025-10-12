@@ -18,7 +18,7 @@ final readonly class AssignTaskToUserResponse implements \JsonSerializable
     public function jsonSerialize() : array
     {
         return [
-            'message' => sprintf('Task "%s" has been assigned to "%s".', $this->taskId->value(), $this->userId->value()),
+            'message' => sprintf('Task "%s" has been assigned to "%s"', $this->taskId->value(), $this->userId->value()),
         ];
     }
 

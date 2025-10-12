@@ -26,19 +26,28 @@ final readonly class AssignTaskToUserUserCase
         $taskId = TaskId::fromString($request->getTaskId());
         $userId = UserId::fromString($request->getUserId());
 
-        $user = $this->userRepository->findById($userId);
-
-        if (!$user) {
-            throw new UserNotFoundException('User with this ID does not exist');
-        }
-
         $task = $this->taskRepository->findById($taskId);
 
         if (!$task) {
             throw new TaskNotFoundException('Task with this ID does not exist');
         }
 
+        $user = $this->userRepository->findById($userId);
+
+        if (!$user) {
+            throw new UserNotFoundException('User with this ID does not exist');
+        }
+
         $task->assignTo($user);
+
+        if (!$task->isUpdated()) {
+            $this->logger->info('Task not Assigned to User (no changes detected)', [
+                'task_id' => $task->getId()->value(),
+                'user_id' => $task->getAssignedUser()?->getId()->value(),
+            ]);
+
+            return new AssignTaskToUserResponse($taskId, $userId);
+        }
 
         $this->taskRepository->update($task);
 

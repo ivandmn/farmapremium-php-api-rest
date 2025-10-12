@@ -13,10 +13,10 @@ final readonly class ListUsersUseCase
     ) {
     }
 
-    public function __invoke(ListUsersRequest $request) : ListsUserResponse
+    public function __invoke(ListUsersRequest $request) : ListUsersResponse
     {
         $users = $this->userRepository->findAll();
 
-        return new ListsUserResponse($users);
+        return new ListUsersResponse($users);
     }
 }

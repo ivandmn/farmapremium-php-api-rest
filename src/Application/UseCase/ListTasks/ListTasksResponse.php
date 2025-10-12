@@ -7,7 +7,7 @@ namespace App\Application\UseCase\ListTasks;
 use App\Domain\Model\Task;
 use ArrayIterator;
 
-final class ListTasksResponse implements \JsonSerializable, \Countable, \IteratorAggregate
+final readonly class ListTasksResponse implements \JsonSerializable, \Countable, \IteratorAggregate
 {
     public function __construct(
         private array $tasks,
@@ -53,6 +53,11 @@ final class ListTasksResponse implements \JsonSerializable, \Countable, \Iterato
     public function getIterator() : \Traversable
     {
         return new ArrayIterator($this->tasks);
+    }
+
+    public function toArray() : array
+    {
+        return $this->jsonSerialize();
     }
 
     public function isEmpty() : bool

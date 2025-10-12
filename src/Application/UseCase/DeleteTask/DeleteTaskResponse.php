@@ -15,7 +15,7 @@ final readonly class DeleteTaskResponse implements \JsonSerializable
     public function jsonSerialize() : array
     {
         return [
-            'message' => sprintf('Task "%s" has been successfully deleted.', $this->taskId->value()),
+            'message' => sprintf('Task "%s" has been successfully deleted', $this->taskId->value()),
         ];
     }
 

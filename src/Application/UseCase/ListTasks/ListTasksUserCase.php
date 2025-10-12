@@ -8,7 +8,7 @@ use App\Domain\Repository\TaskRepositoryInterface;
 use App\Domain\ValueObject\Task\TaskPriority;
 use App\Domain\ValueObject\Task\TaskStatus;
 
-final class ListTasksUserCase
+final readonly class ListTasksUserCase
 {
     public function __construct(
         private TaskRepositoryInterface $taskRepository

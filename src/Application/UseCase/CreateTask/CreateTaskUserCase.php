@@ -12,7 +12,7 @@ use App\Domain\ValueObject\Task\TaskDueDate;
 use App\Domain\ValueObject\Task\TaskPriority;
 use App\Domain\ValueObject\Task\TaskTitle;
 
-final class CreateTaskUserCase
+final readonly class CreateTaskUserCase
 {
     public function __construct(
         private TaskFactory             $taskFactory,
