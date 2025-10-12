@@ -59,7 +59,7 @@ class TaskController extends AbstractController
     ) {
     }
 
-    #[Route('', name: 'task_list', methods: ['GET'])]
+    #[Route('', name: 'api_task_list', methods: ['GET'])]
     public function list(Request $request) : JsonResponse
     {
         try {
@@ -88,7 +88,7 @@ class TaskController extends AbstractController
         }
     }
 
-    #[Route('/{id}', name: 'task_detail', methods: ['GET'])]
+    #[Route('/{id}', name: 'api_task_detail', methods: ['GET'])]
     public function getById(string $id) : JsonResponse
     {
         try {
@@ -111,7 +111,7 @@ class TaskController extends AbstractController
         }
     }
 
-    #[Route('', name: 'task_create', methods: ['POST'])]
+    #[Route('', name: 'api_task_create', methods: ['POST'])]
     public function create(Request $request) : JsonResponse
     {
         try {
@@ -142,7 +142,7 @@ class TaskController extends AbstractController
         }
     }
 
-    #[Route('/{id}', name: 'task_delete', methods: ['DELETE'])]
+    #[Route('/{id}', name: 'api_task_delete', methods: ['DELETE'])]
     public function delete(string $id) : JsonResponse
     {
         try {
@@ -167,7 +167,7 @@ class TaskController extends AbstractController
         }
     }
 
-    #[Route('/{id}/assign', name: 'task_assign', methods: ['PATCH'])]
+    #[Route('/{id}/assign', name: 'api_task_assign', methods: ['PATCH'])]
     public function assign(Request $request, string $id) : JsonResponse
     {
         try {
@@ -196,7 +196,7 @@ class TaskController extends AbstractController
         }
     }
 
-    #[Route('/{id}', name: 'task_update', methods: ['PUT'])]
+    #[Route('/{id}', name: 'api_task_update', methods: ['PUT'])]
     public function update(Request $request, string $id) : JsonResponse
     {
         try {

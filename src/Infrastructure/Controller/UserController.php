@@ -35,7 +35,7 @@ class UserController extends AbstractController
     ) {
     }
 
-    #[Route('', name: 'user_list', methods: ['GET'])]
+    #[Route('', name: 'api_user_list', methods: ['GET'])]
     public function list() : JsonResponse
     {
         try {
@@ -53,7 +53,7 @@ class UserController extends AbstractController
         }
     }
 
-    #[Route('', name: 'user_create', methods: ['POST'])]
+    #[Route('', name: 'api_user_create', methods: ['POST'])]
     public function create(Request $request) : JsonResponse
     {
         try {
