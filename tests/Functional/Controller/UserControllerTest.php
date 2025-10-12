@@ -111,7 +111,7 @@ final class UserControllerTest extends WebTestCase
             'POST',
             '/api/users',
             server: ['CONTENT_TYPE' => 'application/json', 'HTTP_ACCEPT' => 'application/json'],
-            content: json_encode(['name' => 'Test Name']) // falta email
+            content: json_encode(['name' => 'Test Name'])
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
