@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Domain\Repository;
 
@@ -10,16 +10,17 @@ use App\Domain\ValueObject\User\UserId;
 
 interface TaskRepositoryInterface
 {
-    public function create(Task $task) : void;
-    public function update(Task $task) : void;
+    public function create(Task $task): void;
 
-    public function delete(Task $task) : void;
+    public function update(Task $task): void;
 
-    public function findAll() : array;
+    public function delete(Task $task): void;
 
-    public function findById(TaskId $id) : ?Task;
+    public function findAll(): array;
 
-    public function findByUserId(UserId $userId) : array;
+    public function findById(TaskId $id): ?Task;
 
-    public function findByFilters(array $filters, int $page, int $maxItems) : array;
+    public function findByUserId(UserId $userId): array;
+
+    public function findByFilters(array $filters, int $page, int $maxItems): array;
 }

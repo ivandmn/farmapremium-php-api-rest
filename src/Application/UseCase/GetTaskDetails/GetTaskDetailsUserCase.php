@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Application\UseCase\GetTaskDetails;
 
@@ -15,7 +15,7 @@ final readonly class GetTaskDetailsUserCase
     ) {
     }
 
-    public function __invoke(GetTaskDetailsRequest $request) : GetTaskDetailsResponse
+    public function __invoke(GetTaskDetailsRequest $request): GetTaskDetailsResponse
     {
         $taskId = TaskId::fromString($request->getTaskId());
 

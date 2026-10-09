@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Factory;
 
@@ -15,26 +15,24 @@ use App\Domain\ValueObject\Task\TaskTitle;
 use App\Domain\ValueObject\User\UserEmail;
 use App\Domain\ValueObject\User\UserId;
 use App\Domain\ValueObject\User\UserName;
-use DateTime;
-use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
 final class TaskFactoryTest extends TestCase
 {
-    public function test_register_creates_a_valid_task() : void
+    public function test_register_creates_a_valid_task(): void
     {
         $factory = new TaskFactory();
 
-        $taskTitle = TaskTitle::fromString('Test Task Title');
-        $taskDescription = TaskDescription::fromString('Test Task Description');
-        $taskPriority = TaskPriority::LOW;
-        $dueDate = new DateTime('2030-12-31');
-        $taskDueDate = TaskDueDate::fromDate($dueDate);
+        $taskTitle        = TaskTitle::fromString('Test Task Title');
+        $taskDescription  = TaskDescription::fromString('Test Task Description');
+        $taskPriority     = TaskPriority::LOW;
+        $dueDate          = new \DateTime('2030-12-31');
+        $taskDueDate      = TaskDueDate::fromDate($dueDate);
         $taskAssignedUser = new User(UserId::new(), UserEmail::fromString('test@example.com'), UserName::fromString('Test User'));
 
-        $before = new DateTimeImmutable('now');
-        $task = $factory->register($taskTitle, $taskDescription, $taskPriority, $taskDueDate, $taskAssignedUser);
-        $after = new DateTimeImmutable('now');
+        $before = new \DateTimeImmutable('now');
+        $task   = $factory->register($taskTitle, $taskDescription, $taskPriority, $taskDueDate, $taskAssignedUser);
+        $after  = new \DateTimeImmutable('now');
 
         $this->assertInstanceOf(TaskId::class, $task->getId());
         $this->assertInstanceOf(TaskTitle::class, $task->getTitle());
@@ -42,7 +40,7 @@ final class TaskFactoryTest extends TestCase
         $this->assertInstanceOf(TaskPriority::class, $task->getPriority());
         $this->assertInstanceOf(TaskDueDate::class, $task->getDueDate());
         $this->assertInstanceOf(TaskStatus::class, $task->getStatus());
-        $this->assertInstanceOf(DateTimeImmutable::class, $task->getCreatedAt());
+        $this->assertInstanceOf(\DateTimeImmutable::class, $task->getCreatedAt());
 
         $this->assertGreaterThanOrEqual($before->getTimestamp(), $task->getCreatedAt()->getTimestamp());
         $this->assertLessThanOrEqual($after->getTimestamp(), $task->getCreatedAt()->getTimestamp());
@@ -58,23 +56,23 @@ final class TaskFactoryTest extends TestCase
         $this->assertSame($taskDueDate, $task->getDueDate());
     }
 
-    public function test_register_creates_a_valid_task_with_default_values() : void
+    public function test_register_creates_a_valid_task_with_default_values(): void
     {
         $factory = new TaskFactory();
 
-        $taskTitle = TaskTitle::fromString('Test Task Title');
+        $taskTitle       = TaskTitle::fromString('Test Task Title');
         $taskDescription = TaskDescription::fromString('Test Task Description');
 
-        $before = new DateTimeImmutable('now');
-        $task = $factory->register($taskTitle, $taskDescription);
-        $after = new DateTimeImmutable('now');
+        $before = new \DateTimeImmutable('now');
+        $task   = $factory->register($taskTitle, $taskDescription);
+        $after  = new \DateTimeImmutable('now');
 
         $this->assertInstanceOf(TaskId::class, $task->getId());
         $this->assertInstanceOf(TaskTitle::class, $task->getTitle());
         $this->assertInstanceOf(TaskDescription::class, $task->getDescription());
         $this->assertInstanceOf(TaskPriority::class, $task->getPriority());
         $this->assertInstanceOf(TaskStatus::class, $task->getStatus());
-        $this->assertInstanceOf(DateTimeImmutable::class, $task->getCreatedAt());
+        $this->assertInstanceOf(\DateTimeImmutable::class, $task->getCreatedAt());
 
         $this->assertGreaterThanOrEqual($before->getTimestamp(), $task->getCreatedAt()->getTimestamp());
         $this->assertLessThanOrEqual($after->getTimestamp(), $task->getCreatedAt()->getTimestamp());

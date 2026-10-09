@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Application\UseCase\AssignTaskToUser;
 
@@ -15,10 +15,10 @@ final readonly class AssignTaskToUserResponse implements \JsonSerializable
     ) {
     }
 
-    public function jsonSerialize() : array
+    public function jsonSerialize(): array
     {
         return [
-            'message' => sprintf(
+            'message' => \sprintf(
                 'Task "%s" has been assigned to "%s"',
                 $this->task->getTitle()->value(),
                 $this->user->getEmail()->value()
@@ -28,7 +28,7 @@ final readonly class AssignTaskToUserResponse implements \JsonSerializable
         ];
     }
 
-    public function toArray() : array
+    public function toArray(): array
     {
         return $this->jsonSerialize();
     }

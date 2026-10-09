@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Infrastructure\Persistence\Doctrine\Entity;
 
 use App\Domain\ValueObject\Task\TaskDescription;
@@ -7,8 +9,6 @@ use App\Domain\ValueObject\Task\TaskId;
 use App\Domain\ValueObject\Task\TaskPriority;
 use App\Domain\ValueObject\Task\TaskStatus;
 use App\Domain\ValueObject\Task\TaskTitle;
-use DateTime;
-use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -36,116 +36,116 @@ class Task
     private ?User $assignedTo;
 
     #[ORM\Column(name: 'due_date', type: 'datetime', nullable: true)]
-    private ?DateTime $dueDate;
+    private ?\DateTime $dueDate;
 
     #[ORM\Column(name: 'created_at', type: 'datetime_immutable', nullable: false)]
-    private DateTimeImmutable $createdAt;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(name: 'updated_at', type: 'datetime', nullable: true)]
-    private ?DateTime $updatedAt;
+    private ?\DateTime $updatedAt;
 
-    public function getId() : string
+    public function getId(): string
     {
         return $this->id;
     }
 
-    public function setId(string $id) : Task
+    public function setId(string $id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    public function getTitle() : string
+    public function getTitle(): string
     {
         return $this->title;
     }
 
-    public function setTitle(string $title) : Task
+    public function setTitle(string $title): self
     {
         $this->title = $title;
 
         return $this;
     }
 
-    public function getDescription() : string
+    public function getDescription(): string
     {
         return $this->description;
     }
 
-    public function setDescription(string $description) : Task
+    public function setDescription(string $description): self
     {
         $this->description = $description;
 
         return $this;
     }
 
-    public function getPriority() : TaskPriority
+    public function getPriority(): TaskPriority
     {
         return $this->priority;
     }
 
-    public function setPriority(TaskPriority $priority) : Task
+    public function setPriority(TaskPriority $priority): self
     {
         $this->priority = $priority;
 
         return $this;
     }
 
-    public function getStatus() : TaskStatus
+    public function getStatus(): TaskStatus
     {
         return $this->status;
     }
 
-    public function setStatus(TaskStatus $status) : Task
+    public function setStatus(TaskStatus $status): self
     {
         $this->status = $status;
 
         return $this;
     }
 
-    public function getAssignedTo() : ?User
+    public function getAssignedTo(): ?User
     {
         return $this->assignedTo;
     }
 
-    public function setAssignedTo(?User $assignedTo) : Task
+    public function setAssignedTo(?User $assignedTo): self
     {
         $this->assignedTo = $assignedTo;
 
         return $this;
     }
 
-    public function getDueDate() : ?DateTime
+    public function getDueDate(): ?\DateTime
     {
         return $this->dueDate;
     }
 
-    public function setDueDate(?DateTime $dueDate) : Task
+    public function setDueDate(?\DateTime $dueDate): self
     {
         $this->dueDate = $dueDate;
 
         return $this;
     }
 
-    public function getCreatedAt() : DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTimeImmutable $createdAt) : Task
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getUpdatedAt() : ?DateTime
+    public function getUpdatedAt(): ?\DateTime
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?DateTime $updatedAt) : Task
+    public function setUpdatedAt(?\DateTime $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
 

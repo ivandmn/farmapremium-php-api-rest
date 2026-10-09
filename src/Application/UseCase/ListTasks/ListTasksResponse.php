@@ -1,11 +1,10 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Application\UseCase\ListTasks;
 
 use App\Domain\Model\Task;
-use ArrayIterator;
 
 final readonly class ListTasksResponse implements \JsonSerializable, \Countable, \IteratorAggregate
 {
@@ -16,21 +15,21 @@ final readonly class ListTasksResponse implements \JsonSerializable, \Countable,
     ) {
     }
 
-    public function jsonSerialize() : array
+    public function jsonSerialize(): array
     {
         return [
-            'data' => array_map(
-                static fn(Task $task) => [
-                    'id' => $task->getId()->value(),
-                    'title' => $task->getTitle()->value(),
+            'data' => \array_map(
+                static fn (Task $task) => [
+                    'id'          => $task->getId()->value(),
+                    'title'       => $task->getTitle()->value(),
                     'description' => $task->getDescription()->value(),
-                    'status' => $task->getStatus()->value,
-                    'priority' => $task->getPriority()->value,
-                    'assignedTo' => $task->getAssignedUser() ? [
-                        'id' => $task->getAssignedUser()->getId()->value(),
+                    'status'      => $task->getStatus()->value,
+                    'priority'    => $task->getPriority()->value,
+                    'assignedTo'  => $task->getAssignedUser() ? [
+                        'id'   => $task->getAssignedUser()->getId()->value(),
                         'name' => $task->getAssignedUser()->getName()->value(),
                     ] : null,
-                    'dueDate' => $task->getDueDate()?->value()->format(\DATE_ATOM),
+                    'dueDate'   => $task->getDueDate()?->value()->format(\DATE_ATOM),
                     'createdAt' => $task->getCreatedAt()->format(\DATE_ATOM),
                     'updatedAt' => $task->getUpdatedAt()?->format(\DATE_ATOM),
                 ],
@@ -38,30 +37,29 @@ final readonly class ListTasksResponse implements \JsonSerializable, \Countable,
             ),
             'meta' => [
                 'total' => $this->count(),
-                'page' => $this->page ?? 1,
+                'page'  => $this->page ?? 1,
                 'limit' => $this->limit ?? $this->count(),
             ],
         ];
     }
 
-
-    public function count() : int
+    public function count(): int
     {
-        return count($this->tasks);
+        return \count($this->tasks);
     }
 
-    public function getIterator() : \Traversable
+    public function getIterator(): \Traversable
     {
-        return new ArrayIterator($this->tasks);
+        return new \ArrayIterator($this->tasks);
     }
 
-    public function toArray() : array
+    public function toArray(): array
     {
         return $this->jsonSerialize();
     }
 
-    public function isEmpty() : bool
+    public function isEmpty(): bool
     {
-        return $this->tasks === [];
+        return [] === $this->tasks;
     }
 }

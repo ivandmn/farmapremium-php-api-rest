@@ -3,13 +3,12 @@
 <!-- https://phpunit.readthedocs.io/en/latest/configuration.html -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="tests/bootstrap.php"
          colors="true"
-         testdox="true"
          failOnDeprecation="true"
          failOnNotice="true"
          failOnWarning="true"
-         bootstrap="tests/bootstrap.php"
-         cacheDirectory=".phpunit.cache">
+         cacheDirectory=".phpunit.result.cache">
     <php>
         <ini name="display_errors" value="1"/>
         <ini name="error_reporting" value="-1"/>
@@ -51,9 +50,9 @@
               ignoreDeprecatedCodeUnits="true"
               disableCodeCoverageIgnore="true">
         <report>
-            <html outputDirectory="coverage/html-coverage" lowUpperBound="70" highLowerBound="90"/>
-            <text outputFile="coverage/coverage.txt" showUncoveredFiles="true" showOnlySummary="true"/>
-            <xml outputDirectory="coverage/xml-coverage"/>
+            <html outputDirectory="var/phpunit/coverage/html-coverage" lowUpperBound="70" highLowerBound="90"/>
+            <text outputFile="var/phpunit/coverage/coverage.txt" showUncoveredFiles="true" showOnlySummary="true"/>
+            <xml outputDirectory="var/phpunit/coverage/xml-coverage"/>
         </report>
     </coverage>
 

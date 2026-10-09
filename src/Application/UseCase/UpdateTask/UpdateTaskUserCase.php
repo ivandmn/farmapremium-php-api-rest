@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Application\UseCase\UpdateTask;
 
@@ -18,36 +18,36 @@ final readonly class UpdateTaskUserCase
 {
     public function __construct(
         private TaskRepositoryInterface $taskRepository,
-        private LoggerInterface         $logger
+        private LoggerInterface $logger
     ) {
     }
 
-    public function __invoke(UpdateTaskRequest $request) : UpdateTaskResponse
+    public function __invoke(UpdateTaskRequest $request): UpdateTaskResponse
     {
         $taskId = TaskId::fromString($request->getTaskId());
-        $task = $this->taskRepository->findById($taskId);
+        $task   = $this->taskRepository->findById($taskId);
 
         if (!$task) {
             throw new TaskNotFoundException('Task with this ID does not exist');
         }
 
-        if ($request->getTitle() !== null) {
+        if (null !== $request->getTitle()) {
             $task->changeTitle(TaskTitle::fromString($request->getTitle()));
         }
 
-        if ($request->getDescription() !== null) {
+        if (null !== $request->getDescription()) {
             $task->changeDescription(TaskDescription::fromString($request->getDescription()));
         }
 
-        if ($request->getStatus() !== null) {
+        if (null !== $request->getStatus()) {
             $task->changeStatus(TaskStatus::fromString($request->getStatus()));
         }
 
-        if ($request->getPriority() !== null) {
+        if (null !== $request->getPriority()) {
             $task->changePriority(TaskPriority::fromString($request->getPriority()));
         }
 
-        if ($request->getDueDate() !== null) {
+        if (null !== $request->getDueDate()) {
             $task->changeDueDate(TaskDueDate::fromDate($request->getDueDate()));
         }
 

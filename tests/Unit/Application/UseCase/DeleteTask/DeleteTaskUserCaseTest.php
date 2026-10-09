@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Tests\Application\UseCase\DeleteTask;
 
@@ -17,19 +17,18 @@ use App\Domain\ValueObject\Task\TaskId;
 use App\Domain\ValueObject\Task\TaskPriority;
 use App\Domain\ValueObject\Task\TaskStatus;
 use App\Domain\ValueObject\Task\TaskTitle;
-use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid as RamseyUuid;
 
 final class DeleteTaskUserCaseTest extends TestCase
 {
-    public function test_deletes_task_and_logs() : void
+    public function test_deletes_task_and_logs(): void
     {
-        $repo = $this->createMock(TaskRepositoryInterface::class);
+        $repo   = $this->createMock(TaskRepositoryInterface::class);
         $logger = $this->createMock(LoggerInterface::class);
 
         $taskId = TaskId::fromString(RamseyUuid::uuid7()->toString());
-        $task = new Task(
+        $task   = new Task(
             $taskId,
             TaskTitle::fromString('Deletable Task'),
             TaskDescription::fromString('ok'),
@@ -37,12 +36,12 @@ final class DeleteTaskUserCaseTest extends TestCase
             TaskPriority::LOW,
             null,
             null,
-            new DateTimeImmutable('2030-01-01T00:00:00+00:00')
+            new \DateTimeImmutable('2030-01-01T00:00:00+00:00')
         );
 
         $repo->expects($this->once())
             ->method('findById')
-            ->with($this->callback(fn(TaskId $id) => $id->value() === $taskId->value()))
+            ->with($this->callback(static fn (TaskId $id) => $id->value() === $taskId->value()))
             ->willReturn($task);
 
         $repo->expects($this->once())
@@ -53,14 +52,12 @@ final class DeleteTaskUserCaseTest extends TestCase
             ->method('info')
             ->with(
                 'Task deleted',
-                $this->callback(function (array $ctx) use ($taskId, $task) {
-                    return ($ctx['task_id'] ?? null) === $taskId->value()
+                $this->callback(static fn (array $ctx) => ($ctx['task_id'] ?? null) === $taskId->value()
                         && isset($ctx['task_title'])
-                        && $ctx['task_title'] === $task->getTitle();
-                })
+                        && $ctx['task_title'] === $task->getTitle())
             );
 
-        $uc = new DeleteTaskUserCase($repo, $logger);
+        $uc       = new DeleteTaskUserCase($repo, $logger);
         $response = $uc(new DeleteTaskRequest($taskId->value()));
 
         $this->assertInstanceOf(DeleteTaskResponse::class, $response);
@@ -68,9 +65,9 @@ final class DeleteTaskUserCaseTest extends TestCase
         $this->assertSame($taskId->value(), $payload['task_id']);
     }
 
-    public function test_throws_when_task_not_found() : void
+    public function test_throws_when_task_not_found(): void
     {
-        $repo = $this->createMock(TaskRepositoryInterface::class);
+        $repo   = $this->createMock(TaskRepositoryInterface::class);
         $logger = $this->createMock(LoggerInterface::class);
 
         $repo->expects($this->once())->method('findById')->willReturn(null);
@@ -83,13 +80,13 @@ final class DeleteTaskUserCaseTest extends TestCase
         $uc(new DeleteTaskRequest(RamseyUuid::uuid7()->toString()));
     }
 
-    public function test_throws_when_task_cannot_be_deleted() : void
+    public function test_throws_when_task_cannot_be_deleted(): void
     {
-        $repo = $this->createMock(TaskRepositoryInterface::class);
+        $repo   = $this->createMock(TaskRepositoryInterface::class);
         $logger = $this->createMock(LoggerInterface::class);
 
         $taskId = TaskId::fromString(RamseyUuid::uuid7()->toString());
-        $task = new Task(
+        $task   = new Task(
             $taskId,
             TaskTitle::fromString('In Progress'),
             TaskDescription::fromString('no'),
@@ -97,7 +94,7 @@ final class DeleteTaskUserCaseTest extends TestCase
             TaskPriority::LOW,
             null,
             null,
-            new DateTimeImmutable('2030-01-01T00:00:00+00:00')
+            new \DateTimeImmutable('2030-01-01T00:00:00+00:00')
         );
 
         $repo->expects($this->once())->method('findById')->willReturn($task);

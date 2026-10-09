@@ -1,0 +1,9 @@
+nelmio_api_doc:
+    documentation:
+      info:
+        title: Ticket API
+        description: API for managing user tickets
+        version: 1.0.0
+    areas: # to filter documented areas
+        path_patterns:
+            - ^/api(?!/docs$) # Accepts routes under /api except /api/docs

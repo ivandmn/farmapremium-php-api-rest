@@ -1,11 +1,10 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Application\UseCase\ListUsers;
 
 use App\Domain\Model\User;
-use ArrayIterator;
 
 final readonly class ListUsersResponse implements \JsonSerializable, \Countable, \IteratorAggregate
 {
@@ -14,42 +13,42 @@ final readonly class ListUsersResponse implements \JsonSerializable, \Countable,
     ) {
     }
 
-    public function jsonSerialize() : array
+    public function jsonSerialize(): array
     {
         return [
-            'data' => array_map(
-                static fn(User $user) : array => [
-                    'id' => $user->getId()->value(),
-                    'email' => $user->getEmail()->value(),
-                    'name' => $user->getName()->value(),
-                    'createdAt' => $user->getCreatedAt()->format(DATE_ATOM),
+            'data' => \array_map(
+                static fn (User $user): array => [
+                    'id'        => $user->getId()->value(),
+                    'email'     => $user->getEmail()->value(),
+                    'name'      => $user->getName()->value(),
+                    'createdAt' => $user->getCreatedAt()->format(\DATE_ATOM),
                 ],
                 $this->users
             ),
             'meta' => [
                 'total' => $this->count(),
-                'page' => 1,
+                'page'  => 1,
             ],
         ];
     }
 
-    public function count() : int
+    public function count(): int
     {
-        return count($this->users);
+        return \count($this->users);
     }
 
-    public function getIterator() : \Traversable
+    public function getIterator(): \Traversable
     {
-        return new ArrayIterator($this->users);
+        return new \ArrayIterator($this->users);
     }
 
-    public function toArray() : array
+    public function toArray(): array
     {
         return $this->jsonSerialize();
     }
 
-    public function isEmpty() : bool
+    public function isEmpty(): bool
     {
-        return $this->users === [];
+        return [] === $this->users;
     }
 }

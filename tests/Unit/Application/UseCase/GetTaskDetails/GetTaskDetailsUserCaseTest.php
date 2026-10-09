@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Tests\Application\UseCase\GetTaskDetails;
 
@@ -15,18 +15,17 @@ use App\Domain\ValueObject\Task\TaskId;
 use App\Domain\ValueObject\Task\TaskPriority;
 use App\Domain\ValueObject\Task\TaskStatus;
 use App\Domain\ValueObject\Task\TaskTitle;
-use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid as RamseyUuid;
 
 final class GetTaskDetailsUserCaseTest extends TestCase
 {
-    public function test_returns_response_when_task_found() : void
+    public function test_returns_response_when_task_found(): void
     {
         $repo = $this->createMock(TaskRepositoryInterface::class);
 
         $taskIdStr = RamseyUuid::uuid7()->toString();
-        $task = new Task(
+        $task      = new Task(
             TaskId::fromString($taskIdStr),
             TaskTitle::fromString('Details Title'),
             TaskDescription::fromString('Details Description'),
@@ -34,12 +33,12 @@ final class GetTaskDetailsUserCaseTest extends TestCase
             TaskPriority::LOW,
             null,
             null,
-            new DateTimeImmutable('2030-01-01T00:00:00+00:00')
+            new \DateTimeImmutable('2030-01-01T00:00:00+00:00')
         );
 
         $repo->expects($this->once())
             ->method('findById')
-            ->with($this->callback(fn(TaskId $id) => $id->value() === $taskIdStr))
+            ->with($this->callback(static fn (TaskId $id) => $id->value() === $taskIdStr))
             ->willReturn($task);
 
         $uc = new GetTaskDetailsUserCase($repo);
@@ -52,7 +51,7 @@ final class GetTaskDetailsUserCaseTest extends TestCase
         $this->assertSame('Details Title', $payload['title']);
     }
 
-    public function test_throws_when_task_not_found() : void
+    public function test_throws_when_task_not_found(): void
     {
         $repo = $this->createMock(TaskRepositoryInterface::class);
 

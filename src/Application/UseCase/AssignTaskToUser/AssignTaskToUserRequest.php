@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Application\UseCase\AssignTaskToUser;
 
@@ -12,12 +12,12 @@ final readonly class AssignTaskToUserRequest
     ) {
     }
 
-    public function getTaskId() : string
+    public function getTaskId(): string
     {
         return $this->taskId;
     }
 
-    public function getUserId() : string
+    public function getUserId(): string
     {
         return $this->userId;
     }

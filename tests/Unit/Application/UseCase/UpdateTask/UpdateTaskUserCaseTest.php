@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Tests\Application\UseCase\UpdateTask;
 
@@ -17,16 +17,14 @@ use App\Domain\ValueObject\Task\TaskId;
 use App\Domain\ValueObject\Task\TaskPriority;
 use App\Domain\ValueObject\Task\TaskStatus;
 use App\Domain\ValueObject\Task\TaskTitle;
-use DateTime;
-use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid as RamseyUuid;
 
 final class UpdateTaskUserCaseTest extends TestCase
 {
-    public function test_updates_selected_fields_persists_and_logs() : void
+    public function test_updates_selected_fields_persists_and_logs(): void
     {
-        $repo = $this->createMock(TaskRepositoryInterface::class);
+        $repo   = $this->createMock(TaskRepositoryInterface::class);
         $logger = $this->createMock(LoggerInterface::class);
 
         $taskIdStr = RamseyUuid::uuid7()->toString();
@@ -39,30 +37,26 @@ final class UpdateTaskUserCaseTest extends TestCase
             TaskPriority::LOW,
             null,
             null,
-            new DateTimeImmutable('2030-01-01T00:00:00+00:00')
+            new \DateTimeImmutable('2030-01-01T00:00:00+00:00')
         );
 
         $repo->expects($this->once())
             ->method('findById')
-            ->with($this->callback(fn(TaskId $id) => $id->value() === $taskIdStr))
+            ->with($this->callback(static fn (TaskId $id) => $id->value() === $taskIdStr))
             ->willReturn($task);
 
         $repo->expects($this->once())
             ->method('update')
-            ->with($this->callback(function (Task $updated) {
-                return $updated->getTitle()->equals(TaskTitle::fromString('New Valid Title'))
+            ->with($this->callback(static fn (Task $updated) => $updated->getTitle()->equals(TaskTitle::fromString('New Valid Title'))
                     && $updated->getDescription()->equals(TaskDescription::fromString('New Desc'))
                     && $updated->getStatus()->equals(TaskStatus::IN_PROGRESS)
                     && $updated->getPriority()->equals(TaskPriority::HIGH)
-                    && $updated->getDueDate()?->equals(TaskDueDate::fromDate(new DateTime('2030-01-02T00:00:00+00:00'))) === true
-                    && $updated->isUpdated() === true;
-            }));
+                    && true === $updated->getDueDate()?->equals(TaskDueDate::fromDate(new \DateTime('2030-01-02T00:00:00+00:00')))
+                    && true === $updated->isUpdated()));
 
         $logger->expects($this->once())
             ->method('info')
-            ->with('Task Updated', $this->callback(function (array $ctx) use ($taskIdStr) {
-                return ($ctx['task_id'] ?? null) === $taskIdStr;
-            }));
+            ->with('Task Updated', $this->callback(static fn (array $ctx) => ($ctx['task_id'] ?? null) === $taskIdStr));
 
         $uc = new UpdateTaskUserCase($repo, $logger);
 
@@ -85,9 +79,9 @@ final class UpdateTaskUserCaseTest extends TestCase
         $this->assertSame('2030-01-02T00:00:00+00:00', $payload['dueDate']);
     }
 
-    public function test_no_changes_detected_logs_and_does_not_persist() : void
+    public function test_no_changes_detected_logs_and_does_not_persist(): void
     {
-        $repo = $this->createMock(TaskRepositoryInterface::class);
+        $repo   = $this->createMock(TaskRepositoryInterface::class);
         $logger = $this->createMock(LoggerInterface::class);
 
         $taskIdStr = RamseyUuid::uuid7()->toString();
@@ -100,7 +94,7 @@ final class UpdateTaskUserCaseTest extends TestCase
             TaskPriority::LOW,
             null,
             null,
-            new DateTimeImmutable('2030-01-01T00:00:00+00:00')
+            new \DateTimeImmutable('2030-01-01T00:00:00+00:00')
         );
 
         $repo->expects($this->once())->method('findById')->willReturn($task);
@@ -108,9 +102,7 @@ final class UpdateTaskUserCaseTest extends TestCase
 
         $logger->expects($this->once())
             ->method('info')
-            ->with('Task not updated (no changes detected)', $this->callback(function (array $ctx) use ($taskIdStr) {
-                return ($ctx['task_id'] ?? null) === $taskIdStr;
-            }));
+            ->with('Task not updated (no changes detected)', $this->callback(static fn (array $ctx) => ($ctx['task_id'] ?? null) === $taskIdStr));
 
         $uc = new UpdateTaskUserCase($repo, $logger);
 
@@ -129,9 +121,9 @@ final class UpdateTaskUserCaseTest extends TestCase
         $this->assertSame('Keep Title', $response->toArray()['title']);
     }
 
-    public function test_throws_when_task_not_found() : void
+    public function test_throws_when_task_not_found(): void
     {
-        $repo = $this->createMock(TaskRepositoryInterface::class);
+        $repo   = $this->createMock(TaskRepositoryInterface::class);
         $logger = $this->createMock(LoggerInterface::class);
 
         $repo->expects($this->once())->method('findById')->willReturn(null);
@@ -140,7 +132,7 @@ final class UpdateTaskUserCaseTest extends TestCase
 
         $uc = new UpdateTaskUserCase($repo, $logger);
 
-        $this->expectException(\App\Domain\Exception\Task\TaskNotFoundException::class);
+        $this->expectException(TaskNotFoundException::class);
 
         $uc(new UpdateTaskRequest(
             RamseyUuid::uuid7()->toString(),

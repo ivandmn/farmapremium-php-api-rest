@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Application\UseCase\CreateTask;
 
@@ -15,18 +15,18 @@ use App\Domain\ValueObject\Task\TaskTitle;
 final readonly class CreateTaskUserCase
 {
     public function __construct(
-        private TaskFactory             $taskFactory,
+        private TaskFactory $taskFactory,
         private TaskRepositoryInterface $taskRepository,
-        private LoggerInterface         $logger
+        private LoggerInterface $logger
     ) {
     }
 
-    public function __invoke(CreateTaskRequest $request) : CreateTaskResponse
+    public function __invoke(CreateTaskRequest $request): CreateTaskResponse
     {
-        $title = TaskTitle::fromString($request->getTitle());
+        $title       = TaskTitle::fromString($request->getTitle());
         $description = TaskDescription::fromString($request->getDescription());
-        $priority = TaskPriority::fromString($request->getPriority());
-        $dueDate = $request->getDueDate() ? TaskDueDate::fromDate($request->getDueDate()) : null;
+        $priority    = TaskPriority::fromString($request->getPriority());
+        $dueDate     = $request->getDueDate() ? TaskDueDate::fromDate($request->getDueDate()) : null;
 
         $task = $this->taskFactory->register(
             $title,

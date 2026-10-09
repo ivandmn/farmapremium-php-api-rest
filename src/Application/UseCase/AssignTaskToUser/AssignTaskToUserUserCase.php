@@ -1,12 +1,12 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Application\UseCase\AssignTaskToUser;
 
 use App\Application\Service\LoggerInterface;
-use App\Domain\Exception\Task\UserNotFoundException;
 use App\Domain\Exception\Task\TaskNotFoundException;
+use App\Domain\Exception\Task\UserNotFoundException;
 use App\Domain\Repository\TaskRepositoryInterface;
 use App\Domain\Repository\UserRepositoryInterface;
 use App\Domain\ValueObject\Task\TaskId;
@@ -17,11 +17,11 @@ final readonly class AssignTaskToUserUserCase
     public function __construct(
         private TaskRepositoryInterface $taskRepository,
         private UserRepositoryInterface $userRepository,
-        private LoggerInterface         $logger
+        private LoggerInterface $logger
     ) {
     }
 
-    public function __invoke(AssignTaskToUserRequest $request) : AssignTaskToUserResponse
+    public function __invoke(AssignTaskToUserRequest $request): AssignTaskToUserResponse
     {
         $taskId = TaskId::fromString($request->getTaskId());
         $userId = UserId::fromString($request->getUserId());
@@ -42,9 +42,9 @@ final readonly class AssignTaskToUserUserCase
 
         if (!$task->isUpdated()) {
             $this->logger->info('Task not Assigned to User (no changes detected)', [
-                'task_id' => $task->getId()->value(),
+                'task_id'    => $task->getId()->value(),
                 'task_title' => $task->getTitle()->value(),
-                'user_id' => $task->getAssignedUser()?->getId()->value(),
+                'user_id'    => $task->getAssignedUser()?->getId()->value(),
                 'user_email' => $user->getEmail()->value(),
             ]);
 
@@ -53,11 +53,12 @@ final readonly class AssignTaskToUserUserCase
 
         $this->taskRepository->update($task);
 
-        $this->logger->info('Task Assigned to User',
+        $this->logger->info(
+            'Task Assigned to User',
             [
-                'task_id' => $task->getId()->value(),
+                'task_id'    => $task->getId()->value(),
                 'task_title' => $task->getTitle()->value(),
-                'user_id' => $task->getAssignedUser()?->getId()->value(),
+                'user_id'    => $task->getAssignedUser()?->getId()->value(),
                 'user_email' => $user->getEmail()->value(),
             ]
         );

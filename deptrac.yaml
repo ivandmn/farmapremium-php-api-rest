@@ -1,0 +1,104 @@
+# Dependency rules between layers (hexagonal architecture + DDD).
+#
+#   UI ──┐
+#        ├──► Application ──► Domain
+#   Infra┘   (Infra implements the Domain/Application Ports)
+#
+# Domain depends on nothing; UI and Infrastructure sit at the same level
+# (UI = HTTP/CLI entry points, Infrastructure = exit points), so they
+# must NOT depend on each other.
+#
+# Vendor code is split into layers too, so the "no framework in the core"
+# rule is enforced instead of just documented: Domain and Application may
+# only use the framework-agnostic libraries in CoreLibraries.
+#
+# Run with: make deptrac
+deptrac:
+  paths:
+    - ./src
+
+  layers:
+    -
+      name: Domain
+      collectors:
+        -
+          type: classLike
+          value: ^App\\Domain\\
+    -
+      name: Application
+      collectors:
+        -
+          type: classLike
+          value: ^App\\Application\\
+    -
+      name: Infrastructure
+      collectors:
+        -
+          type: classLike
+          value: ^App\\Infrastructure\\
+    -
+      name: UI
+      collectors:
+        -
+          type: classLike
+          value: ^App\\UI\\
+
+    # Framework-agnostic libraries (value objects, ids) the core can build on.
+    -
+      name: CoreLibraries
+      collectors:
+        -
+          type: classLike
+          value: ^(Farmapremium|Ramsey\\Uuid)\\
+    # PSR-3 interface only: Application may log through the abstraction.
+    -
+      name: Logging
+      collectors:
+        -
+          type: classLike
+          value: ^Psr\\Log\\
+    # Frameworks and SDKs: only the adapters (Infrastructure/UI) may know them.
+    -
+      name: Framework
+      collectors:
+        -
+          type: classLike
+          value: ^(Symfony|Doctrine|Google|OpenApi|Firebase|Psr\\(Http|Cache))\\
+
+  ruleset:
+    # The domain is the core: it knows no other layer.
+    Domain:
+      - CoreLibraries
+
+    # Orchestrates the domain and declares the Ports Infrastructure implements.
+    Application:
+      - Domain
+      - CoreLibraries
+      - Logging
+
+    # Outbound adapters: Doctrine, issuers, HTTP, Pub/Sub, buses.
+    Infrastructure:
+      - Domain
+      - Application
+      - CoreLibraries
+      - Logging
+      - Framework
+
+    # Inbound adapters: HTTP controllers and CLI commands.
+    UI:
+      - Domain
+      - Application
+      - CoreLibraries
+      - Logging
+      - Framework
+
+  # Known, scoped exceptions. Every entry must be justified here;
+  # do not add anything without explaining why the layer cannot be respected.
+  skip_violations:
+    # Diagnostic tool: emits a sample .pkpass signed against the real
+    # secrets, with no DB and no service container. It wires the Apple
+    # builder/packager by hand precisely to verify the signing chain
+    # end-to-end, so it knows the implementation on purpose.
+    App\UI\Console\Command\EmitTestApplePassCli:
+      - App\Infrastructure\WalletIssuer\Apple\WalletPass\Builder\ApplePassBuilder
+      - App\Infrastructure\WalletIssuer\Apple\WalletPass\Builder\AppleWalletPassExternalIdBuilder

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Tests\Application\UseCase\GetTaskDetails;
 
@@ -16,29 +16,26 @@ use App\Domain\ValueObject\Task\TaskTitle;
 use App\Domain\ValueObject\User\UserEmail;
 use App\Domain\ValueObject\User\UserId;
 use App\Domain\ValueObject\User\UserName;
-use DateTime;
-use DateTimeImmutable;
-use JsonSerializable;
 use PHPUnit\Framework\TestCase;
 
 final class GetTaskDetailsResponseTest extends TestCase
 {
-    public function test_json_serialize_with_all_fields() : void
+    public function test_json_serialize_with_all_fields(): void
     {
-        $taskId = TaskId::fromString('018f9f9a-aaaa-bbbb-cccc-000000000111');
-        $title = TaskTitle::fromString('Test Title');
+        $taskId      = TaskId::fromString('018f9f9a-aaaa-bbbb-cccc-000000000111');
+        $title       = TaskTitle::fromString('Test Title');
         $description = TaskDescription::fromString('Test Description');
-        $status = TaskStatus::IN_PROGRESS;
-        $priority = TaskPriority::HIGH;
-        $assignee = new User(
+        $status      = TaskStatus::IN_PROGRESS;
+        $priority    = TaskPriority::HIGH;
+        $assignee    = new User(
             UserId::fromString('018f9f9a-dddd-eeee-ffff-000000000222'),
             UserEmail::fromString('user@example.com'),
             UserName::fromString('User Name'),
-            new DateTimeImmutable('2030-01-01T00:00:00+00:00')
+            new \DateTimeImmutable('2030-01-01T00:00:00+00:00')
         );
-        $due = TaskDueDate::fromDate(new DateTime('2030-01-02T10:20:30+00:00'));
-        $created = new DateTimeImmutable('2030-01-01T10:00:00+00:00');
-        $updated = new DateTime('2030-01-03T12:34:56+00:00');
+        $due     = TaskDueDate::fromDate(new \DateTime('2030-01-02T10:20:30+00:00'));
+        $created = new \DateTimeImmutable('2030-01-01T10:00:00+00:00');
+        $updated = new \DateTime('2030-01-03T12:34:56+00:00');
 
         $task = new Task(
             $taskId,
@@ -54,7 +51,7 @@ final class GetTaskDetailsResponseTest extends TestCase
 
         $response = new GetTaskDetailsResponse($task);
 
-        $this->assertInstanceOf(JsonSerializable::class, $response);
+        $this->assertInstanceOf(\JsonSerializable::class, $response);
 
         $data = $response->jsonSerialize();
 
@@ -70,7 +67,7 @@ final class GetTaskDetailsResponseTest extends TestCase
         $this->assertSame('2030-01-03T12:34:56+00:00', $data['updatedAt']);
     }
 
-    public function test_json_serialize_with_nullables_and_to_array_matches() : void
+    public function test_json_serialize_with_nullables_and_to_array_matches(): void
     {
         $task = new Task(
             TaskId::fromString('018f9f9a-aaaa-bbbb-cccc-000000000333'),
@@ -80,12 +77,12 @@ final class GetTaskDetailsResponseTest extends TestCase
             TaskPriority::LOW,
             null,
             null,
-            new DateTimeImmutable('2031-01-01T00:00:00+00:00'),
+            new \DateTimeImmutable('2031-01-01T00:00:00+00:00'),
             null
         );
 
         $response = new GetTaskDetailsResponse($task);
-        $data = $response->jsonSerialize();
+        $data     = $response->jsonSerialize();
 
         $this->assertSame('018f9f9a-aaaa-bbbb-cccc-000000000333', $data['id']);
         $this->assertSame('Another Title', $data['title']);

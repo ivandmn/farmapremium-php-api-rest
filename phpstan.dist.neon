@@ -1,0 +1,16 @@
+parameters:
+    level: 6
+    paths:
+        - bin/
+        - config/
+        - public/
+        - src/
+        - tests/
+    parallel:
+        maximumNumberOfProcesses: 4
+        processTimeout: 300.0
+    symfony:
+        containerXmlPath: var/cache/local/App_Infrastructure_Symfony_KernelDevDebugContainer.xml
+        consoleApplicationLoader: tests/Support/PhpStan/ConsoleApplication.php
+    doctrine:
+        objectManagerLoader: tests/Support/PhpStan/DoctrineObjectManager.php

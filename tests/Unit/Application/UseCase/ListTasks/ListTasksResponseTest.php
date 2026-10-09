@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Tests\Application\UseCase\ListTasks;
 
@@ -16,20 +16,17 @@ use App\Domain\ValueObject\Task\TaskTitle;
 use App\Domain\ValueObject\User\UserEmail;
 use App\Domain\ValueObject\User\UserId;
 use App\Domain\ValueObject\User\UserName;
-use DateTime;
-use DateTimeImmutable;
-use JsonSerializable;
 use PHPUnit\Framework\TestCase;
 
 final class ListTasksResponseTest extends TestCase
 {
-    public function test_json_serialize_with_multiple_tasks_and_meta() : void
+    public function test_json_serialize_with_multiple_tasks_and_meta(): void
     {
         $assignee = new User(
             UserId::fromString('018f9f9a-aaaa-bbbb-cccc-000000000123'),
             UserEmail::fromString('user@example.com'),
             UserName::fromString('User Name'),
-            new DateTimeImmutable('2030-01-01T00:00:00+00:00')
+            new \DateTimeImmutable('2030-01-01T00:00:00+00:00')
         );
 
         $t1 = new Task(
@@ -39,9 +36,9 @@ final class ListTasksResponseTest extends TestCase
             TaskStatus::IN_PROGRESS,
             TaskPriority::HIGH,
             $assignee,
-            TaskDueDate::fromDate(new DateTime('2030-01-02T03:04:05+00:00')),
-            new DateTimeImmutable('2030-01-01T10:00:00+00:00'),
-            new DateTime('2030-01-03T12:34:56+00:00')
+            TaskDueDate::fromDate(new \DateTime('2030-01-02T03:04:05+00:00')),
+            new \DateTimeImmutable('2030-01-01T10:00:00+00:00'),
+            new \DateTime('2030-01-03T12:34:56+00:00')
         );
 
         $t2 = new Task(
@@ -52,13 +49,13 @@ final class ListTasksResponseTest extends TestCase
             TaskPriority::LOW,
             null,
             null,
-            new DateTimeImmutable('2031-01-01T10:00:00+00:00'),
+            new \DateTimeImmutable('2031-01-01T10:00:00+00:00'),
             null
         );
 
         $resp = new ListTasksResponse([$t1, $t2], 2, 10);
 
-        $this->assertInstanceOf(JsonSerializable::class, $resp);
+        $this->assertInstanceOf(\JsonSerializable::class, $resp);
         $data = $resp->jsonSerialize();
 
         $this->assertCount(2, $data['data']);
@@ -94,7 +91,7 @@ final class ListTasksResponseTest extends TestCase
         $this->assertSame(2, $resp->count());
     }
 
-    public function test_json_serialize_with_empty_list_uses_defaults_in_meta() : void
+    public function test_json_serialize_with_empty_list_uses_defaults_in_meta(): void
     {
         $resp = new ListTasksResponse([]);
 

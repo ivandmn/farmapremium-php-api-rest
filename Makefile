@@ -1,87 +1,73 @@
-export USER_ID := $(shell id -u)
-export GROUP_ID := $(shell id -g)
-export USER ?= $(shell whoami)
+## ———— Ticket API ————
 
-NEED_ENV := up down build logs bash restart ps stop start prune composer-install composer-update test
+help: ## Outputs this help screen
+	@grep -E '(^[a-zA-Z_-]+:.*?##.*$$)|(^## ————)' $(firstword $(MAKEFILE_LIST)) \
+		| awk 'BEGIN {FS = ":.*?## "}{if (NR == 1) printf "\n\033[1;33m%s\033[0m\n", $$0; else if ($$1 ~ /^##/) {name = $$0; gsub(/^## *(—)* *| *(—)* *$$/, "", name); printf "\n \033[36m▸ %s\033[0m\n", name} else printf "  \033[32m%-35s\033[0m %s\n", $$1, $$2}'
 
-$(NEED_ENV): check-env
+install: ## Install vendors according to the current composer.lock file
+	composer install
 
-ENV ?= dev
-COMPOSE_FILES ?=
+update: ## Update vendors according to the current composer.json file
+	composer update
 
+fix-perms: ## Fix permissions of all var files
+	chmod -R 777 var/*
 
-# docker-compose.yml = prod (lo que despliega Dokploy); el override añade dev encima
-ifeq ($(COMPOSE_FILES),)
-	COMPOSE_FILES = -f docker-compose.yml
-	ifeq ($(ENV),dev)
-		COMPOSE_FILES += -f docker-compose.override.yml
-	endif
-endif
+purge: ## Purge cache and logs
+	rm -rf var/log/*.log
+	find var -mindepth 1 -maxdepth 1 ! -name log -exec rm -rf {} +
 
+## ———— Docker ————
 
-ifeq ($(ENV),dev)
-	ENV_FILES = --env-file .env --env-file .env.local --env-file .env.dev --env-file .env.dev.local
-else ifeq ($(ENV),prod)
-	ENV_FILES = --env-file .env --env-file .env.local --env-file .env.prod --env-file .env.prod.local
-endif
+up: ## Start the stack docker containers
+	docker compose up -d
 
-ENV_FILES_FILTERED = $(foreach file,$(subst --env-file ,,$(ENV_FILES)),$(if $(wildcard $(file)),--env-file $(file)))
+down: ## Down the stack docker containers
+	docker compose down
 
-up:
-	docker compose $(ENV_FILES_FILTERED) $(COMPOSE_FILES) up -d
+build: ## Rebuild the docker images
+	docker compose build --no-cache
 
-down:
-	docker compose $(ENV_FILES_FILTERED) $(COMPOSE_FILES) down
+restart: ## Restart docker services
+	docker compose --profile supervisor restart
 
-build:
-	docker compose $(ENV_FILES_FILTERED) $(COMPOSE_FILES) build --no-cache
+logs: ## Show logs of container
+	docker compose logs -f app-tickets
 
-logs:
-	docker compose $(ENV_FILES_FILTERED) $(COMPOSE_FILES) logs -f
+shell: ## Access app container shell
+	docker compose exec -it app-tickets bash
 
-bash:
-	docker compose $(ENV_FILES_FILTERED) $(COMPOSE_FILES) exec app bash
+## ———— Symfony ————
 
-restart: down up
+cache-clear: ## Clear Symfony cache
+	bin/console cache:clear
 
-ps:
-	docker compose $(ENV_FILES_FILTERED) $(COMPOSE_FILES) ps
+db-diff: ## Generate database migration diff
+	bin/console doctrine:migrations:diff
 
-stop:
-	docker compose $(ENV_FILES_FILTERED) $(COMPOSE_FILES) stop
+db-migrate: ## Run database migrations
+	bin/console doctrine:migrations:migrate
 
-start:
-	docker compose $(ENV_FILES_FILTERED) $(COMPOSE_FILES) start
+## ———— Quality ————
 
-prune:
-	@echo "This will remove all unused Docker resources (containers, networks, images, volumes)"
-	@read -p "Are you sure? [y/N]: " confirm && [ "$$confirm" = "y" ] || [ "$$confirm" = "Y" ]
-	docker stop $$(docker ps -aq) 2>/dev/null || true
-	docker rm -f $$(docker ps -aq) 2>/dev/null || true
-	docker network rm $$(docker network ls -q) 2>/dev/null || true
-	docker volume rm $$(docker volume ls -q) 2>/dev/null || true
-	docker rmi -f $$(docker images -q) 2>/dev/null || true
-	docker builder prune -af
-	docker system prune -af --volumes
+cs: ## Check code style (dry-run)
+	bin/php-cs-fixer --no-interaction --dry-run --diff -v fix
 
-composer-install:
-	docker compose $(ENV_FILES_FILTERED) $(COMPOSE_FILES) exec app composer install
+cs-fix: ## Apply code style fixes
+	bin/php-cs-fixer fix
 
-composer-update:
-	docker compose $(ENV_FILES_FILTERED) $(COMPOSE_FILES) exec app composer update
+phpstan: ## Run PHPStan static analysis
+	bin/console cache:warmup --env=local --quiet
+	bin/phpstan analyse --memory-limit=512M
 
-test:
-	docker compose $(ENV_FILES_FILTERED) $(COMPOSE_FILES) exec app bash -lc 'APP_ENV=test bin/console doctrine:database:create --if-not-exists'
-	docker compose $(ENV_FILES_FILTERED) $(COMPOSE_FILES) exec app bash -lc 'APP_ENV=test bin/console doctrine:migrations:migrate -n'
-	docker compose $(ENV_FILES_FILTERED) $(COMPOSE_FILES) exec -e XDEBUG_MODE=coverage app bash -c "APP_ENV=test ./bin/phpunit"
+test-unit: ## Run unit tests
+	bin/phpunit --testsuite Unit --stop-on-failure --testdox
 
-check-env:
-	@if [ ! -f .env ]; then \
-		echo "No .env file found. Creating one from .env.example..."; \
-		cp .env.example .env; \
-	fi
+test-coverage: ## Generate test coverage
+	bin/phpunit --stop-on-failure --testdox --coverage-html var/coverage
 
-show-config:
-	@echo "Environment: $(ENV)"
-	@echo "Compose files: $(COMPOSE_FILES)"
-	@echo "Env files: $(ENV_FILES_FILTERED)"
+deptrac: ## Check architectural dependencies
+	bin/deptrac analyze --fail-on-uncovered --report-uncovered
+
+code-check: cs deptrac phpstan test ## Run all code quality checks
+

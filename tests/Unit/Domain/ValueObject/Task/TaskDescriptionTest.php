@@ -1,17 +1,16 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\ValueObject\Task;
 
 use App\Domain\Exception\Task\InvalidTaskDescription;
 use App\Domain\ValueObject\Task\TaskDescription;
 use PHPUnit\Framework\TestCase;
-use TypeError;
 
 final class TaskDescriptionTest extends TestCase
 {
-    public function test_creates_valid_task_description() : void
+    public function test_creates_valid_task_description(): void
     {
         $desc = new TaskDescription('Valid description');
 
@@ -20,7 +19,7 @@ final class TaskDescriptionTest extends TestCase
         $this->assertSame('Valid description', (string) $desc);
     }
 
-    public function test_from_string_creates_valid_task_description() : void
+    public function test_from_string_creates_valid_task_description(): void
     {
         $desc = TaskDescription::fromString('Another description');
 
@@ -28,7 +27,7 @@ final class TaskDescriptionTest extends TestCase
         $this->assertSame('Another description', $desc->value());
     }
 
-    public function test_allows_empty_string() : void
+    public function test_allows_empty_string(): void
     {
         $desc = new TaskDescription('');
 
@@ -36,15 +35,15 @@ final class TaskDescriptionTest extends TestCase
         $this->assertSame('', (string) $desc);
     }
 
-    public function test_throws_exception_when_too_long() : void
+    public function test_throws_exception_when_too_long(): void
     {
         $this->expectException(InvalidTaskDescription::class);
         $this->expectExceptionMessage('Task description exceeds maximum characters length');
 
-        new TaskDescription(str_repeat('a', TaskDescription::MAX_LENGTH + 1));
+        new TaskDescription(\str_repeat('a', TaskDescription::MAX_LENGTH + 1));
     }
 
-    public function test_equals_returns_true_for_same_value() : void
+    public function test_equals_returns_true_for_same_value(): void
     {
         $a = new TaskDescription('Same');
         $b = new TaskDescription('Same');
@@ -52,7 +51,7 @@ final class TaskDescriptionTest extends TestCase
         $this->assertTrue($a->equals($b));
     }
 
-    public function test_equals_returns_false_for_different_value() : void
+    public function test_equals_returns_false_for_different_value(): void
     {
         $a = new TaskDescription('One');
         $b = new TaskDescription('Two');
@@ -60,9 +59,9 @@ final class TaskDescriptionTest extends TestCase
         $this->assertFalse($a->equals($b));
     }
 
-    public function test_constructor_with_null_throws_type_error() : void
+    public function test_constructor_with_null_throws_type_error(): void
     {
-        $this->expectException(TypeError::class);
+        $this->expectException(\TypeError::class);
         new TaskDescription(null);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Tests\Application\UseCase\ListTasks;
 
@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 final class ListTasksRequestTest extends TestCase
 {
-    public function test_getters_return_values() : void
+    public function test_getters_return_values(): void
     {
         $req = new ListTasksRequest('pending', 'low', 2, 10);
 
@@ -19,7 +19,7 @@ final class ListTasksRequestTest extends TestCase
         $this->assertSame(10, $req->getLimit());
     }
 
-    public function test_defaults_for_page_and_limit_when_omitted() : void
+    public function test_defaults_for_page_and_limit_when_omitted(): void
     {
         $req = new ListTasksRequest(null, null);
 
@@ -29,7 +29,7 @@ final class ListTasksRequestTest extends TestCase
         $this->assertSame(50, $req->getLimit());
     }
 
-    public function test_accepts_nulls_for_filters_and_pagination() : void
+    public function test_accepts_nulls_for_filters_and_pagination(): void
     {
         $req = new ListTasksRequest(null, null, null, null);
 

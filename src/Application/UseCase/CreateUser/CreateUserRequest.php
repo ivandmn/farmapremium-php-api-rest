@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Application\UseCase\CreateUser;
 
@@ -12,12 +12,12 @@ final readonly class CreateUserRequest
     ) {
     }
 
-    public function getEmail() : string
+    public function getEmail(): string
     {
         return $this->email;
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }

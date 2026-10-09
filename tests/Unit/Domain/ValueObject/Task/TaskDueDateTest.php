@@ -1,71 +1,70 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\ValueObject\Task;
 
 use App\Domain\Exception\Task\TaskDueDateInPastException;
 use App\Domain\ValueObject\Task\TaskDueDate;
-use DateTime;
 use PHPUnit\Framework\TestCase;
 
 final class TaskDueDateTest extends TestCase
 {
-    public function test_creates_valid_future_due_date() : void
+    public function test_creates_valid_future_due_date(): void
     {
-        $future = (new DateTime('now'))->modify('+1 day');
-        $due = new TaskDueDate($future);
+        $future = new \DateTime('now')->modify('+1 day');
+        $due    = new TaskDueDate($future);
 
         $this->assertInstanceOf(TaskDueDate::class, $due);
-        $this->assertInstanceOf(DateTime::class, $due->value());
+        $this->assertInstanceOf(\DateTime::class, $due->value());
         $this->assertSame($future->getTimestamp(), $due->value()->getTimestamp());
     }
 
-    public function test_from_date_creates_valid_due_date() : void
+    public function test_from_date_creates_valid_due_date(): void
     {
-        $future = (new DateTime('now'))->modify('+2 days');
-        $due = TaskDueDate::fromDate($future);
+        $future = new \DateTime('now')->modify('+2 days');
+        $due    = TaskDueDate::fromDate($future);
 
         $this->assertInstanceOf(TaskDueDate::class, $due);
         $this->assertSame($future->getTimestamp(), $due->value()->getTimestamp());
     }
 
-    public function test_throws_exception_when_date_in_past() : void
+    public function test_throws_exception_when_date_in_past(): void
     {
         $this->expectException(TaskDueDateInPastException::class);
         $this->expectExceptionMessage('Due date cannot be in the past');
 
-        $past = (new DateTime('now'))->modify('-1 second');
+        $past = new \DateTime('now')->modify('-1 second');
         new TaskDueDate($past);
     }
 
-    public function test_equals_returns_true_for_same_timestamp() : void
+    public function test_equals_returns_true_for_same_timestamp(): void
     {
-        $base = new DateTime('2030-01-01T00:00:00+00:00');
-        $a = new TaskDueDate(clone $base);
-        $b = new TaskDueDate(clone $base);
+        $base = new \DateTime('2030-01-01T00:00:00+00:00');
+        $a    = new TaskDueDate(clone $base);
+        $b    = new TaskDueDate(clone $base);
 
         $this->assertTrue($a->equals($b));
     }
 
-    public function test_equals_returns_false_for_different_timestamp() : void
+    public function test_equals_returns_false_for_different_timestamp(): void
     {
-        $base = new DateTime('2030-01-01T00:00:00+00:00');
-        $a = new TaskDueDate(clone $base);
-        $b = new TaskDueDate((clone $base)->modify('+1 second'));
+        $base = new \DateTime('2030-01-01T00:00:00+00:00');
+        $a    = new TaskDueDate(clone $base);
+        $b    = new TaskDueDate((clone $base)->modify('+1 second'));
 
         $this->assertFalse($a->equals($b));
     }
 
-    public function test_string_representation_is_rfc3339() : void
+    public function test_string_representation_is_rfc3339(): void
     {
-        $future = new DateTime('2040-05-06T12:34:56+02:00');
-        $due = new TaskDueDate(clone $future);
+        $future = new \DateTime('2040-05-06T12:34:56+02:00');
+        $due    = new TaskDueDate(clone $future);
 
         $this->assertSame($future->format(TaskDueDate::FORMAT), (string) $due);
 
-        $parsed = DateTime::createFromFormat(TaskDueDate::FORMAT, (string) $due);
-        $this->assertInstanceOf(DateTime::class, $parsed);
+        $parsed = \DateTime::createFromFormat(TaskDueDate::FORMAT, (string) $due);
+        $this->assertInstanceOf(\DateTime::class, $parsed);
         $this->assertSame((string) $due, $parsed->format(TaskDueDate::FORMAT));
     }
 }

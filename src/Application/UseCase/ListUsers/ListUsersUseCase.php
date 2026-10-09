@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Application\UseCase\ListUsers;
 
@@ -13,7 +13,7 @@ final readonly class ListUsersUseCase
     ) {
     }
 
-    public function __invoke(ListUsersRequest $request) : ListUsersResponse
+    public function __invoke(ListUsersRequest $request): ListUsersResponse
     {
         $users = $this->userRepository->findAll();
 

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Application\UseCase\ListTasks;
 
@@ -15,7 +15,7 @@ final readonly class ListTasksUserCase
     ) {
     }
 
-    public function __invoke(ListTasksRequest $request) : ListTasksResponse
+    public function __invoke(ListTasksRequest $request): ListTasksResponse
     {
         $filters = [];
 

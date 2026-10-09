@@ -1,18 +1,17 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Tests\Application\UseCase\CreateTask;
 
 use App\Application\Exception\InvalidDateFormat;
 use App\Application\UseCase\CreateTask\CreateTaskRequest;
 use App\Domain\ValueObject\Task\TaskDueDate;
-use DateTime;
 use PHPUnit\Framework\TestCase;
 
 final class CreateTaskRequestTest extends TestCase
 {
-    public function test_construct_with_valid_rfc3339_sets_properties() : void
+    public function test_construct_with_valid_rfc3339_sets_properties(): void
     {
         $req = new CreateTaskRequest(
             'Test Title',
@@ -24,14 +23,14 @@ final class CreateTaskRequestTest extends TestCase
         $this->assertSame('Test Title', $req->getTitle());
         $this->assertSame('Test Description', $req->getDescription());
         $this->assertSame('medium', $req->getPriority());
-        $this->assertInstanceOf(DateTime::class, $req->getDueDate());
+        $this->assertInstanceOf(\DateTime::class, $req->getDueDate());
         $this->assertSame(
             '2030-01-01T00:00:00+00:00',
             $req->getDueDate()->format(TaskDueDate::FORMAT)
         );
     }
 
-    public function test_construct_with_invalid_date_throws() : void
+    public function test_construct_with_invalid_date_throws(): void
     {
         $this->expectException(InvalidDateFormat::class);
         new CreateTaskRequest(
@@ -42,7 +41,7 @@ final class CreateTaskRequestTest extends TestCase
         );
     }
 
-    public function test_construct_with_null_due_date_currently_errors_due_to_non_nullable_property() : void
+    public function test_construct_with_null_due_date_currently_errors_due_to_non_nullable_property(): void
     {
         $this->expectException(\TypeError::class);
         new CreateTaskRequest(

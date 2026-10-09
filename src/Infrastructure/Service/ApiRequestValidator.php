@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Infrastructure\Service;
 
@@ -8,9 +8,9 @@ use App\Infrastructure\Exception\InvalidRequestException;
 use App\Infrastructure\Exception\InvalidRequestParameterException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\Exception\ExtraAttributesException;
+use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 
 class ApiRequestValidator
 {
@@ -18,11 +18,11 @@ class ApiRequestValidator
 
     public function __construct(
         private readonly SerializerInterface $serializer,
-        private readonly ValidatorInterface  $validator
+        private readonly ValidatorInterface $validator
     ) {
     }
 
-    public function validate(Request $request, string $dtoClass) : object
+    public function validate(Request $request, string $dtoClass): object
     {
         try {
             $dto = $request->isMethod('GET')
@@ -37,18 +37,18 @@ class ApiRequestValidator
         }
     }
 
-    private function validateDto(object $dto) : object
+    private function validateDto(object $dto): object
     {
         $violations = $this->validator->validate($dto);
 
-        if (count($violations) === 0) {
+        if (0 === \count($violations)) {
             return $dto;
         }
 
         $violation = $violations[0];
-        $field = $violation->getPropertyPath();
+        $field     = $violation->getPropertyPath();
 
-        $message = str_replace('{{ label }}', $field, $violation->getMessage());
+        $message = \str_replace('{{ label }}', $field, $violation->getMessage());
 
         throw new InvalidRequestParameterException($message);
     }

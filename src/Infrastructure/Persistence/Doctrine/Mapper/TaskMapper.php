@@ -1,22 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Infrastructure\Persistence\Doctrine\Mapper;
 
-use App\Domain\ValueObject\Task\TaskDueDate;
-use App\Infrastructure\Persistence\Doctrine\Entity\Task as DoctrineTask;
-use App\Infrastructure\Persistence\Doctrine\Entity\User as DoctrineUser;
 use App\Domain\Model\Task as DomainTask;
 use App\Domain\ValueObject\Task\TaskDescription;
+use App\Domain\ValueObject\Task\TaskDueDate;
 use App\Domain\ValueObject\Task\TaskId;
 use App\Domain\ValueObject\Task\TaskTitle;
+use App\Infrastructure\Persistence\Doctrine\Entity\Task as DoctrineTask;
+use App\Infrastructure\Persistence\Doctrine\Entity\User as DoctrineUser;
 
 final class TaskMapper
 {
     public static function toDoctrine(
-        DomainTask    $task,
+        DomainTask $task,
         ?DoctrineTask $taskRef = null,
         ?DoctrineUser $userRef = null
-    ) : DoctrineTask {
+    ): DoctrineTask {
         $taskDoctrine = $taskRef ?? new DoctrineTask();
 
         return $taskDoctrine
@@ -31,7 +33,7 @@ final class TaskMapper
             ->setUpdatedAt($task->getUpdatedAt());
     }
 
-    public static function toDomain(DoctrineTask $entity) : DomainTask
+    public static function toDomain(DoctrineTask $entity): DomainTask
     {
         $doctrineAssignedUser = $entity->getAssignedTo();
 

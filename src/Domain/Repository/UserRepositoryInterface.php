@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Domain\Repository;
 
@@ -10,13 +10,13 @@ use App\Domain\ValueObject\User\UserId;
 
 interface UserRepositoryInterface
 {
-    public function save(User $user) : void;
+    public function save(User $user): void;
 
-    public function delete(User $user) : void;
+    public function delete(User $user): void;
 
-    public function findAll() : array;
+    public function findAll(): array;
 
-    public function findById(UserId $id) : ?User;
+    public function findById(UserId $id): ?User;
 
-    public function findByEmail(UserEmail $email) : ?User;
+    public function findByEmail(UserEmail $email): ?User;
 }

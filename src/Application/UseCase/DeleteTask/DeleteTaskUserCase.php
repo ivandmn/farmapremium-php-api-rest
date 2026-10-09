@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Application\UseCase\DeleteTask;
 
@@ -14,11 +14,11 @@ final readonly class DeleteTaskUserCase
 {
     public function __construct(
         private TaskRepositoryInterface $taskRepository,
-        private LoggerInterface         $logger
+        private LoggerInterface $logger
     ) {
     }
 
-    public function __invoke(DeleteTaskRequest $request) : DeleteTaskResponse
+    public function __invoke(DeleteTaskRequest $request): DeleteTaskResponse
     {
         $taskId = TaskId::fromString($request->getTaskId());
 
@@ -29,9 +29,7 @@ final readonly class DeleteTaskUserCase
         }
 
         if (!$task->canBeDeleted()) {
-            throw new TaskDeletionNotAllowedException(
-                sprintf('Tasks with status "%s" cannot be deleted', $task->getStatus()->value)
-            );
+            throw new TaskDeletionNotAllowedException(\sprintf('Tasks with status "%s" cannot be deleted', $task->getStatus()->value));
         }
 
         $this->taskRepository->delete($task);

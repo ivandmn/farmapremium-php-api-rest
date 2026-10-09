@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Domain\ValueObject\Task;
 
@@ -8,52 +8,52 @@ use App\Domain\Exception\Task\InvalidTaskPriorityException;
 
 enum TaskPriority: string
 {
-    case LOW = 'low';
+    case LOW    = 'low';
     case MEDIUM = 'medium';
-    case HIGH = 'high';
+    case HIGH   = 'high';
 
-    public static function fromString(string $value) : self
+    public static function fromString(string $value): self
     {
         return self::tryFrom($value)
             ?? throw new InvalidTaskPriorityException('Invalid task priority');
     }
 
-    public function isLow() : bool
+    public function isLow(): bool
     {
-        return $this === self::LOW;
+        return self::LOW === $this;
     }
 
-    public function isMedium() : bool
+    public function isMedium(): bool
     {
-        return $this === self::MEDIUM;
+        return self::MEDIUM === $this;
     }
 
-    public function isHigh() : bool
+    public function isHigh(): bool
     {
-        return $this === self::HIGH;
+        return self::HIGH === $this;
     }
 
-    public function isHigherThan(TaskPriority $other) : bool
+    public function isHigherThan(TaskPriority $other): bool
     {
         return $this->getNumericValue() > $other->getNumericValue();
     }
 
-    public function isLowerThan(TaskPriority $other) : bool
+    public function isLowerThan(TaskPriority $other): bool
     {
         return $this->getNumericValue() < $other->getNumericValue();
     }
 
-    public function equals(TaskPriority $other) : bool
+    public function equals(TaskPriority $other): bool
     {
         return $this === $other;
     }
 
-    public function getNumericValue() : int
+    public function getNumericValue(): int
     {
         return match ($this) {
-            self::LOW => 1,
+            self::LOW    => 1,
             self::MEDIUM => 2,
-            self::HIGH => 3,
+            self::HIGH   => 3,
         };
     }
 }

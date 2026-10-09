@@ -1,33 +1,29 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace App\Infrastructure\Controller;
+namespace App\UI\Http\Controller\Api\Task;
 
+use App\Application\Command\CommandBusInterface;
+use App\Application\Exception\InvalidDateFormat;
+use App\Application\Query\QueryBusInterface;
 use App\Application\UseCase\AssignTaskToUser\AssignTaskToUserRequest;
-use App\Application\UseCase\AssignTaskToUser\AssignTaskToUserUserCase;
 use App\Application\UseCase\CreateTask\CreateTaskRequest;
-use App\Application\UseCase\CreateTask\CreateTaskUserCase;
 use App\Application\UseCase\DeleteTask\DeleteTaskRequest;
-use App\Application\UseCase\DeleteTask\DeleteTaskUserCase;
 use App\Application\UseCase\GetTaskDetails\GetTaskDetailsRequest;
-use App\Application\UseCase\GetTaskDetails\GetTaskDetailsUserCase;
 use App\Application\UseCase\ListTasks\ListTasksRequest;
-use App\Application\UseCase\ListTasks\ListTasksUserCase;
 use App\Application\UseCase\UpdateTask\UpdateTaskRequest;
-use App\Application\UseCase\UpdateTask\UpdateTaskUserCase;
 use App\Domain\Exception\Task\InvalidTaskDescription;
-use App\Domain\Exception\Task\InvalidTaskStatusTransitionException;
-use App\Domain\Exception\Task\TaskDeletionNotAllowedException;
-use App\Domain\Exception\Task\UserNotFoundException;
 use App\Domain\Exception\Task\InvalidTaskIdException;
 use App\Domain\Exception\Task\InvalidTaskPriorityException;
 use App\Domain\Exception\Task\InvalidTaskStatusException;
+use App\Domain\Exception\Task\InvalidTaskStatusTransitionException;
 use App\Domain\Exception\Task\InvalidTaskTitleException;
+use App\Domain\Exception\Task\TaskDeletionNotAllowedException;
 use App\Domain\Exception\Task\TaskDueDateInPastException;
 use App\Domain\Exception\Task\TaskNotFoundException;
+use App\Domain\Exception\Task\UserNotFoundException;
 use App\Domain\Exception\User\InvalidUserIdException;
-use App\Application\Exception\InvalidDateFormat;
 use App\Infrastructure\Exception\InvalidRequestException;
 use App\Infrastructure\Exception\InvalidRequestParameterException;
 use App\Infrastructure\Http\ApiResponse;
@@ -37,30 +33,25 @@ use App\Infrastructure\Http\Request\Task\ListTaskRequestDto;
 use App\Infrastructure\Http\Request\Task\UpdateTaskRequestDto;
 use App\Infrastructure\Service\ApiRequestValidator;
 use App\Infrastructure\Service\MonologLogger;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Infrastructure\Symfony\Controller\BaseController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Throwable;
 
-#[Route('/api/tasks')]
-class TaskController extends AbstractController
+class AssignTaskController extends BaseController
 {
     public function __construct(
-        private readonly MonologLogger            $logger,
-        private readonly ApiRequestValidator      $apiRequestValidator,
-        private readonly CreateTaskUserCase       $createTaskUserCase,
-        private readonly ListTasksUserCase        $listTasksUserCase,
-        private readonly GetTaskDetailsUserCase   $getTaskDetailsUserCase,
-        private readonly DeleteTaskUserCase       $deleteTaskUserCase,
-        private readonly AssignTaskToUserUserCase $assignTaskToUserUserCase,
-        private readonly UpdateTaskUserCase       $updateTaskUserCase,
+        QueryBusInterface $queryBus,
+        CommandBusInterface $commandBus,
+        private readonly MonologLogger $logger,
+        private readonly ApiRequestValidator $apiRequestValidator,
     ) {
+        parent::__construct($queryBus, $commandBus);
     }
 
     #[Route('', name: 'api_task_list', methods: ['GET'])]
-    public function list(Request $request) : JsonResponse
+    public function list(Request $request): JsonResponse
     {
         try {
             /** @var ListTaskRequestDto $data */
@@ -78,9 +69,9 @@ class TaskController extends AbstractController
             return $response->isEmpty() ? ApiResponse::empty() : ApiResponse::success($response);
         } catch (InvalidRequestParameterException|InvalidRequestException|InvalidTaskStatusException|InvalidTaskPriorityException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        } catch (Throwable $exception) {
+        } catch (\Throwable $exception) {
             $this->logger->error(
-                sprintf('Error Listing Tasks: %s', $exception->getMessage()),
+                \sprintf('Error Listing Tasks: %s', $exception->getMessage()),
                 ['exception' => $exception]
             );
 
@@ -89,7 +80,7 @@ class TaskController extends AbstractController
     }
 
     #[Route('/{id}', name: 'api_task_detail', methods: ['GET'])]
-    public function getById(string $id) : JsonResponse
+    public function getById(string $id): JsonResponse
     {
         try {
             $request = new GetTaskDetailsRequest($id);
@@ -101,9 +92,9 @@ class TaskController extends AbstractController
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         } catch (TaskNotFoundException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_NOT_FOUND);
-        } catch (Throwable $exception) {
+        } catch (\Throwable $exception) {
             $this->logger->error(
-                sprintf('Error Getting Task Details: %s', $exception->getMessage()),
+                \sprintf('Error Getting Task Details: %s', $exception->getMessage()),
                 ['exception' => $exception]
             );
 
@@ -112,7 +103,7 @@ class TaskController extends AbstractController
     }
 
     #[Route('', name: 'api_task_create', methods: ['POST'])]
-    public function create(Request $request) : JsonResponse
+    public function create(Request $request): JsonResponse
     {
         try {
             /** @var CreateTaskRequestDto $data */
@@ -132,9 +123,9 @@ class TaskController extends AbstractController
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         } catch (TaskDueDateInPastException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_CONFLICT);
-        } catch (Throwable $exception) {
+        } catch (\Throwable $exception) {
             $this->logger->error(
-                sprintf('Error Creating Task: %s', $exception->getMessage()),
+                \sprintf('Error Creating Task: %s', $exception->getMessage()),
                 ['exception' => $exception]
             );
 
@@ -143,7 +134,7 @@ class TaskController extends AbstractController
     }
 
     #[Route('/{id}', name: 'api_task_delete', methods: ['DELETE'])]
-    public function delete(string $id) : JsonResponse
+    public function delete(string $id): JsonResponse
     {
         try {
             $request = new DeleteTaskRequest($id);
@@ -157,9 +148,9 @@ class TaskController extends AbstractController
             return ApiResponse::error($exception->getMessage(), Response::HTTP_NOT_FOUND);
         } catch (TaskDeletionNotAllowedException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_CONFLICT);
-        } catch (Throwable $exception) {
+        } catch (\Throwable $exception) {
             $this->logger->error(
-                sprintf('Error Deleting Task: %s', $exception->getMessage()),
+                \sprintf('Error Deleting Task: %s', $exception->getMessage()),
                 ['exception' => $exception]
             );
 
@@ -168,7 +159,7 @@ class TaskController extends AbstractController
     }
 
     #[Route('/{id}/assign', name: 'api_task_assign', methods: ['PATCH'])]
-    public function assign(Request $request, string $id) : JsonResponse
+    public function assign(Request $request, string $id): JsonResponse
     {
         try {
             /** @var AssignTaskToUserDto $data */
@@ -186,9 +177,9 @@ class TaskController extends AbstractController
             return ApiResponse::error($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         } catch (UserNotFoundException|TaskNotFoundException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_NOT_FOUND);
-        } catch (Throwable $exception) {
+        } catch (\Throwable $exception) {
             $this->logger->error(
-                sprintf('Error Assigning Task To User: %s', $exception->getMessage()),
+                \sprintf('Error Assigning Task To User: %s', $exception->getMessage()),
                 ['exception' => $exception]
             );
 
@@ -197,7 +188,7 @@ class TaskController extends AbstractController
     }
 
     #[Route('/{id}', name: 'api_task_update', methods: ['PUT'])]
-    public function update(Request $request, string $id) : JsonResponse
+    public function update(Request $request, string $id): JsonResponse
     {
         try {
             /** @var UpdateTaskRequestDto $data */
@@ -221,9 +212,9 @@ class TaskController extends AbstractController
             return ApiResponse::error($exception->getMessage(), Response::HTTP_NOT_FOUND);
         } catch (TaskDueDateInPastException|InvalidTaskStatusTransitionException $exception) {
             return ApiResponse::error($exception->getMessage(), Response::HTTP_CONFLICT);
-        } catch (Throwable $exception) {
+        } catch (\Throwable $exception) {
             $this->logger->error(
-                sprintf('Error Updating Task: %s', $exception->getMessage()),
+                \sprintf('Error Updating Task: %s', $exception->getMessage()),
                 ['exception' => $exception]
             );
 

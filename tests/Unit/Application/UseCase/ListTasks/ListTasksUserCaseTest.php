@@ -1,12 +1,14 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Tests\Application\UseCase\ListTasks;
 
 use App\Application\UseCase\ListTasks\ListTasksRequest;
 use App\Application\UseCase\ListTasks\ListTasksResponse;
 use App\Application\UseCase\ListTasks\ListTasksUserCase;
+use App\Domain\Exception\Task\InvalidTaskPriorityException;
+use App\Domain\Exception\Task\InvalidTaskStatusException;
 use App\Domain\Model\Task;
 use App\Domain\Repository\TaskRepositoryInterface;
 use App\Domain\ValueObject\Task\TaskDescription;
@@ -15,11 +17,12 @@ use App\Domain\ValueObject\Task\TaskPriority;
 use App\Domain\ValueObject\Task\TaskStatus;
 use App\Domain\ValueObject\Task\TaskTitle;
 use PHPUnit\Framework\TestCase;
+use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\Uuid as RamseyUuid;
 
 final class ListTasksUserCaseTest extends TestCase
 {
-    public function test_calls_find_all_when_no_filters() : void
+    public function test_calls_find_all_when_no_filters(): void
     {
         $repo = $this->createMock(TaskRepositoryInterface::class);
 
@@ -34,7 +37,7 @@ final class ListTasksUserCaseTest extends TestCase
 
         $repo->expects($this->never())->method('findByFilters');
 
-        $uc = new ListTasksUserCase($repo);
+        $uc       = new ListTasksUserCase($repo);
         $response = $uc(new ListTasksRequest(null, null));
 
         $this->assertInstanceOf(ListTasksResponse::class, $response);
@@ -44,7 +47,7 @@ final class ListTasksUserCaseTest extends TestCase
         $this->assertSame(50, $payload['meta']['limit']);
     }
 
-    public function test_calls_find_by_filters_with_status_and_pagination() : void
+    public function test_calls_find_by_filters_with_status_and_pagination(): void
     {
         $repo = $this->createMock(TaskRepositoryInterface::class);
 
@@ -57,20 +60,20 @@ final class ListTasksUserCaseTest extends TestCase
             ->with($this->equalTo(['status' => 'pending']), 2, 10)
             ->willReturn($expected);
 
-        $uc = new ListTasksUserCase($repo);
+        $uc       = new ListTasksUserCase($repo);
         $response = $uc(new ListTasksRequest('pending', null, 2, 10));
 
         $this->assertInstanceOf(ListTasksResponse::class, $response);
         $this->assertSame(1, $response->count());
     }
 
-    public function test_calls_find_by_filters_with_priority_only() : void
+    public function test_calls_find_by_filters_with_priority_only(): void
     {
         $repo = $this->createMock(TaskRepositoryInterface::class);
 
         $expected = [
             new Task(
-                TaskId::fromString(\Ramsey\Uuid\Uuid::uuid7()->toString()),
+                TaskId::fromString(Uuid::uuid7()->toString()),
                 TaskTitle::fromString('High One'),
                 TaskDescription::fromString('D1'),
                 TaskStatus::IN_PROGRESS,
@@ -91,7 +94,7 @@ final class ListTasksUserCaseTest extends TestCase
         $this->assertSame(1, $response->count());
     }
 
-    public function test_calls_find_by_filters_with_both_filters() : void
+    public function test_calls_find_by_filters_with_both_filters(): void
     {
         $repo = $this->createMock(TaskRepositoryInterface::class);
 
@@ -104,28 +107,28 @@ final class ListTasksUserCaseTest extends TestCase
             ->with($this->equalTo(['status' => 'in_progress', 'priority' => 'medium']), 3, 5)
             ->willReturn($expected);
 
-        $uc = new ListTasksUserCase($repo);
+        $uc       = new ListTasksUserCase($repo);
         $response = $uc(new ListTasksRequest('in_progress', 'medium', 3, 5));
 
         $this->assertInstanceOf(ListTasksResponse::class, $response);
         $this->assertSame(1, $response->count());
     }
 
-    public function test_throws_on_invalid_status() : void
+    public function test_throws_on_invalid_status(): void
     {
         $repo = $this->createMock(TaskRepositoryInterface::class);
-        $uc = new ListTasksUserCase($repo);
+        $uc   = new ListTasksUserCase($repo);
 
-        $this->expectException(\App\Domain\Exception\Task\InvalidTaskStatusException::class);
+        $this->expectException(InvalidTaskStatusException::class);
         $uc(new ListTasksRequest('not_a_status', null));
     }
 
-    public function test_throws_on_invalid_priority() : void
+    public function test_throws_on_invalid_priority(): void
     {
         $repo = $this->createMock(TaskRepositoryInterface::class);
-        $uc = new ListTasksUserCase($repo);
+        $uc   = new ListTasksUserCase($repo);
 
-        $this->expectException(\App\Domain\Exception\Task\InvalidTaskPriorityException::class);
+        $this->expectException(InvalidTaskPriorityException::class);
         $uc(new ListTasksRequest(null, 'not_a_priority'));
     }
 }

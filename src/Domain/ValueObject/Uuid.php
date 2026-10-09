@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Domain\ValueObject;
 
@@ -18,27 +18,27 @@ readonly class Uuid
         }
     }
 
-    public static function fromString(string $uuid) : static
+    public static function fromString(string $uuid): static
     {
         return new static($uuid);
     }
 
-    public static function new() : static
+    public static function new(): static
     {
         return new static(RamseyUuid::uuid7()->toString());
     }
 
-    public function value() : string
+    public function value(): string
     {
         return $this->value;
     }
 
-    public function equals(Uuid $other) : bool
+    public function equals(self $other): bool
     {
         return $this->value === $other->value;
     }
 
-    public function __toString() : string
+    public function __toString(): string
     {
         return $this->value;
     }

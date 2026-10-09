@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Application\UseCase\CreateUser;
 
@@ -18,23 +18,23 @@ final class CreateUserResponse implements \JsonSerializable
 
     public function __construct(User $user)
     {
-        $this->id = $user->getId()->value();
-        $this->email = $user->getEmail()->value();
-        $this->name = $user->getName()->value();
+        $this->id        = $user->getId()->value();
+        $this->email     = $user->getEmail()->value();
+        $this->name      = $user->getName()->value();
         $this->createdAt = $user->getCreatedAt()->format(\DATE_ATOM);
     }
 
-    public function jsonSerialize() : array
+    public function jsonSerialize(): array
     {
         return [
-            'id' => $this->id,
-            'email' => $this->email,
-            'name' => $this->name,
+            'id'        => $this->id,
+            'email'     => $this->email,
+            'name'      => $this->name,
             'createdAt' => $this->createdAt,
         ];
     }
 
-    public function toArray() : array
+    public function toArray(): array
     {
         return $this->jsonSerialize();
     }

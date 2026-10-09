@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Infrastructure\Persistence\Doctrine\Mapper;
 
 use App\Domain\Model\User as DomainUser;
@@ -10,7 +12,7 @@ use App\Infrastructure\Persistence\Doctrine\Entity\User as DoctrineUser;
 
 class UserMapper
 {
-    public static function toDomain(DoctrineUser $entity) : DomainUser
+    public static function toDomain(DoctrineUser $entity): DomainUser
     {
         return new DomainUser(
             UserId::fromString($entity->getId()),
@@ -20,7 +22,7 @@ class UserMapper
         );
     }
 
-    public static function toDoctrine(DomainUser $user) : DoctrineUser
+    public static function toDoctrine(DomainUser $user): DoctrineUser
     {
         $entity = new DoctrineUser();
 

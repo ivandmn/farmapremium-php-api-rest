@@ -1,18 +1,17 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Tests\Application\UseCase\UpdateTask;
 
 use App\Application\Exception\InvalidDateFormat;
 use App\Application\UseCase\UpdateTask\UpdateTaskRequest;
 use App\Domain\ValueObject\Task\TaskDueDate;
-use DateTime;
 use PHPUnit\Framework\TestCase;
 
 final class UpdateTaskRequestTest extends TestCase
 {
-    public function test_getters_return_values_and_parsed_due_date() : void
+    public function test_getters_return_values_and_parsed_due_date(): void
     {
         $req = new UpdateTaskRequest(
             '018f9f9a-aaaa-bbbb-cccc-000000000001',
@@ -28,11 +27,11 @@ final class UpdateTaskRequestTest extends TestCase
         $this->assertSame('Some description', $req->getDescription());
         $this->assertSame('in_progress', $req->getStatus());
         $this->assertSame('high', $req->getPriority());
-        $this->assertInstanceOf(DateTime::class, $req->getDueDate());
+        $this->assertInstanceOf(\DateTime::class, $req->getDueDate());
         $this->assertSame('2030-01-01T00:00:00+00:00', $req->getDueDate()->format(TaskDueDate::FORMAT));
     }
 
-    public function test_nullables_are_accepted_and_due_date_can_be_null() : void
+    public function test_nullables_are_accepted_and_due_date_can_be_null(): void
     {
         $req = new UpdateTaskRequest(
             '018f9f9a-aaaa-bbbb-cccc-000000000002',
@@ -51,7 +50,7 @@ final class UpdateTaskRequestTest extends TestCase
         $this->assertNull($req->getDueDate());
     }
 
-    public function test_throws_on_invalid_due_date_format() : void
+    public function test_throws_on_invalid_due_date_format(): void
     {
         $this->expectException(InvalidDateFormat::class);
 

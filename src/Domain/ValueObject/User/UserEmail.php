@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Domain\ValueObject\User;
 
@@ -13,7 +13,7 @@ final readonly class UserEmail extends Email
     public function __construct(string $value)
     {
         try {
-            parent::__construct(strtolower($value));
+            parent::__construct(\strtolower($value));
         } catch (InvalidEmailException $exception) {
             throw new InvalidUserEmailException('Invalid user email', $exception->getCode(), $exception);
         }

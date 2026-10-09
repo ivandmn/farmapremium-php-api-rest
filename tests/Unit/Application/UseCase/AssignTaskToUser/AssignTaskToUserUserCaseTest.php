@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Tests\Application\UseCase\AssignTaskToUser;
 
@@ -22,18 +22,16 @@ use App\Domain\ValueObject\Task\TaskTitle;
 use App\Domain\ValueObject\User\UserEmail;
 use App\Domain\ValueObject\User\UserId;
 use App\Domain\ValueObject\User\UserName;
-use DateTime;
-use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid as RamseyUuid;
 
 final class AssignTaskToUserUserCaseTest extends TestCase
 {
-    public function test_happy_path_assigns_and_updates_and_logs() : void
+    public function test_happy_path_assigns_and_updates_and_logs(): void
     {
         $taskRepo = $this->createMock(TaskRepositoryInterface::class);
         $userRepo = $this->createMock(UserRepositoryInterface::class);
-        $logger = $this->createMock(LoggerInterface::class);
+        $logger   = $this->createMock(LoggerInterface::class);
 
         $taskIdStr = RamseyUuid::uuid7()->toString();
         $userIdStr = RamseyUuid::uuid7()->toString();
@@ -46,42 +44,38 @@ final class AssignTaskToUserUserCaseTest extends TestCase
             TaskPriority::LOW,
             null,
             null,
-            new DateTimeImmutable('2030-01-01T00:00:00+00:00')
+            new \DateTimeImmutable('2030-01-01T00:00:00+00:00')
         );
 
         $user = new User(
             UserId::fromString($userIdStr),
             UserEmail::fromString('assignee@example.com'),
             UserName::fromString('Assignee User'),
-            new DateTimeImmutable('2030-01-01T00:00:00+00:00')
+            new \DateTimeImmutable('2030-01-01T00:00:00+00:00')
         );
 
         $taskRepo->expects($this->once())
             ->method('findById')
-            ->with($this->callback(fn(TaskId $id) => $id->value() === $taskIdStr))
+            ->with($this->callback(static fn (TaskId $id) => $id->value() === $taskIdStr))
             ->willReturn($task);
 
         $userRepo->expects($this->once())
             ->method('findById')
-            ->with($this->callback(fn(UserId $id) => $id->value() === $userIdStr))
+            ->with($this->callback(static fn (UserId $id) => $id->value() === $userIdStr))
             ->willReturn($user);
 
         $taskRepo->expects($this->once())
             ->method('update')
-            ->with($this->callback(function (Task $updated) use ($user) {
-                return $updated->getAssignedUser()?->equals($user) === true && $updated->isUpdated() === true;
-            }));
+            ->with($this->callback(static fn (Task $updated) => true === $updated->getAssignedUser()?->equals($user) && true === $updated->isUpdated()));
 
         $logger->expects($this->once())
             ->method('info')
             ->with(
                 'Task Assigned to User',
-                $this->callback(function (array $ctx) use ($taskIdStr, $userIdStr) {
-                    return ($ctx['task_id'] ?? null) === $taskIdStr
+                $this->callback(static fn (array $ctx) => ($ctx['task_id'] ?? null) === $taskIdStr
                         && ($ctx['task_title'] ?? null) === 'Test Title'
                         && ($ctx['user_id'] ?? null) === $userIdStr
-                        && ($ctx['user_email'] ?? null) === 'assignee@example.com';
-                })
+                        && ($ctx['user_email'] ?? null) === 'assignee@example.com')
             );
 
         $uc = new AssignTaskToUserUserCase($taskRepo, $userRepo, $logger);
@@ -92,11 +86,11 @@ final class AssignTaskToUserUserCaseTest extends TestCase
         $this->assertSame($user, $task->getAssignedUser());
     }
 
-    public function test_no_change_when_already_assigned_logs_and_does_not_update() : void
+    public function test_no_change_when_already_assigned_logs_and_does_not_update(): void
     {
         $taskRepo = $this->createMock(TaskRepositoryInterface::class);
         $userRepo = $this->createMock(UserRepositoryInterface::class);
-        $logger = $this->createMock(LoggerInterface::class);
+        $logger   = $this->createMock(LoggerInterface::class);
 
         $taskIdStr = RamseyUuid::uuid7()->toString();
         $userIdStr = RamseyUuid::uuid7()->toString();
@@ -105,7 +99,7 @@ final class AssignTaskToUserUserCaseTest extends TestCase
             UserId::fromString($userIdStr),
             UserEmail::fromString('assignee@example.com'),
             UserName::fromString('Assignee User'),
-            new DateTimeImmutable('2030-01-01T00:00:00+00:00')
+            new \DateTimeImmutable('2030-01-01T00:00:00+00:00')
         );
 
         $task = new Task(
@@ -116,7 +110,7 @@ final class AssignTaskToUserUserCaseTest extends TestCase
             TaskPriority::LOW,
             $user,
             null,
-            new DateTimeImmutable('2030-01-01T00:00:00+00:00')
+            new \DateTimeImmutable('2030-01-01T00:00:00+00:00')
         );
 
         $taskRepo->expects($this->once())
@@ -133,15 +127,13 @@ final class AssignTaskToUserUserCaseTest extends TestCase
             ->method('info')
             ->with(
                 'Task not Assigned to User (no changes detected)',
-                $this->callback(function (array $ctx) use ($taskIdStr, $userIdStr) {
-                    return ($ctx['task_id'] ?? null) === $taskIdStr
+                $this->callback(static fn (array $ctx) => ($ctx['task_id'] ?? null) === $taskIdStr
                         && ($ctx['task_title'] ?? null) === 'Test Title'
                         && ($ctx['user_id'] ?? null) === $userIdStr
-                        && ($ctx['user_email'] ?? null) === 'assignee@example.com';
-                })
+                        && ($ctx['user_email'] ?? null) === 'assignee@example.com')
             );
 
-        $uc = new AssignTaskToUserUserCase($taskRepo, $userRepo, $logger);
+        $uc       = new AssignTaskToUserUserCase($taskRepo, $userRepo, $logger);
         $response = $uc(new AssignTaskToUserRequest($taskIdStr, $userIdStr));
 
         $this->assertInstanceOf(AssignTaskToUserResponse::class, $response);
@@ -149,11 +141,11 @@ final class AssignTaskToUserUserCaseTest extends TestCase
         $this->assertFalse($task->isUpdated());
     }
 
-    public function test_throws_when_task_not_found() : void
+    public function test_throws_when_task_not_found(): void
     {
         $taskRepo = $this->createMock(TaskRepositoryInterface::class);
         $userRepo = $this->createMock(UserRepositoryInterface::class);
-        $logger = $this->createMock(LoggerInterface::class);
+        $logger   = $this->createMock(LoggerInterface::class);
 
         $taskRepo->expects($this->once())->method('findById')->willReturn(null);
         $userRepo->expects($this->never())->method('findById');
@@ -165,14 +157,14 @@ final class AssignTaskToUserUserCaseTest extends TestCase
         $uc(new AssignTaskToUserRequest(RamseyUuid::uuid7()->toString(), RamseyUuid::uuid7()->toString()));
     }
 
-    public function test_throws_when_user_not_found() : void
+    public function test_throws_when_user_not_found(): void
     {
         $taskRepo = $this->createMock(TaskRepositoryInterface::class);
         $userRepo = $this->createMock(UserRepositoryInterface::class);
-        $logger = $this->createMock(LoggerInterface::class);
+        $logger   = $this->createMock(LoggerInterface::class);
 
         $taskIdStr = RamseyUuid::uuid7()->toString();
-        $task = new Task(
+        $task      = new Task(
             TaskId::fromString($taskIdStr),
             TaskTitle::fromString('Test Title'),
             TaskDescription::fromString('Test Description')

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\ValueObject\Task;
 
@@ -11,35 +11,35 @@ use Ramsey\Uuid\Uuid as RamseyUuid;
 
 final class TaskIdTest extends TestCase
 {
-    public function test_creates_valid_task_id() : void
+    public function test_creates_valid_task_id(): void
     {
         $uuidString = RamseyUuid::uuid7()->toString();
-        $id = new TaskId($uuidString);
+        $id         = new TaskId($uuidString);
 
         $this->assertInstanceOf(TaskId::class, $id);
         $this->assertSame($uuidString, $id->value());
         $this->assertSame($uuidString, (string) $id);
     }
 
-    public function test_from_string_creates_valid_task_id() : void
+    public function test_from_string_creates_valid_task_id(): void
     {
         $uuidString = RamseyUuid::uuid7()->toString();
-        $id = TaskId::fromString($uuidString);
+        $id         = TaskId::fromString($uuidString);
 
         $this->assertInstanceOf(TaskId::class, $id);
         $this->assertSame($uuidString, $id->value());
     }
 
-    public function test_new_creates_valid_task_id() : void
+    public function test_new_creates_valid_task_id(): void
     {
         $id = TaskId::new();
 
         $this->assertInstanceOf(TaskId::class, $id);
         $this->assertTrue(RamseyUuid::isValid($id->value()));
-        $this->assertSame(36, strlen($id->value()));
+        $this->assertSame(36, \strlen($id->value()));
     }
 
-    public function test_throws_invalid_task_id_exception_for_invalid_uuid() : void
+    public function test_throws_invalid_task_id_exception_for_invalid_uuid(): void
     {
         $this->expectException(InvalidTaskIdException::class);
         $this->expectExceptionMessage('Invalid Task ID');
@@ -47,16 +47,16 @@ final class TaskIdTest extends TestCase
         new TaskId('invalid-uuid');
     }
 
-    public function test_equals_returns_true_for_same_value() : void
+    public function test_equals_returns_true_for_same_value(): void
     {
         $uuidString = RamseyUuid::uuid7()->toString();
-        $a = new TaskId($uuidString);
-        $b = new TaskId($uuidString);
+        $a          = new TaskId($uuidString);
+        $b          = new TaskId($uuidString);
 
         $this->assertTrue($a->equals($b));
     }
 
-    public function test_equals_returns_false_for_different_values() : void
+    public function test_equals_returns_false_for_different_values(): void
     {
         $a = new TaskId(RamseyUuid::uuid7()->toString());
         $b = new TaskId(RamseyUuid::uuid7()->toString());
