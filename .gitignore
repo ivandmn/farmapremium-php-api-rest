@@ -3,6 +3,9 @@
 /.env.local.php
 /.env.*.local
 
+bin/*
+!bin/console
+
 /etc/bash/ssh/*
 !/etc/bas/ssh/.gitkeep
 
