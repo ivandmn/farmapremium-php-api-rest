@@ -1,20 +1,24 @@
+networks:
+  default:
+    name: ${EXTERNAL_NET}
+    external: true
+
 services:
   app:
-    image: farmapremium_app:latest
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - app-network
+    build:
+      context: .
+      dockerfile: etc/Dockerfile
+      target: prod
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    deploy:
+      resources:
+        limits:
+          memory: 1g
 
-  nginx:
-    image: nginx:1.29.1-alpine
-    depends_on:
-      app:
-        condition: service_started
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
+volumes:
+  caddy_data:
+  caddy_config:

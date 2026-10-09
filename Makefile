@@ -1,6 +1,6 @@
 export USER_ID := $(shell id -u)
 export GROUP_ID := $(shell id -g)
-export USER_NAME := $(shell whoami)
+export USER ?= $(shell whoami)
 
 NEED_ENV := up down build logs bash restart ps stop start prune composer-install composer-update test
 
@@ -78,7 +78,7 @@ composer-update:
 test:
 	docker compose $(ENV_FILES_FILTERED) $(COMPOSE_FILES) exec app bash -lc 'APP_ENV=test bin/console doctrine:database:create --if-not-exists'
 	docker compose $(ENV_FILES_FILTERED) $(COMPOSE_FILES) exec app bash -lc 'APP_ENV=test bin/console doctrine:migrations:migrate -n'
-	docker compose $(ENV_FILES_FILTERED) $(COMPOSE_FILES) exec app bash -c "APP_ENV=test ./bin/phpunit"
+	docker compose $(ENV_FILES_FILTERED) $(COMPOSE_FILES) exec -e XDEBUG_MODE=coverage app bash -c "APP_ENV=test ./bin/phpunit"
 
 check-env:
 	@if [ ! -f .env ]; then \

@@ -1,84 +1,27 @@
 services:
   app:
     build:
-      context: .
-      dockerfile: docker/app/Dockerfile
       target: dev
       args:
-        APP_ENV: dev
+        USER: ${USER}
         USER_ID: ${USER_ID:-1000}
-        GROUP_ID: ${GROUP_ID:-1000}
-        USER_NAME: ${USER_NAME:-appuser}
-    volumes:
-      - .:/var/www/html
-      - ./docker/app/php.dev.ini:/usr/local/etc/php/conf.d/php.ini
+        GROUP_ID: ${USER_ID:-1000}
+        USER_NAME: ${USER_NAME}
+        USER_EMAIL: ${USER_EMAIL}
+    restart: "no"
+    env_file:
+      - path: .env
+      - path: .env.local
+        required: false
     environment:
-      APP_ENV: dev
-      APP_DEBUG: 1
+      RUN_MIGRATIONS: "false"
     ports:
-      - "9003:9003"
-
-  nginx:
-    ports:
-      - "8080:80"
+      - "127.0.0.1:${HTTP_WEB_PORT:-8080}:80"
     volumes:
-      - .:/var/www/html
-      - ./docker/nginx/nginx.dev.conf:/etc/nginx/conf.d/default.conf:ro
-
-  db:
-    image: postgres:16-alpine
-    restart: always
-    networks:
-      - app-network
-    volumes:
-      - db_data:/var/lib/postgresql/data
-      - ./docker/postgresql/postgresql.dev.conf:/etc/postgresql/postgresql.conf:ro
-      - ./docker/postgresql/pg_hba.dev.conf:/etc/postgresql/pg_hba.conf:ro
-    environment:
-      POSTGRES_USER: ${DB_USER:-user}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
-      POSTGRES_DB: ${DB_NAME:-app_db}
-    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
-    ports:
-      - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-user} -d ${DB_NAME:-app_db}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-
-  db_test:
-    image: postgres:16-alpine
-    restart: always
-    networks:
-      - app-network
-    volumes:
-      - ./docker/postgresql/postgresql.dev.conf:/etc/postgresql/postgresql.conf:ro
-      - ./docker/postgresql/pg_hba.dev.conf:/etc/postgresql/pg_hba.conf:ro
-    environment:
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
-      POSTGRES_DB: ${DB_NAME_TEST:-farmapremium_test}
-    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
-    ports:
-      - "5433:5432"
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME_TEST:-farmapremium_test}" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-
-  portainer:
-    image: portainer/portainer-ce:latest
-    ports:
-      - "9000:9000"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
-    restart: unless-stopped
-
-volumes:
-  db_data:
-  portainer_data:
+      - ./:/app
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    deploy:
+      resources:
+        limits:
+          memory: 2g

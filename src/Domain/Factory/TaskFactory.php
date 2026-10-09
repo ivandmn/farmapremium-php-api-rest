@@ -18,8 +18,8 @@ final class TaskFactory
         TaskTitle       $title,
         TaskDescription $description,
         TaskPriority    $priority = TaskPriority::LOW,
-        TaskDueDate     $dueDate = null,
-        User            $assignedUser = null
+        ?TaskDueDate    $dueDate = null,
+        ?User           $assignedUser = null
     ) : Task {
         return new Task(
             TaskId::new(),

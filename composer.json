@@ -1,8 +1,22 @@
 {
     "type": "project",
-    "license": "proprietary",
+    "name": "app/api-task-manager",
+    "description": "Task Manager API",
+    "keywords": [
+      "api-rest",
+      "symfony",
+      "task",
+      "manager"
+    ],
+    "license": "MIT",
     "minimum-stability": "stable",
     "prefer-stable": true,
+    "authors": [
+      {
+        "name": "Iván de Monserrat Navarro",
+        "email": "ivandmn1@gmail.com"
+      }
+    ],
     "require": {
         "php": ">=8.2",
         "ext-ctype": "*",
@@ -14,29 +28,29 @@
         "phpdocumentor/reflection-docblock": "^5.6",
         "phpstan/phpdoc-parser": "^2.3",
         "ramsey/uuid": "^4.9.1",
-        "symfony/asset": "7.3.*",
-        "symfony/console": "7.3.*",
-        "symfony/dotenv": "7.3.*",
-        "symfony/flex": "^2.8.2",
-        "symfony/framework-bundle": "7.3.*",
-        "symfony/monolog-bundle": "^3.10",
-        "symfony/property-access": "7.3.*",
-        "symfony/property-info": "7.3.*",
-        "symfony/runtime": "7.3.*",
-        "symfony/serializer": "7.3.*",
-        "symfony/twig-bundle": "7.3.*",
-        "symfony/validator": "7.3.*",
-        "symfony/yaml": "7.3.*",
+        "symfony/asset": "7.4.*",
+        "symfony/console": "7.4.*",
+        "symfony/dotenv": "7.4.*",
+        "symfony/flex": "^2.11.0",
+        "symfony/framework-bundle": "7.4.*",
+        "symfony/monolog-bundle": "^3.11.2",
+        "symfony/property-access": "7.4.*",
+        "symfony/property-info": "7.4.*",
+        "symfony/runtime": "7.4.*",
+        "symfony/serializer": "7.4.*",
+        "symfony/twig-bundle": "7.4.*",
+        "symfony/validator": "7.4.*",
+        "symfony/yaml": "7.4.*",
         "twig/extra-bundle": "^2.12|^3.0",
-        "twig/twig": "^2.12|^3.0"
+        "twig/twig": "^2.12|^3.30"
     },
     "require-dev": {
         "dama/doctrine-test-bundle": "^8.3",
-        "phpunit/phpunit": "^12.4.1",
-        "symfony/browser-kit": "7.3.*",
-        "symfony/css-selector": "7.3.*",
-        "symfony/stopwatch": "7.3.*",
-        "symfony/web-profiler-bundle": "7.3.*"
+        "phpunit/phpunit": "^12.5.38",
+        "symfony/browser-kit": "7.4.*",
+        "symfony/css-selector": "7.4.*",
+        "symfony/stopwatch": "7.4.*",
+        "symfony/web-profiler-bundle": "7.4.*"
     },
     "config": {
         "allow-plugins": {
@@ -44,6 +58,11 @@
             "symfony/flex": true,
             "symfony/runtime": true
         },
+        "optimize-autoloader": true,
+        "preferred-install": {
+          "*": "dist"
+        },
+        "bin-dir": "bin",
         "bump-after-update": true,
         "sort-packages": true
     },
@@ -85,7 +104,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "7.3.*"
+            "require": "7.4.*"
         }
     }
 }
