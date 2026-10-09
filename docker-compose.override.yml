@@ -23,6 +23,7 @@ services:
       - "127.0.0.1:${HTTP_WEB_PORT:-8080}:80"
     volumes:
       - ./:/web
+      - ~/.ssh:/home/${USER}/.ssh:ro
     extra_hosts:
       - host.docker.internal:host-gateway
     deploy:

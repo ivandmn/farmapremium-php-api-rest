@@ -19,7 +19,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/frankenphp \
     && rm -rf /var/lib/apt/lists/*
 
-# OPcache viene integrado en PHP 8.5, no hace falta instalarlo.
 RUN install-php-extensions \
     @composer \
     amqp \
@@ -57,11 +56,12 @@ ENV FRANKENPHP_WORKER_CONFIG=watch
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bash \
+    bash-completion \
+    less \
     make \
-    nano \
+    micro \
     openssh-client \
     unzip \
-    vim \
     && rm -rf /var/lib/apt/lists/*
 
 RUN install-php-extensions xdebug \
@@ -69,11 +69,13 @@ RUN install-php-extensions xdebug \
 
 COPY etc/app/php.dev.ini $PHP_INI_DIR/app.conf.d/10-app.ini
 
-# Usuario sin root con el mismo UID que tu usuario de WSL (evita problemas de permisos)
-RUN (getent group ${GROUP_ID} || groupadd -g ${GROUP_ID} ${USER}) \
-    && useradd -m -s /bin/bash -u ${USER_ID} -g ${GROUP_ID} ${USER} \
-    && mkdir -p /home/${USER}/.ssh \
-    && chown -R ${USER_ID}:${GROUP_ID} /home/${USER} /web /config/caddy /data/caddy
+RUN getent group ${GROUP_ID} || groupadd -g ${GROUP_ID} ${USER}
+RUN useradd --no-log-init -m -s /bin/bash -u ${USER_ID} -g ${GROUP_ID} ${USER}
+RUN chown -R ${USER_ID}:${GROUP_ID} /home/${USER} /web /config/caddy /data/caddy
+
+COPY --chown=${USER_ID}:${GROUP_ID} etc/bash/.bashrc /home/${USER}/.bashrc
+COPY --chown=${USER_ID}:${GROUP_ID} etc/bash/.bash_aliases /home/${USER}/.bash_aliases
+COPY --chown=${USER_ID}:${GROUP_ID} etc/bash/.gitconfig /home/${USER}/.gitconfig
 
 USER ${USER}
 

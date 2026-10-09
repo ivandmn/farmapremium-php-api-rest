@@ -32,3 +32,4 @@ etc/*
 !etc/caddy/
 !etc/app/php.*.ini
 !etc/app/docker-entrypoint.sh
+!etc/bash/

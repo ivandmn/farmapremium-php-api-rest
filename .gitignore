@@ -6,9 +6,6 @@
 bin/*
 !bin/console
 
-/etc/bash/ssh/*
-!/etc/bas/ssh/.gitkeep
-
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 /var/
