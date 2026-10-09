@@ -4,13 +4,14 @@ networks:
     external: true
 
 services:
-  app:
+  app-tickets:
     build:
       context: .
       dockerfile: etc/Dockerfile
       target: prod
-    restart: unless-stopped
+    container_name: app-tickets
     env_file: .env
+    restart: unless-stopped
     volumes:
       - caddy_data:/data
       - caddy_config:/config

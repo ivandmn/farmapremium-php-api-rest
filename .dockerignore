@@ -3,20 +3,26 @@
 .dockerignore
 .idea/
 .vscode/
-.env.local
-.env.*.local
+.editorconfig
+
+.env
+.env.*
 
 /public/bundles/
 /vendor/
 /coverage/
-
 /var/
 
 /node_modules/
 /tools/*/vendor/
 
+/tests/
+phpunit.xml
+phpunit.dist.xml
 .phpunit.cache
 .phpunit.result.cache
+postman_collection.json
+*.md
 
 *.bak
 *.tmp
@@ -25,3 +31,4 @@ docker-compose*.yml
 etc/*
 !etc/caddy/
 !etc/app/php.*.ini
+!etc/app/docker-entrypoint.sh

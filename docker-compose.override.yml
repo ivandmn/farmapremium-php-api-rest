@@ -1,11 +1,11 @@
 services:
-  app:
+  app-tickets:
     build:
       target: dev
       args:
         USER: ${USER}
-        USER_ID: ${USER_ID:-1000}
-        GROUP_ID: ${USER_ID:-1000}
+        USER_ID: ${USER_ID}
+        GROUP_ID: ${GROUP_ID}
         USER_NAME: ${USER_NAME}
         USER_EMAIL: ${USER_EMAIL}
     restart: "no"
@@ -14,11 +14,15 @@ services:
       - path: .env.local
         required: false
     environment:
-      RUN_MIGRATIONS: "false"
+      FRANKENPHP_WORKER_CONFIG: |
+        watch ./src/**/*.php
+        watch ./config/**/*.{php,yaml,yml}
+        watch ./templates/**/*.twig
+        watch ./.env*
     ports:
       - "127.0.0.1:${HTTP_WEB_PORT:-8080}:80"
     volumes:
-      - ./:/app
+      - ./:/web
     extra_hosts:
       - host.docker.internal:host-gateway
     deploy:
